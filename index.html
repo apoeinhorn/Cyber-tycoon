@@ -407,7 +407,6 @@
 
     // --- FIREBASE AUTH & LEADERBOARD FUNKTIONEN ---
     async function handleRegister() {
-      alert('Registrieren-Button geklickt!');
       if (!window.FB) { alert('Firebase nicht initialisiert.'); return; }
       
       const companyInput = document.getElementById('auth-company-name').value.trim();
@@ -943,7 +942,6 @@
     checkSeasonReset();
     updateSeasonCountdown();
 
-    // Automatische Aktualisierung alle 6 Stunden (6 * 3600 * 1000 Millisekunden)
     setInterval(() => {
       autoSyncLeaderboard();
     }, 6 * 3600 * 1000);
