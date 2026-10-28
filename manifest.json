@@ -1,0 +1,13 @@
+{
+  "background_color": "#05070f",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Cyber Tech Tycoon",
+  "orientation": "any",
+  "scope": "/Cyber-tycoon/",
+  "short_name": "Cyber Tycoon",
+  "start_url": "/Cyber-tycoon/",
+  "theme_color": "#05070f",
+  "id": "com.cyber.tech.tycoon",
+  "description": "Ein Cyber Tech Tycoon Klicker-Spiel."
+}
