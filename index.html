@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="de" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cyber Tech Tycoon - Leaderboard Edition</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Firebase SDKs & Echte Config -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDVkBQHOU3bch3D5eAhbN_lwyV7uaK4zxM",
+      authDomain: "cyber-tycoon-5a1e6.firebaseapp.com",
+      projectId: "cyber-tycoon-5a1e6",
+      storageBucket: "cyber-tycoon-5a1e6.firebasestorage.app",
+      messagingSenderId: "57493581543",
+      appId: "1:57493581543:web:1b06bd315ad56ed461bc42",
+      measurementId: "G-ER4SVEMLVE"
+    };
+
+    try {
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      window.FB = { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, doc, setDoc, getDoc, collection, getDocs, query, orderBy, limit };
+
+      onAuthStateChanged(auth, async (user) => {
+        const userStatusEl = document.getElementById('firebase-user-status');
+        const authFormsEl = document.getElementById('firebase-auth-forms');
+        const logoutBtnEl = document.getElementById('firebase-logout-btn');
+
+        if (user) {
+          if(userStatusEl) userStatusEl.innerText = `Eingeloggt als: ${user.email}`;
+          if(authFormsEl) authFormsEl.classList.add('hidden');
+          if(logoutBtnEl) logoutBtnEl.classList.remove('hidden');
+          loadGameFromCloud(user.uid);
+        } else {
+          if(userStatusEl) userStatusEl.innerText = 'Nicht eingeloggt (Lokaler Modus)';
+          if(authFormsEl) authFormsEl.classList.remove('hidden');
+          if(logoutBtnEl) logoutBtnEl.classList.add('hidden');
+        }
+      });
+    } catch (e) {
+      console.warn("Firebase Init Fehler:", e);
+      window.FB = null;
+    }
+  </script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+    
+    * {
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .font-cyber { font-family: 'Chakra Petch', sans-serif; }
+
+    body {
+      background-color: #05070f;
+      color: #f3f4f6;
+      overflow-x: hidden;
+    }
+
+    .menu-drawer {
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8);
+    }
+
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #05070f; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+
+    @keyframes pulseGlow {
+      0%, 100% { border-color: rgba(6, 182, 212, 0.6); box-shadow: 0 0 15px rgba(6, 182, 212, 0.2); }
+      50% { border-color: rgba(217, 70, 239, 0.6); box-shadow: 0 0 15px rgba(217, 70, 239, 0.2); }
+    }
+    .glow-border { animation: pulseGlow 3s infinite; }
+  </style>
+</head>
+<body class="bg-[#05070f] text-gray-100 min-h-screen flex flex-col relative overflow-x-hidden">
+
+  <!-- TOP APP BAR -->
+  <header class="bg-[#0b0f19]/90 border-b border-slate-800 px-4 py-3 sticky top-0 z-30 backdrop-blur-md flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <button id="btn-toggle-menu" onclick="toggleMenu()" class="p-2 bg-slate-900 hover:bg-slate-800 text-cyan-400 rounded-xl border border-slate-700 active:scale-95 transition">
+        <i data-lucide="menu" class="w-5 h-5"></i>
+      </button>
+      <div>
+        <h1 class="font-cyber font-bold text-lg text-slate-100 leading-none bg-gradient-to-r from-cyan-400 to-fuchsia-500 bg-clip-text text-transparent">CYBER TYCOON</h1>
+        <span id="season-tag" class="text-[10px] text-fuchsia-400 font-mono">Saison Okt 2026</span>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-2 text-xs font-semibold">
+      <div class="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-cyan-400 font-cyber font-bold">
+        Lvl <span id="stat-level">1</span>
+      </div>
+      <div class="flex items-center space-x-1 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-emerald-400">
+        <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
+        <span id="stat-money" class="font-mono">€0.00</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- OVERLAY BACKDROP -->
+  <div id="menu-backdrop" onclick="toggleMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity"></div>
+
+  <!-- SLIDE-OUT HAMBURGER SIDEBAR -->
+  <aside id="menu-drawer" class="menu-drawer fixed top-0 left-0 bottom-0 w-72 bg-[#080d1a] border-r border-slate-800 z-50 transform -translate-x-full flex flex-col justify-between">
+    <div class="overflow-y-auto p-4 space-y-2">
+      
+      <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-2">
+        <div class="flex items-center space-x-2 text-cyan-400">
+          <i data-lucide="cpu" class="w-5 h-5"></i>
+          <span class="font-cyber font-bold text-base text-slate-100">NAVIGATION</span>
+        </div>
+        <button onclick="toggleMenu()" class="text-slate-400 p-1 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <button onclick="switchTab('clicker')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/30">
+        <i data-lucide="terminal" class="w-4 h-4"></i>
+        <span>0. Dev-Konsole</span>
+      </button>
+
+      <button onclick="switchTab('depts')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-slate-300 hover:bg-slate-800/50 hover:text-cyan-400 transition">
+        <i data-lucide="building-2" class="w-4 h-4"></i>
+        <span>1. Abteilungen</span>
+      </button>
+
+      <button onclick="switchTab('upgrades')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-slate-300 hover:bg-slate-800/50 hover:text-cyan-400 transition">
+        <i data-lucide="wrench" class="w-4 h-4"></i>
+        <span>2. Forschungen</span>
+      </button>
+
+      <button onclick="switchTab('market')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-slate-300 hover:bg-slate-800/50 hover:text-cyan-400 transition">
+        <i data-lucide="candlestick-chart" class="w-4 h-4"></i>
+        <span>3. Börse & Krypto</span>
+      </button>
+
+      <button onclick="switchTab('lab')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-slate-300 hover:bg-slate-800/50 hover:text-cyan-400 transition">
+        <i data-lucide="rocket" class="w-4 h-4"></i>
+        <span>4. Hardware Lab</span>
+      </button>
+
+      <button onclick="switchTab('staff')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-slate-300 hover:bg-slate-800/50 hover:text-cyan-400 transition">
+        <i data-lucide="users" class="w-4 h-4"></i>
+        <span>5. Personal</span>
+      </button>
+
+      <button onclick="switchTab('hack')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-slate-300 hover:bg-slate-800/50 hover:text-cyan-400 transition">
+        <i data-lucide="shield-alert" class="w-4 h-4"></i>
+        <span>6. Cyber Hack</span>
+      </button>
+
+      <button onclick="switchTab('hq')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-slate-300 hover:bg-slate-800/50 hover:text-cyan-400 transition">
+        <i data-lucide="landmark" class="w-4 h-4"></i>
+        <span>7. Hauptquartier</span>
+      </button>
+
+      <button onclick="switchTab('fame')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-fuchsia-400 hover:bg-fuchsia-500/10 transition">
+        <i data-lucide="award" class="w-4 h-4"></i>
+        <span>8. Cloud Save & Bestenliste</span>
+      </button>
+
+    </div>
+
+    <div class="p-4 border-t border-slate-800 bg-slate-950">
+      <div class="text-[11px] text-fuchsia-400 font-mono">Reset am 1. jedes Monats</div>
+      <div id="season-countdown" class="text-xs text-slate-300 font-bold font-mono">00d 00h 00m 00s</div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1 max-w-2xl w-full mx-auto p-4 flex flex-col">
+    
+    <!-- HEADER STATS -->
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+        <div class="text-[10px] text-slate-400 uppercase font-semibold">Passiv / Minute</div>
+        <div id="stat-income" class="font-cyber font-bold text-base text-cyan-400">+€0.00/min</div>
+      </div>
+      <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+        <div class="text-[10px] text-slate-400 uppercase font-semibold">Monats-Firmenwert</div>
+        <div id="stat-total-value" class="font-cyber font-bold text-base text-fuchsia-400">€0.00</div>
+      </div>
+    </div>
+
+    <!-- TAB 0: DEV-KONSOLE -->
+    <div id="tab-clicker" class="tab-panel space-y-4">
+      <div class="bg-slate-900/90 rounded-2xl p-5 border-2 border-slate-800 glow-border flex flex-col items-center justify-center relative overflow-hidden">
+        <div class="text-center mb-3">
+          <h3 class="font-cyber font-bold text-lg text-slate-100">0. Dev-Konsole</h3>
+          <p class="text-xs text-slate-400">Code manuell schreiben, um Startkapital aufzubauen.</p>
+        </div>
+
+        <button id="click-btn" class="w-36 h-36 rounded-full bg-slate-950 border-4 border-cyan-500/80 flex flex-col items-center justify-center shadow-2xl active:scale-95 transition-transform my-2">
+          <i data-lucide="terminal" class="w-9 h-9 text-cyan-400 mb-1"></i>
+          <span class="font-cyber font-bold text-slate-100 text-xs">CODE SCHREIBEN</span>
+          <span id="click-power-text" class="text-[11px] font-mono font-semibold text-fuchsia-400 mt-1">+€0.01 / Klick</span>
+        </button>
+
+        <!-- DIREKT-UPGRADER FÜR KLICK-POWER -->
+        <div class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 mt-3 flex justify-between items-center">
+          <div>
+            <div class="font-cyber font-bold text-xs text-slate-200">Klick-Booster (Level <span id="click-upgrade-level">0</span>)</div>
+            <div class="text-[10px] text-cyan-400 font-mono">+€0.01 Klick-Power</div>
+          </div>
+          <button onclick="buyClickUpgrade()" id="btn-buy-click-upg" class="px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-cyber text-xs rounded-lg font-bold transition">
+            Kaufen (<span id="click-upgrade-cost">€0.50</span>)
+          </button>
+        </div>
+
+        <div class="w-full mt-4">
+          <div class="flex justify-between text-xs mb-1">
+            <span class="text-slate-400">Level <span id="player-level-text" class="text-cyan-400 font-bold">1</span></span>
+            <span id="exp-text" class="text-cyan-400 font-mono">0 / 200 EXP</span>
+          </div>
+          <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+            <div id="exp-bar" class="h-full bg-gradient-to-r from-cyan-500 to-fuchsia-500 transition-all duration-200" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 1: ABTEILUNGEN -->
+    <div id="tab-depts" class="tab-panel space-y-4 hidden">
+      <h3 class="font-cyber font-bold text-lg text-slate-100">1. Abteilungen ausbauen</h3>
+      <div id="list-depts" class="space-y-3"></div>
+    </div>
+
+    <!-- TAB 2: FORSCHUNGEN -->
+    <div id="tab-upgrades" class="tab-panel space-y-4 hidden">
+      <h3 class="font-cyber font-bold text-lg text-slate-100">2. Forschungen & Multiplikatoren</h3>
+      <div id="list-upgrades" class="space-y-3"></div>
+    </div>
+
+    <!-- TAB 3: BÖRSE & KRYPTO -->
+    <div id="tab-market" class="tab-panel space-y-4 hidden">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="font-cyber font-bold text-lg text-slate-100">3. Börse & Krypto Mining</h3>
+          <p class="text-xs text-slate-400">Handle Aktien und schürfe Krypto-Coins stündlich.</p>
+        </div>
+        <div class="text-right text-xs text-cyan-400 font-mono" id="mining-timer-display">Nächster Drop in: 60:00</div>
+      </div>
+      <div id="list-market" class="space-y-3"></div>
+    </div>
+
+    <!-- TAB 4: HARDWARE LAB -->
+    <div id="tab-lab" class="tab-panel space-y-4 hidden">
+      <h3 class="font-cyber font-bold text-lg text-slate-100">4. Hardware Launch Lab</h3>
+      <div id="list-lab" class="space-y-3"></div>
+    </div>
+
+    <!-- TAB 5: PERSONAL -->
+    <div id="tab-staff" class="tab-panel space-y-4 hidden">
+      <h3 class="font-cyber font-bold text-lg text-slate-100">5. Spezialisten & Personal</h3>
+      <div id="list-staff" class="space-y-3"></div>
+    </div>
+
+    <!-- TAB 6: CYBER HACK -->
+    <div id="tab-hack" class="tab-panel space-y-4 hidden">
+      <div>
+        <h3 class="font-cyber font-bold text-lg text-slate-100">6. Cyber Security Operations</h3>
+        <p class="text-xs text-slate-400">Jeder Hack ist nur 1x pro Tag möglich. Beute wird nach Ablauf des Timers ausgezahlt.</p>
+      </div>
+      <div id="list-hack" class="space-y-3"></div>
+    </div>
+
+    <!-- TAB 7: HAUPTQUARTIER -->
+    <div id="tab-hq" class="tab-panel space-y-4 hidden">
+      <h3 class="font-cyber font-bold text-lg text-slate-100">7. Hauptquartier Expansion</h3>
+      <div id="list-hq" class="space-y-3"></div>
+    </div>
+
+    <!-- TAB 8: CLOUD SAVE & LEADERBOARD -->
+    <div id="tab-fame" class="tab-panel space-y-4 hidden">
+      <h3 class="font-cyber font-bold text-lg text-fuchsia-400">8. Cloud Save & Bestenliste</h3>
+      
+      <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-3">
+        <div id="firebase-user-status" class="text-xs text-cyan-400 font-mono font-bold">Verbinde mit Firebase...</div>
+        
+        <div id="firebase-auth-forms" class="space-y-2">
+          <input type="text" id="auth-company-name" placeholder="Einmaliger Firmenname" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+          <input type="email" id="auth-email" placeholder="E-Mail Adresse" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+          <input type="password" id="auth-password" placeholder="Passwort (min. 6 Zeichen)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+          <div class="flex gap-2 pt-1">
+            <button onclick="handleLogin()" class="flex-1 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-cyber text-xs rounded-xl font-bold transition">Login</button>
+            <button onclick="handleRegister()" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 font-cyber text-xs rounded-xl font-bold transition">Registrieren</button>
+          </div>
+        </div>
+
+        <button id="firebase-logout-btn" onclick="handleLogout()" class="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white font-cyber text-xs rounded-xl font-bold transition hidden">Abmelden</button>
+        <button onclick="saveGameToCloudManual()" class="w-full py-2 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-cyber text-xs rounded-xl font-bold transition">Spielstand & Bestenliste speichern</button>
+      </div>
+
+      <div class="flex justify-between items-center pt-2">
+        <h3 class="font-cyber font-bold text-md text-fuchsia-400">Globale Top-Firmen</h3>
+        <span class="text-[10px] text-slate-400 font-mono">Auto-Sync (alle 6h)</span>
+      </div>
+      <div id="leaderboard-list" class="space-y-2">
+        <div class="text-xs text-slate-500 italic">Lade Bestenliste...</div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- GAME STATE ---
+    let state = {
+      companyName: '',
+      money: 0,
+      totalEarned: 0,
+      clickPower: 0.01,
+      clickUpgLevel: 0,
+      clickUpgCost: 0.50,
+      level: 1,
+      exp: 0,
+      expNeeded: 200,
+      miningSecondsLeft: 3600,
+      incomeTimerSeconds: 60,
+
+      departments: [
+        { id: 'd1', name: 'Mamas Garage Studio', count: 0, baseCost: 1.50, baseIncome: 0.05 },
+        { id: 'd2', name: 'Freelance Coder Squad', count: 0, baseCost: 15.00, baseIncome: 0.40 },
+        { id: 'd3', name: 'Darknet Server Node', count: 0, baseCost: 120.00, baseIncome: 2.50 },
+        { id: 'd4', name: 'Web3 & Crypto Lab', count: 0, baseCost: 950.00, baseIncome: 15.00 },
+        { id: 'd5', name: 'Indie Game Studio', count: 0, baseCost: 7500.00, baseIncome: 90.00 },
+        { id: 'd6', name: 'AI Chatbot Cluster', count: 0, baseCost: 55000.00, baseIncome: 450.00 },
+        { id: 'd7', name: 'SaaS Enterprise Engine', count: 0, baseCost: 400000.00, baseIncome: 2400.00 },
+        { id: 'd8', name: 'Cybernetic Bio-Augmenter', count: 0, baseCost: 3000000.00, baseIncome: 12000.00 },
+        { id: 'd9', name: 'Quantum Cloud Grid', count: 0, baseCost: 25000000.00, baseIncome: 65000.00 },
+        { id: 'd10', name: 'Autonomous Mech Factory', count: 0, baseCost: 200000000.00, baseIncome: 350000.00 },
+        { id: 'd11', name: 'Neural Link Implant Corp', count: 0, baseCost: 1500000000.00, baseIncome: 1800000.00 },
+        { id: 'd12', name: 'Sub-Orbital Satellite Net', count: 0, baseCost: 12000000000.00, baseIncome: 9000000.00 },
+        { id: 'd13', name: 'Fusion Energy Generator', count: 0, baseCost: 90000000000.00, baseIncome: 45000000.00 },
+        { id: 'd14', name: 'Deep Space Mining Rig', count: 0, baseCost: 750000000000.00, baseIncome: 220000000.00 },
+        { id: 'd15', name: 'Planetary AI Hivemind', count: 0, baseCost: 6000000000000.00, baseIncome: 1100000000.00 }
+      ],
+
+      upgrades: [
+        { id: 'u1', name: 'Mechanische RGB-Tastatur', cost: 2.50, bought: false, mult: 2.0, type: 'click', desc: 'Verdoppelt Klick-Power.' },
+        { id: 'u2', name: 'Ergonomischer Titan-Stuhl', cost: 10.00, bought: false, mult: 1.25, type: 'global', desc: '+25% Passiv-Einkommen.' },
+        { id: 'u3', name: 'Giga-Koffein Infusion', cost: 50.00, bought: false, mult: 2.0, type: 'click', desc: 'Verdoppelt Klick-Power.' },
+        { id: 'u4', name: 'Glasfaser Gigabit-Standleitung', cost: 300.00, bought: false, mult: 1.3, type: 'global', desc: '+30% Passiv-Einkommen.' },
+        { id: 'u5', name: 'AI Auto-Code Autopilot', cost: 1500.00, bought: false, mult: 2.0, type: 'click', desc: 'Starke Klick-Steigerung.' },
+        { id: 'u6', name: 'Cloud Cluster CI/CD Pipeline', cost: 8000.00, bought: false, mult: 1.35, type: 'global', desc: '+35% Passiv-Einkommen.' },
+        { id: 'u7', name: 'Quantum Compiler V8', cost: 45000.00, bought: false, mult: 2.0, type: 'click', desc: 'Erweiterte Klick-Power.' },
+        { id: 'u8', name: 'Neural Sync Headset Mod', cost: 250000.00, bought: false, mult: 1.4, type: 'global', desc: '+40% Passiv-Einkommen.' },
+        { id: 'u9', name: 'Darknet Algorithmus Matrix', cost: 1500000.00, bought: false, mult: 1.5, type: 'global', desc: '+50% Passiv-Einkommen.' }
+      ],
+
+      market: [
+        { id: 'm1', name: 'NVIDIA Cyber-Tech', type: 'stock', price: 15.00, change: 1.2, owned: 0 },
+        { id: 'm2', name: 'CyberCorp Inc.', type: 'stock', price: 5.00, change: -0.4, owned: 0 },
+        { id: 'm3', name: 'BioGenetics Corp', type: 'stock', price: 45.00, change: 0.8, owned: 0 },
+        { id: 'm4', name: 'RoboDynamics Ltd', type: 'stock', price: 180.00, change: 2.1, owned: 0 },
+        { id: 'm5', name: 'CyberCoin (CBC)', type: 'crypto', price: 1200.00, change: 3.5, owned: 0, rigs: 0, rigCost: 500.00 },
+        { id: 'm6', name: 'ByteToken (BYT)', type: 'crypto', price: 150.00, change: -1.1, owned: 0, rigs: 0, rigCost: 80.00 },
+        { id: 'm7', name: 'Void Coin (VOID)', type: 'crypto', price: 12.00, change: 0.2, owned: 0, rigs: 0, rigCost: 20.00 }
+      ],
+
+      products: [
+        { id: 'p1', name: 'CyberPhone Alpha', cost: 1000.00, launched: false, desc: '+10% Hype.' },
+        { id: 'p2', name: 'Neural VR Visor', cost: 8500.00, launched: false, desc: '+15% Hype.' },
+        { id: 'p3', name: 'Smart CyberGlasses AR', cost: 65000.00, launched: false, desc: '+20% Hype.' },
+        { id: 'p4', name: 'Autonomous Security Drone', cost: 500000.00, launched: false, desc: '+25% Hype.' },
+        { id: 'p5', name: 'Cyber Mech-Dog Patrol', cost: 4000000.00, launched: false, desc: '+30% Hype.' }
+      ],
+
+      staff: [
+        { id: 's1', name: 'Junior Coder', cost: 20.00, count: 0, bonus: '+€0.01 Klick-Power' },
+        { id: 's2', name: 'Senior Fullstack Dev', cost: 250.00, count: 0, bonus: '+1% Passiv-Einkommen' },
+        { id: 's3', name: 'AI Prompt Engineer', cost: 1800.00, count: 0, bonus: '+1.5% Passiv-Einkommen' },
+        { id: 's4', name: 'Cyber Security Officer', cost: 15000.00, count: 0, bonus: '+2% Passiv-Einkommen' },
+        { id: 's5', name: 'Growth Hacking Lead', cost: 100000.00, count: 0, bonus: '+2.5% Passiv-Einkommen' }
+      ],
+
+      hacks: [
+        { id: 'h1', name: 'Kebab-Bistro Wifi', reward: 0.50, cd: 0, maxCd: 86400 },
+        { id: 'h2', name: 'Stadtsparkassen Server', reward: 3.50, cd: 0, maxCd: 86400 },
+        { id: 'h3', name: 'Offshore Crypto Pool', reward: 25.00, cd: 0, maxCd: 86400 },
+        { id: 'h4', name: 'Rivalisierendes Tech-Startup', reward: 150.00, cd: 0, maxCd: 86400 },
+        { id: 'h5', name: 'Polizeipräsidium Mainframe', reward: 1000.00, cd: 0, maxCd: 86400 }
+      ],
+
+      hqs: [
+        { id: 'hq1', name: 'Mamas Garage', cost: 0, mult: 1.0, bought: true, desc: 'Staubiger Raum, kostenlos.' },
+        { id: 'hq2', name: 'Open Space Startup Loft', cost: 5000.00, mult: 1.2, bought: false, desc: '+20% Gesamtertrag.' },
+        { id: 'hq3', name: 'Tech Park Campus Building', cost: 80000.00, mult: 1.35, bought: false, desc: '1.35x Gesamtertrag.' },
+        { id: 'hq4', name: 'Cyber Skyscraper Tower', cost: 1200000.00, mult: 1.5, bought: false, desc: '1.5x Gesamtertrag.' },
+        { id: 'hq5', name: 'Underground Bunkernet Facility', cost: 20000000.00, mult: 1.8, bought: false, desc: '1.8x Gesamtertrag.' }
+      ]
+    };
+
+    // --- FIREBASE AUTH & LEADERBOARD FUNKTIONEN ---
+    async function handleRegister() {
+      alert('Registrieren-Button geklickt!');
+      if (!window.FB) { alert('Firebase nicht initialisiert.'); return; }
+      
+      const companyInput = document.getElementById('auth-company-name').value.trim();
+      const email = document.getElementById('auth-email').value;
+      const pass = document.getElementById('auth-password').value;
+
+      if (!companyInput) {
+        alert('Bitte gib einen Firmennamen für die Bestenliste ein!');
+        return;
+      }
+      if (!email || !pass) {
+        alert('Bitte E-Mail und Passwort (min. 6 Zeichen) eingeben!');
+        return;
+      }
+
+      try {
+        const nameQuery = await window.FB.getDocs(window.FB.query(window.FB.collection(window.FB.db, "leaderboard")));
+        let nameExists = false;
+        nameQuery.forEach(doc => {
+          if (doc.data().companyName && doc.data().companyName.toLowerCase() === companyInput.toLowerCase()) {
+            nameExists = true;
+          }
+        });
+
+        if (nameExists) {
+          alert('Dieser Firmenname ist bereits vergeben! Wähle bitte einen anderen.');
+          return;
+        }
+
+        state.companyName = companyInput;
+        await window.FB.createUserWithEmailAndPassword(window.FB.auth, email, pass);
+        await saveGameToCloudManual();
+        alert('Erfolgreich registriert & Firmenname gesichert!');
+      } catch (e) { 
+        alert('Registrierungs-Fehler: ' + e.message); 
+        console.error(e);
+      }
+    }
+
+    async function handleLogin() {
+      if (!window.FB) { alert('Firebase nicht initialisiert.'); return; }
+      const email = document.getElementById('auth-email').value;
+      const pass = document.getElementById('auth-password').value;
+      try {
+        await window.FB.signInWithEmailAndPassword(window.FB.auth, email, pass);
+        alert('Erfolgreich eingeloggt!');
+      } catch (e) { alert('Login-Fehler: ' + e.message); }
+    }
+
+    async function handleLogout() {
+      if (!window.FB) return;
+      await window.FB.signOut(window.FB.auth);
+      alert('Abgemeldet');
+    }
+
+    async function saveGameToCloudManual() {
+      if (!window.FB || !window.FB.auth.currentUser) {
+        alert('Bitte zuerst über Firebase einloggen!');
+        return;
+      }
+      try {
+        const user = window.FB.auth.currentUser;
+        await window.FB.setDoc(window.FB.doc(window.FB.db, "saves", user.uid), state);
+        
+        if (state.companyName) {
+          await window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", user.uid), {
+            companyName: state.companyName,
+            totalValue: state.totalEarned,
+            updatedAt: Date.now()
+          });
+        }
+        alert('Spielstand & Bestenliste erfolgreich aktualisiert!');
+        fetchLeaderboard();
+      } catch (e) { alert('Speicherfehler: ' + e.message); }
+    }
+
+    async function autoSyncLeaderboard() {
+      if (!window.FB || !window.FB.auth.currentUser) return;
+      try {
+        const user = window.FB.auth.currentUser;
+        if (state.companyName) {
+          await window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", user.uid), {
+            companyName: state.companyName,
+            totalValue: state.totalEarned,
+            updatedAt: Date.now()
+          }, { merge: true });
+          fetchLeaderboard();
+        }
+      } catch (e) { console.error('Auto-Sync Fehler:', e); }
+    }
+
+    async function loadGameFromCloud(uid) {
+      if (!window.FB) return;
+      try {
+        const docSnap = await window.FB.getDoc(window.FB.doc(window.FB.db, "saves", uid));
+        if (docSnap.exists()) {
+          state = docSnap.data();
+          if(state.companyName) {
+            document.getElementById('auth-company-name').value = state.companyName;
+            document.getElementById('auth-company-name').disabled = true;
+          }
+          updateUI();
+          if(activeCurrentTab !== 'clicker') renderTabContent(activeCurrentTab);
+        }
+        fetchLeaderboard();
+      } catch (e) { console.error('Ladefehler:', e); }
+    }
+
+    async function fetchLeaderboard() {
+      if (!window.FB) return;
+      try {
+        const q = window.FB.query(window.FB.collection(window.FB.db, "leaderboard"), window.FB.orderBy("totalValue", "desc"), window.FB.limit(10));
+        const querySnapshot = await window.FB.getDocs(q);
+        const listEl = document.getElementById('leaderboard-list');
+        listEl.innerHTML = '';
+        
+        let rank = 1;
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          listEl.innerHTML += `
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+              <div class="flex items-center space-x-2">
+                <span class="font-mono font-bold text-fuchsia-400">#${rank++}</span>
+                <span class="font-cyber font-bold text-slate-100">${data.companyName}</span>
+              </div>
+              <span class="font-mono text-emerald-400 font-bold">${formatMoney(data.totalValue)}</span>
+            </div>
+          `;
+        });
+        if(rank === 1) {
+          listEl.innerHTML = `<div class="text-xs text-slate-500 italic">Noch keine Einträge in der Bestenliste.</div>`;
+        }
+      } catch (e) {
+        console.error("Bestenlisten-Fehler:", e);
+      }
+    }
+
+    // --- SEASON & TIMER LOGIC ---
+    function getMonthKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    function checkSeasonReset() {
+      const currentKey = getMonthKey();
+      const savedKey = localStorage.getItem('cyber_season_key');
+      if (savedKey && savedKey !== currentKey) {
+        localStorage.removeItem('cyber_state');
+        alert(`🏆 NEUE MONATLICHE SAISON GESTARTET!`);
+      }
+      localStorage.setItem('cyber_season_key', currentKey);
+    }
+
+    function updateSeasonCountdown() {
+      const now = new Date();
+      const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0);
+      const diff = nextMonth - now;
+      if (diff <= 0) return;
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const mins = Math.floor((diff / (1000 * 60)) % 60);
+      const secs = Math.floor((diff / 1000) % 60);
+
+      const el = document.getElementById('season-countdown');
+      if (el) el.innerText = `${String(days).padStart(2, '0')}d ${String(hours).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+    }
+
+    // --- DRAWER & NAVIGATION ---
+    let activeCurrentTab = 'clicker';
+
+    function toggleMenu() {
+      const drawer = document.getElementById('menu-drawer');
+      const backdrop = document.getElementById('menu-backdrop');
+      const isHidden = drawer.classList.contains('-translate-x-full');
+      if (isHidden) {
+        drawer.classList.remove('-translate-x-full');
+        backdrop.classList.remove('hidden');
+      } else {
+        drawer.classList.add('-translate-x-full');
+        backdrop.classList.add('hidden');
+      }
+    }
+
+    function switchTab(tabId) {
+      activeCurrentTab = tabId;
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById('tab-' + tabId).classList.remove('hidden');
+      toggleMenu();
+      renderTabContent(tabId);
+      if(tabId === 'fame') fetchLeaderboard();
+    }
+
+    function formatMoney(num) {
+      if (num >= 1e12) return '€' + (num / 1e12).toFixed(2) + ' T';
+      if (num >= 1e9) return '€' + (num / 1e9).toFixed(2) + ' B';
+      if (num >= 1e6) return '€' + (num / 1e6).toFixed(2) + ' M';
+      if (num >= 1e3) return '€' + (num / 1e3).toFixed(2) + ' k';
+      return '€' + num.toFixed(2);
+    }
+
+    function formatTime(seconds) {
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = seconds % 60;
+      return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+
+    function getPassiveIncome() {
+      let income = 0;
+      state.departments.forEach(d => { income += d.count * d.baseIncome; });
+      state.staff.forEach(s => {
+        if (s.bonus.includes('Passiv-Einkommen')) {
+          const pct = parseFloat(s.bonus) / 100;
+          if (!isNaN(pct)) income *= (1 + s.count * pct);
+        }
+      });
+      state.upgrades.filter(u => u.bought && u.type === 'global').forEach(u => { income *= u.mult; });
+      const currentHQ = state.hqs.filter(h => h.bought).slice(-1)[0];
+      if (currentHQ) income *= currentHQ.mult;
+      return income;
+    }
+
+    function getClickPower() {
+      let base = state.clickPower + (state.clickUpgLevel * 0.01);
+      state.staff.forEach(s => {
+        if (s.bonus.includes('Klick-Power')) base += s.count * 0.01;
+      });
+      state.upgrades.filter(u => u.bought && u.type === 'click').forEach(u => { base *= u.mult; });
+      return base;
+    }
+
+    function updateUI() {
+      document.getElementById('stat-money').innerText = formatMoney(state.money);
+      document.getElementById('stat-income').innerText = '+' + formatMoney(getPassiveIncome()) + '/min';
+      document.getElementById('stat-level').innerText = state.level;
+      document.getElementById('player-level-text').innerText = state.level;
+      document.getElementById('stat-total-value').innerText = formatMoney(state.totalEarned);
+      document.getElementById('click-power-text').innerText = '+' + formatMoney(getClickPower()) + ' / Klick';
+      
+      document.getElementById('click-upgrade-level').innerText = state.clickUpgLevel;
+      document.getElementById('click-upgrade-cost').innerText = formatMoney(state.clickUpgCost);
+      const btnUpg = document.getElementById('btn-buy-click-upg');
+      if (state.money >= state.clickUpgCost) {
+        btnUpg.className = "px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-cyber text-xs rounded-lg font-bold transition cursor-pointer";
+      } else {
+        btnUpg.className = "px-3 py-1.5 bg-slate-800 text-slate-500 font-cyber text-xs rounded-lg font-bold transition cursor-not-allowed";
+      }
+
+      document.getElementById('exp-text').innerText = `${Math.floor(state.exp)} / ${state.expNeeded} EXP`;
+      document.getElementById('exp-bar').style.width = Math.min(100, (state.exp / state.expNeeded) * 100) + '%';
+
+      const mMin = Math.floor(state.miningSecondsLeft / 60);
+      const mSec = state.miningSecondsLeft % 60;
+      const mTimerEl = document.getElementById('mining-timer-display');
+      if (mTimerEl) mTimerEl.innerText = `Nächster Drop in: ${String(mMin).padStart(2,'0')}:${String(mSec).padStart(2,'0')}`;
+    }
+
+    function buyClickUpgrade() {
+      if (state.money >= state.clickUpgCost) {
+        state.money -= state.clickUpgCost;
+        state.clickUpgLevel++;
+        state.clickUpgCost *= 1.35;
+        updateUI();
+      }
+    }
+
+    function renderTabContent(tabId) {
+      if (tabId === 'depts') {
+        const list = document.getElementById('list-depts');
+        list.innerHTML = '';
+        state.departments.forEach((d, idx) => {
+          const cost = d.baseCost * Math.pow(1.22, d.count);
+          list.innerHTML += `
+            <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
+              <div>
+                <div class="font-cyber font-bold text-sm text-slate-100">${d.name}</div>
+                <div class="text-xs text-cyan-400">Level: ${d.count} (+${formatMoney(d.baseIncome * d.count)}/min)</div>
+              </div>
+              <button onclick="buyDept(${idx})" class="px-3.5 py-2 ${state.money >= cost ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} font-cyber text-xs rounded-xl font-bold transition">
+                Kaufen (${formatMoney(cost)})
+              </button>
+            </div>
+          `;
+        });
+      }
+
+      if (tabId === 'upgrades') {
+        const list = document.getElementById('list-upgrades');
+        list.innerHTML = '';
+        state.upgrades.forEach((u, idx) => {
+          list.innerHTML += `
+            <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
+              <div>
+                <div class="font-cyber font-bold text-sm text-slate-100">${u.name}</div>
+                <div class="text-xs text-slate-400">${u.desc}</div>
+              </div>
+              <button onclick="buyUpgrade(${idx})" ${u.bought ? 'disabled' : ''} class="px-3.5 py-2 ${u.bought ? 'bg-slate-800 text-emerald-400' : (state.money >= u.cost ? 'bg-fuchsia-600 hover:bg-fuchsia-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed')} font-cyber text-xs rounded-xl font-bold transition">
+                ${u.bought ? 'Erforscht' : formatMoney(u.cost)}
+              </button>
+            </div>
+          `;
+        });
+      }
+
+      if (tabId === 'market') {
+        const list = document.getElementById('list-market');
+        list.innerHTML = '';
+        state.market.forEach((m, idx) => {
+          const isCrypto = m.type === 'crypto';
+          const totalVal = m.owned * m.price;
+          const changeColor = m.change >= 0 ? 'text-emerald-400' : 'text-rose-400';
+          const changeSign = m.change >= 0 ? '+' : '';
+
+          let miningHTML = '';
+          if (isCrypto) {
+            const currentRigCost = m.rigCost * Math.pow(1.3, m.rigs);
+            miningHTML = `
+              <div class="mt-2 pt-2 border-t border-slate-800 text-xs flex justify-between items-center">
+                <span class="text-purple-300">Rigs: ${m.rigs} (Mincht stündlich)</span>
+                <button onclick="buyRig(${idx})" class="px-2.5 py-1 ${state.money >= currentRigCost ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} rounded font-cyber text-[10px]">
+                  Rig (+1) (${formatMoney(currentRigCost)})
+                </button>
+              </div>
+            `;
+          }
+
+          list.innerHTML += `
+            <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 flex flex-col justify-between">
+              <div class="flex justify-between items-start">
+                <div>
+                  <div class="font-cyber font-bold text-sm text-slate-100">${m.name} <span class="text-[10px] text-slate-500 uppercase">(${m.type})</span></div>
+                  <div class="text-xs font-mono text-cyan-400 mt-0.5">Kurs: ${formatMoney(m.price)} <span class="${changeColor}">(${changeSign}${m.change}%)</span></div>
+                </div>
+                <div class="text-right">
+                  <div class="text-xs text-slate-400">Besitz: <span class="text-emerald-400 font-bold">${m.owned.toFixed(2)}</span></div>
+                  <div class="text-[10px] text-slate-500 font-mono">Wert: ${formatMoney(totalVal)}</div>
+                </div>
+              </div>
+
+              <div class="flex gap-2 mt-3">
+                <button onclick="buyStock(${idx})" class="flex-1 py-1.5 ${state.money >= m.price ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} font-cyber text-xs rounded-lg">Kauf</button>
+                <button onclick="sellStock(${idx})" class="flex-1 py-1.5 ${m.owned >= 1 ? 'bg-rose-600 hover:bg-rose-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} font-cyber text-xs rounded-lg">Verkauf</button>
+              </div>
+              ${miningHTML}
+            </div>
+          `;
+        });
+      }
+
+      if (tabId === 'lab') {
+        const list = document.getElementById('list-lab');
+        list.innerHTML = '';
+        state.products.forEach((p, idx) => {
+          list.innerHTML += `
+            <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
+              <div>
+                <div class="font-cyber font-bold text-sm text-slate-100">${p.name}</div>
+                <div class="text-xs text-slate-400">${p.desc}</div>
+              </div>
+              <button onclick="launchProduct(${idx})" ${p.launched ? 'disabled' : ''} class="px-3.5 py-2 ${p.launched ? 'bg-slate-800 text-emerald-400' : (state.money >= p.cost ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed')} font-cyber text-xs rounded-xl font-bold transition">
+                ${p.launched ? 'Gelauncht' : 'Launchen (' + formatMoney(p.cost) + ')'}
+              </button>
+            </div>
+          `;
+        });
+      }
+
+      if (tabId === 'staff') {
+        const list = document.getElementById('list-staff');
+        list.innerHTML = '';
+        state.staff.forEach((s, idx) => {
+          list.innerHTML += `
+            <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
+              <div>
+                <div class="font-cyber font-bold text-sm text-slate-100">${s.name}</div>
+                <div class="text-xs text-cyan-400">${s.bonus} (Angestellt: ${s.count})</div>
+              </div>
+              <button onclick="hireStaff(${idx})" class="px-3.5 py-2 ${state.money >= s.cost ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} font-cyber text-xs rounded-xl font-bold transition">
+                Einstellen (${formatMoney(s.cost)})
+              </button>
+            </div>
+          `;
+        });
+      }
+
+      if (tabId === 'hack') {
+        const list = document.getElementById('list-hack');
+        list.innerHTML = '';
+        state.hacks.forEach((h, idx) => {
+          list.innerHTML += `
+            <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
+              <div>
+                <div class="font-cyber font-bold text-sm text-slate-100">${h.name}</div>
+                <div class="text-xs text-slate-400">Beute nach Timer: <span class="text-emerald-400 font-mono">+${formatMoney(h.reward)}</span></div>
+              </div>
+              <button onclick="executeHack(${idx})" ${h.cd > 0 ? 'disabled' : ''} class="px-3.5 py-2 ${h.cd > 0 ? 'bg-slate-800 text-slate-500' : 'bg-rose-600 hover:bg-rose-500 text-white'} font-cyber text-xs rounded-xl font-bold transition">
+                ${h.cd > 0 ? formatTime(h.cd) : 'HACKEN (1x/Tag)'}
+              </button>
+            </div>
+          `;
+        });
+      }
+
+      if (tabId === 'hq') {
+        const list = document.getElementById('list-hq');
+        list.innerHTML = '';
+        state.hqs.forEach((hq, idx) => {
+          list.innerHTML += `
+            <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
+              <div>
+                <div class="font-cyber font-bold text-sm text-slate-100">${hq.name}</div>
+                <div class="text-xs text-slate-400">${hq.desc}</div>
+              </div>
+              <button onclick="buyHQ(${idx})" ${hq.bought || state.money < hq.cost ? 'disabled' : ''} class="px-3.5 py-2 ${hq.bought ? 'bg-slate-800 text-cyan-400' : (state.money >= hq.cost ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed')} font-cyber text-xs rounded-xl font-bold transition">
+                ${hq.bought ? 'Aktuell' : formatMoney(hq.cost)}
+              </button>
+            </div>
+          `;
+        });
+      }
+    }
+
+    // --- ACTIONS ---
+    function buyDept(idx) {
+      const d = state.departments[idx];
+      const cost = d.baseCost * Math.pow(1.22, d.count);
+      if (state.money >= cost) {
+        state.money -= cost;
+        d.count++;
+        updateUI();
+        renderTabContent('depts');
+      }
+    }
+
+    function buyUpgrade(idx) {
+      const u = state.upgrades[idx];
+      if (!u.bought && state.money >= u.cost) {
+        state.money -= u.cost;
+        u.bought = true;
+        updateUI();
+        renderTabContent('upgrades');
+      }
+    }
+
+    function buyStock(idx) {
+      const item = state.market[idx];
+      if (state.money >= item.price) {
+        state.money -= item.price;
+        item.owned++;
+        updateUI();
+        renderTabContent('market');
+      }
+    }
+
+    function sellStock(idx) {
+      const item = state.market[idx];
+      if (item.owned >= 1) {
+        state.money += item.price;
+        item.owned--;
+        updateUI();
+        renderTabContent('market');
+      }
+    }
+
+    function buyRig(idx) {
+      const item = state.market[idx];
+      const cost = item.rigCost * Math.pow(1.3, item.rigs);
+      if (state.money >= cost) {
+        state.money -= cost;
+        item.rigs++;
+        updateUI();
+        renderTabContent('market');
+      }
+    }
+
+    function launchProduct(idx) {
+      const p = state.products[idx];
+      if (!p.launched && state.money >= p.cost) {
+        state.money -= p.cost;
+        p.launched = true;
+        updateUI();
+        renderTabContent('lab');
+      }
+    }
+
+    function hireStaff(idx) {
+      const s = state.staff[idx];
+      if (state.money >= s.cost) {
+        state.money -= s.cost;
+        s.count++;
+        s.cost *= 1.35;
+        updateUI();
+        renderTabContent('staff');
+      }
+    }
+
+    function executeHack(idx) {
+      const h = state.hacks[idx];
+      if (h.cd === 0) {
+        h.cd = h.maxCd;
+        updateUI();
+        renderTabContent('hack');
+      }
+    }
+
+    function buyHQ(idx) {
+      const hq = state.hqs[idx];
+      if (!hq.bought && state.money >= hq.cost) {
+        state.money -= hq.cost;
+        hq.bought = true;
+        updateUI();
+        renderTabContent('hq');
+      }
+    }
+
+    document.getElementById('click-btn').addEventListener('click', () => {
+      const pwr = getClickPower();
+      state.money += pwr;
+      state.totalEarned += pwr;
+
+      state.exp += 5;
+      if (state.exp >= state.expNeeded) {
+        state.level++;
+        state.exp = 0;
+        state.expNeeded = Math.floor(state.expNeeded * 1.8);
+      }
+
+      updateUI();
+    });
+
+    // --- INITIALISIERUNG & SEKUNDEN-LOOP ---
+    checkSeasonReset();
+    updateSeasonCountdown();
+
+    // Automatische Aktualisierung alle 6 Stunden (6 * 3600 * 1000 Millisekunden)
+    setInterval(() => {
+      autoSyncLeaderboard();
+    }, 6 * 3600 * 1000);
+
+    setInterval(() => {
+      state.hacks.forEach(h => {
+        if (h.cd > 0) {
+          h.cd--;
+          if (h.cd === 0) {
+            state.money += h.reward;
+            state.totalEarned += h.reward;
+          }
+        }
+      });
+
+      state.miningSecondsLeft--;
+      if (state.miningSecondsLeft <= 0) {
+        state.miningSecondsLeft = 3600;
+        state.market.forEach(m => {
+          if (m.type === 'crypto' && m.rigs > 0) {
+            m.owned += m.rigs * 0.1;
+          }
+        });
+      }
+
+      if (Math.random() < 0.05) {
+        state.market.forEach(m => {
+          const delta = (Math.random() - 0.48) * 4;
+          m.change = parseFloat(delta.toFixed(1));
+          m.price = Math.max(2, m.price * (1 + delta / 100));
+        });
+      }
+
+      state.incomeTimerSeconds--;
+      if (state.incomeTimerSeconds <= 0) {
+        state.incomeTimerSeconds = 60;
+        const inc = getPassiveIncome();
+        if (inc > 0) {
+          state.money += inc;
+          state.totalEarned += inc;
+        }
+      }
+
+      updateUI();
+      if (activeCurrentTab !== 'clicker' && activeCurrentTab !== 'fame') {
+        renderTabContent(activeCurrentTab);
+      }
+    }, 1000);
+
+    setInterval(() => {
+      updateSeasonCountdown();
+    }, 1000);
+
+    updateUI();
+    lucide.createIcons();
+  </script>
+</body>
+</html>
