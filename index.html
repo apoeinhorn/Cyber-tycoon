@@ -940,8 +940,54 @@
     });
 
     // --- INITIALISIERUNG & SEKUNDEN-LOOP ---
+       // --- AUTOMATISCHES SPEICHERN & LADEN ---
+    function saveGameLocally() {
+      localStorage.setItem('cyber_tycoon_save', JSON.stringify(state));
+    }
+
+    function loadGameLocally() {
+      const saved = localStorage.getItem('cyber_tycoon_save');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          // Zustand zusammenführen, damit neue Variablen nicht überschrieben werden
+          state = { ...state, ...parsed };
+        } catch (e) {
+          console.error("Ladefehler aus lokalem Speicher:", e);
+        }
+      }
+    }
+
+    // Beim Start des Spiels laden
+    loadGameLocally();
+
+    // --- INITIALISIERUNG & SEKUNDEN-LOOP ---
     checkSeasonReset();
     updateSeasonCountdown();
+
+    // Automatisches Speichern alle 30 Sekunden (Lokal + Cloud, falls eingeloggt)
+    setInterval(() => {
+      saveGameLocally();
+      if (window.FB && window.FB.auth.currentUser) {
+        saveGameToCloudManualSilent(); // Speichert still im Hintergrund ohne nervige Pop-ups
+      }
+    }, 30000);
+
+    // Stille Cloud-Speicherung für den Hintergrund
+    async function saveGameToCloudManualSilent() {
+      try {
+        const user = window.FB.auth.currentUser;
+        if (!user) return;
+        await window.FB.setDoc(window.FB.doc(window.FB.db, "saves", user.uid), state);
+        if (state.companyName) {
+          await window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", user.uid), {
+            companyName: state.companyName,
+            totalValue: state.totalEarned,
+            updatedAt: Date.now()
+          }, { merge: true });
+        }
+      } catch (e) { console.error('Hintergrund-Speicherfehler:', e); }
+    }
 
     setInterval(() => {
       autoSyncLeaderboard();
@@ -996,8 +1042,9 @@
       updateSeasonCountdown();
     }, 1000);
 
-    updateUI();
+        updateUI();
     lucide.createIcons();
   </script>
 </body>
 </html>
+
