@@ -92,7 +92,17 @@
 
   <!-- TOP APP BAR -->
   <header class="bg-[#0b0f19]/90 border-b border-slate-800 px-4 py-3 sticky top-0 z-30 backdrop-blur-md flex items-center justify-between">
-    <div id="save-status" class="text-[10px] text-slate-500 font-mono transition-opacity duration-300 opacity-0">
+    <!-- Cyberpunk Musik Player -->
+<div class="flex items-center space-x-1">
+  <audio id="bg-music" loop>
+    <!-- Du kannst hier jeden direkten MP3-Link oder eine lokale Datei einbinden -->
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=cyberpunk-2099-10701.mp3" type="audio/mpeg">
+  </audio>
+  <button onclick="toggleMusic()" id="music-btn" class="p-2 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl border border-slate-700 active:scale-95 transition">
+    <i data-lucide="volume-X" id="music-icon" class="w-5 h-5"></i>
+  </button>
+</div>
+ <div id="save-status" class="text-[10px] text-slate-500 font-mono transition-opacity duration-300 opacity-0">
       Gespeichert ✓
     </div>
     <div class="flex items-center space-x-3">
@@ -1057,6 +1067,29 @@
     }, 1000);
 
     updateUI();
+        // --- MUSIK STEUERUNG ---
+    function toggleMusic() {
+      const music = document.getElementById('bg-music');
+      const icon = document.getElementById('music-icon');
+      
+      if (music.paused) {
+        music.volume = 0.3; // Angenehme Lautstärke (30%)
+        music.play().then(() => {
+          icon.setAttribute('data-lucide', 'volume-2');
+          icon.classList.remove('text-slate-400');
+          icon.classList.add('text-cyan-400');
+          lucide.createIcons();
+        }).catch(e => {
+          console.log("Audio-Autoplay blockiert vom Browser:", e);
+        });
+      } else {
+        music.pause();
+        icon.setAttribute('data-lucide', 'volume-X');
+        icon.classList.remove('text-cyan-400');
+        icon.classList.add('text-slate-400');
+        lucide.createIcons();
+      }
+    }
     lucide.createIcons();
   </script>
 </body>
