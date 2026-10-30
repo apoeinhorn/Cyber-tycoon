@@ -92,8 +92,12 @@
 
   <!-- TOP APP BAR -->
   <header class="bg-[#0b0f19]/90 border-b border-slate-800 px-4 py-3 sticky top-0 z-30 backdrop-blur-md flex items-center justify-between">
-    <!-- Cyberpunk Musik Player -->
-    <div class="flex items-center space-x-1">
+    <div class="flex items-center space-x-2">
+      <!-- Menü Burger Button -->
+      <button id="btn-toggle-menu" onclick="toggleMenu()" class="p-2 bg-slate-900 hover:bg-slate-800 text-cyan-400 rounded-xl border border-slate-700 active:scale-95 transition">
+        <i data-lucide="menu" class="w-5 h-5"></i>
+      </button>
+      <!-- Musik Player Button -->
       <audio id="bg-music" loop>
         <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=cyberpunk-2099-10701.mp3" type="audio/mpeg">
       </audio>
@@ -101,29 +105,26 @@
         <i data-lucide="volume-X" id="music-icon" class="w-5 h-5"></i>
       </button>
     </div>
-    <div id="save-status" class="text-[10px] text-slate-500 font-mono transition-opacity duration-300 opacity-0">
-      Gespeichert ✓
-    </div>
-    <div class="flex items-center space-x-3">
-      <button id="btn-toggle-menu" onclick="toggleMenu()" class="p-2 bg-slate-900 hover:bg-slate-800 text-cyan-400 rounded-xl border border-slate-700 active:scale-95 transition">
-        <i data-lucide="menu" class="w-5 h-5"></i>
-      </button>
-      <div>
-        <h1 class="font-cyber font-bold text-lg text-slate-100 leading-none bg-gradient-to-r from-cyan-400 to-fuchsia-500 bg-clip-text text-transparent">CYBER TYCOON</h1>
-        <span id="season-tag" class="text-[10px] text-fuchsia-400 font-mono">Saison Okt 2026</span>
-      </div>
+
+    <div class="text-center">
+      <h1 class="font-cyber font-bold text-base text-slate-100 leading-none bg-gradient-to-r from-cyan-400 to-fuchsia-500 bg-clip-text text-transparent">CYBER TYCOON</h1>
+      <span id="season-tag" class="text-[9px] text-fuchsia-400 font-mono">Saison Okt 2026</span>
     </div>
 
     <div class="flex items-center space-x-2 text-xs font-semibold">
-      <div class="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-cyan-400 font-cyber font-bold">
+      <div class="px-2 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-cyan-400 font-cyber font-bold text-[11px]">
         Lvl <span id="stat-level">1</span>
       </div>
-      <div class="flex items-center space-x-1 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-emerald-400">
-        <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
+      <div class="flex items-center space-x-1 px-2 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-emerald-400 text-[11px]">
+        <i data-lucide="wallet" class="w-3 h-3"></i>
         <span id="stat-money" class="font-mono">€0.00</span>
       </div>
     </div>
   </header>
+  
+  <div id="save-status" class="absolute top-14 right-4 text-[10px] text-slate-500 font-mono transition-opacity duration-300 opacity-0 z-40">
+    Gespeichert ✓
+  </div>
 
   <!-- OVERLAY BACKDROP -->
   <div id="menu-backdrop" onclick="toggleMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity"></div>
@@ -1015,7 +1016,6 @@
       const elapsedSeconds = Math.floor((now - parseInt(lastSaveTime)) / 1000);
 
       if (elapsedSeconds > 10) {
-        // 1. Passives Einkommen berechnen
         const passivePerSec = getPassiveIncome() / 60;
         const offlineEarnings = passivePerSec * elapsedSeconds;
 
@@ -1024,7 +1024,6 @@
           state.totalEarned += offlineEarnings;
         }
 
-        // 2. Cyber Hack Timer offline weiterlaufen lassen
         state.hacks.forEach(h => {
           if (h.cd > 0) {
             h.cd = Math.max(0, h.cd - elapsedSeconds);
@@ -1035,15 +1034,14 @@
           }
         });
 
-        // 3. Krypto-Mining Rigs offline korrekt mit Mehrfach-Drops berechnen
         let remainingElapsed = elapsedSeconds;
         while (remainingElapsed > 0) {
           if (remainingElapsed >= state.miningSecondsLeft) {
             remainingElapsed -= state.miningSecondsLeft;
-            state.miningSecondsLeft = 3600; // Reset auf 1 Stunde
+            state.miningSecondsLeft = 3600;
             state.market.forEach(m => {
               if (m.type === 'crypto' && m.rigs > 0) {
-                m.owned += m.rigs * 0.1; // Krypto-Drop gutschreiben
+                m.owned += m.rigs * 0.1;
               }
             });
           } else {
@@ -1052,7 +1050,6 @@
           }
         }
 
-        // Sofort lokal sichern
         saveGameLocally();
 
         if (offlineEarnings > 1) {
@@ -1067,15 +1064,11 @@
     checkSeasonReset();
     updateSeasonCountdown();
 
-    // 1. ALLERERSTER SCHRITT: Sofort lokal laden und Offline-Fortschritt berechnen
     loadGameLocally();
     processOfflineProgress();
-    
-    // 2. Sofort final sichern, damit der Stand eingefroren ist
     saveGameLocally();
     updateUI();
 
-    // Automatisches Speichern alle 30 Sekunden (Lokal + Cloud)
     setInterval(() => {
       saveGameLocally();
       if (window.FB && window.FB.auth.currentUser) {
@@ -1083,7 +1076,6 @@
       }
     }, 30000);
 
-    // Stille Cloud-Speicherung für den Hintergrund
     async function saveGameToCloudManualSilent() {
       try {
         const user = window.FB.auth.currentUser;
@@ -1177,6 +1169,8 @@
         lucide.createIcons();
       }
     }
+    
+    // Lucide Icons initialisieren
     lucide.createIcons();
   </script>
 </body>
