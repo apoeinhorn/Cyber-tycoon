@@ -536,8 +536,39 @@
       lucide.createIcons();
     }
 
+    const defaultProducts = [
+      { id: 'p1', name: 'KI-Assistent v1', cost: 1000.00, launched: false, bonus: 'Schaltet fortgeschrittene Datenströme frei' },
+      { id: 'p2', name: 'Quanten-Firewall', cost: 8500.00, launched: false, bonus: 'Erhöht globale Sicherheit & Ertrag' },
+      { id: 'p3', name: 'Holo-Projektor Linse', cost: 65000.00, launched: false, bonus: 'Steigert Sektor-Effizienz um +15%' },
+      { id: 'p4', name: 'Autonomer Android', cost: 500000.00, launched: false, bonus: 'Automatisiert manuelle Datenprozesse' },
+      { id: 'p5', name: 'Dyson-Kompaktkern', cost: 4000000.00, launched: false, bonus: 'Ultimativer Energie-Multiplikator' }
+    ];
+
+    const defaultStaff = [
+      { id: 's1', name: 'Junior Hacker', cost: 20.00, count: 0, desc: '+€0.01 Klick-Leistung pro Kopf' },
+      { id: 's2', name: 'Cyber-Analyst', cost: 250.00, count: 0, desc: '+1% passives Einkommen pro Kopf' },
+      { id: 's3', name: 'AI-Architekt', cost: 1800.00, count: 0, desc: '+1.5% passives Einkommen pro Kopf' },
+      { id: 's4', name: 'Syndikat-Direktor', cost: 15000.00, count: 0, desc: '+2% passives Einkommen pro Kopf' },
+      { id: 's5', name: 'Overlord Berater', cost: 100000.00, count: 0, desc: '+2.5% passives Einkommen pro Kopf' }
+    ];
+
+    const defaultHqs = [
+      { id: 'hq1', name: 'Keller-Serverraum', cost: 0, mult: 1.0, bought: true },
+      { id: 'hq2', name: 'Neon-Penthouse', cost: 5000.00, mult: 1.2, bought: false },
+      { id: 'hq3', name: 'Cyber-Tower Etage 50', cost: 80000.00, mult: 1.35, bought: false },
+      { id: 'hq4', name: 'Orbital-Plattform Alpha', cost: 1200000.00, mult: 1.5, bought: false },
+      { id: 'hq5', name: 'Quantum Citadel (Zentrale)', cost: 20000000.00, mult: 1.8, bought: false }
+    ];
+
+    const defaultOrbitals = [
+      { id: 'o1', name: 'Scout Drohne', count: 0, baseCost: 50000.00, baseIncome: 1500.00 },
+      { id: 'o2', name: 'Relais-Satellit', count: 0, baseCost: 750000.00, baseIncome: 18000.00 },
+      { id: 'o3', name: 'Ion-Plattform', count: 0, baseCost: 10000000.00, baseIncome: 220000.00 },
+      { id: 'o4', name: 'Solar-Dyson Satellit', count: 0, baseCost: 150000000.00, baseIncome: 3000000.00 }
+    ];
+
     let state = {
-      version: 8,
+      version: 9,
       companyName: '',
       language: 'de',
       money: 0,
@@ -610,21 +641,8 @@
         { id: 'm7', type: 'crypto', name: 'DarkByte Cash', price: 12.00, change: 0.2, owned: 0, rigs: 0, rigCost: 20.00, candles: [{o:11.8, h:12.1, l:11.7, c:11.9}, {o:11.9, h:12.2, l:11.8, c:12.1}, {o:12.1, h:12.3, l:11.9, c:12.0}] }
       ],
 
-      products: [
-        { id: 'p1', name: 'KI-Assistent v1', cost: 1000.00, launched: false, bonus: 'Schaltet fortgeschrittene Datenströme frei' },
-        { id: 'p2', name: 'Quanten-Firewall', cost: 8500.00, launched: false, bonus: 'Erhöht globale Sicherheit & Ertrag' },
-        { id: 'p3', name: 'Holo-Projektor Linse', cost: 65000.00, launched: false, bonus: 'Steigert Sektor-Effizienz um +15%' },
-        { id: 'p4', name: 'Autonomer Android', cost: 500000.00, launched: false, bonus: 'Automatisiert manuelle Datenprozesse' },
-        { id: 'p5', name: 'Dyson-Kompaktkern', cost: 4000000.00, launched: false, bonus: 'Ultimativer Energie-Multiplikator' }
-      ],
-
-      staff: [
-        { id: 's1', name: 'Junior Hacker', cost: 20.00, count: 0, desc: '+€0.01 Klick-Leistung pro Kopf' },
-        { id: 's2', name: 'Cyber-Analyst', cost: 250.00, count: 0, desc: '+1% passives Einkommen pro Kopf' },
-        { id: 's3', name: 'AI-Architekt', cost: 1800.00, count: 0, desc: '+1.5% passives Einkommen pro Kopf' },
-        { id: 's4', name: 'Syndikat-Direktor', cost: 15000.00, count: 0, desc: '+2% passives Einkommen pro Kopf' },
-        { id: 's5', name: 'Overlord Berater', cost: 100000.00, count: 0, desc: '+2.5% passives Einkommen pro Kopf' }
-      ],
+      products: JSON.parse(JSON.stringify(defaultProducts)),
+      staff: JSON.parse(JSON.stringify(defaultStaff)),
 
       hacks: [
         { id: 'h1', reward: 0.50, cd: 0, maxCd: 5 },
@@ -634,30 +652,43 @@
         { id: 'h5', reward: 1000.00, cd: 0, maxCd: 45 }
       ],
 
-      hqs: [
-        { id: 'hq1', name: 'Keller-Serverraum', cost: 0, mult: 1.0, bought: true },
-        { id: 'hq2', name: 'Neon-Penthouse', cost: 5000.00, mult: 1.2, bought: false },
-        { id: 'hq3', name: 'Cyber-Tower Etage 50', cost: 80000.00, mult: 1.35, bought: false },
-        { id: 'hq4', name: 'Orbital-Plattform Alpha', cost: 1200000.00, mult: 1.5, bought: false },
-        { id: 'hq5', name: 'Quantum Citadel (Zentrale)', cost: 20000000.00, mult: 1.8, bought: false }
-      ],
-
-      orbitals: [
-        { id: 'o1', name: 'Scout Drohne', count: 0, baseCost: 50000.00, baseIncome: 1500.00 },
-        { id: 'o2', name: 'Relais-Satellit', count: 0, baseCost: 750000.00, baseIncome: 18000.00 },
-        { id: 'o3', name: 'Ion-Plattform', count: 0, baseCost: 10000000.00, baseIncome: 220000.00 },
-        { id: 'o4', name: 'Solar-Dyson Satellit', count: 0, baseCost: 150000000.00, baseIncome: 3000000.00 }
-      ]
+      hqs: JSON.parse(JSON.stringify(defaultHqs)),
+      orbitals: JSON.parse(JSON.stringify(defaultOrbitals))
     };
 
     window.mergeCloudAndLocalState = function(cloudData) {
       if (!cloudData) return;
       state = { ...state, ...cloudData };
+      fixMissingNames();
       saveGameLocally();
       updateDynamicTexts();
       updateUI();
       renderTabContent(activeCurrentTab);
     };
+
+    function fixMissingNames() {
+      if(!state.products) state.products = JSON.parse(JSON.stringify(defaultProducts));
+      state.products.forEach((p, i) => {
+        if(!p.name && defaultProducts[i]) p.name = defaultProducts[i].name;
+        if(!p.bonus && defaultProducts[i]) p.bonus = defaultProducts[i].bonus;
+      });
+
+      if(!state.staff) state.staff = JSON.parse(JSON.stringify(defaultStaff));
+      state.staff.forEach((s, i) => {
+        if(!s.name && defaultStaff[i]) s.name = defaultStaff[i].name;
+        if(!s.desc && defaultStaff[i]) s.desc = defaultStaff[i].desc;
+      });
+
+      if(!state.hqs) state.hqs = JSON.parse(JSON.stringify(defaultHqs));
+      state.hqs.forEach((h, i) => {
+        if(!h.name && defaultHqs[i]) h.name = defaultHqs[i].name;
+      });
+
+      if(!state.orbitals) state.orbitals = JSON.parse(JSON.stringify(defaultOrbitals));
+      state.orbitals.forEach((o, i) => {
+        if(!o.name && defaultOrbitals[i]) o.name = defaultOrbitals[i].name;
+      });
+    }
 
     const availableAvatars = [
       { name: '🤖 Standard Klon', type: 'free' },
@@ -1379,6 +1410,7 @@
     }
 
     function renderTabContent(tabId) {
+      fixMissingNames();
       const lang = state.language || 'de';
       const t = translations[lang] || translations['de'];
 
@@ -1623,7 +1655,7 @@
       if (tabId === 'orbit') {
         const list = document.getElementById('list-orbit');
         list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">8. Orbital-Drohnen & Satelliten</h3>`;
-        if(!state.orbitals) state.orbitals = [{ id: 'o1', name: 'Scout Drohne', count: 0, baseCost: 50000.00, baseIncome: 1500.00 }, { id: 'o2', name: 'Relais-Satellit', count: 0, baseCost: 750000.00, baseIncome: 18000.00 }, { id: 'o3', name: 'Ion-Plattform', count: 0, baseCost: 10000000.00, baseIncome: 220000.00 }, { id: 'o4', name: 'Solar-Dyson Satellit', count: 0, baseCost: 150000000.00, baseIncome: 3000000.00 }];
+        if(!state.orbitals) state.orbitals = JSON.parse(JSON.stringify(defaultOrbitals));
         
         state.orbitals.forEach((o, idx) => {
           const cost = o.baseCost * Math.pow(1.25, o.count);
@@ -1784,7 +1816,7 @@
     }
 
     function buyOrbital(idx) {
-      if(!state.orbitals) state.orbitals = [{ id: 'o1', name: 'Scout Drohne', count: 0, baseCost: 50000.00, baseIncome: 1500.00 }, { id: 'o2', name: 'Relais-Satellit', count: 0, baseCost: 750000.00, baseIncome: 18000.00 }, { id: 'o3', name: 'Ion-Plattform', count: 0, baseCost: 10000000.00, baseIncome: 220000.00 }, { id: 'o4', name: 'Solar-Dyson Satellit', count: 0, baseCost: 150000000.00, baseIncome: 3000000.00 }];
+      if(!state.orbitals) state.orbitals = JSON.parse(JSON.stringify(defaultOrbitals));
       const o = state.orbitals[idx];
       const cost = o.baseCost * Math.pow(1.25, o.count);
       if (state.money >= cost) {
@@ -1832,6 +1864,7 @@
           }
         } catch (e) { console.error(e); }
       }
+      fixMissingNames();
     }
 
     checkSeasonReset();
