@@ -1016,6 +1016,7 @@
       const elapsedSeconds = Math.floor((now - parseInt(lastSaveTime)) / 1000);
 
       if (elapsedSeconds > 10) {
+        // 1. Passives Einkommen berechnen
         const passivePerSec = getPassiveIncome() / 60;
         const offlineEarnings = passivePerSec * elapsedSeconds;
 
@@ -1024,6 +1025,7 @@
           state.totalEarned += offlineEarnings;
         }
 
+        // 2. Cyber Hack Timer offline weiterlaufen lassen
         state.hacks.forEach(h => {
           if (h.cd > 0) {
             h.cd = Math.max(0, h.cd - elapsedSeconds);
@@ -1034,9 +1036,24 @@
           }
         });
 
-        state.miningSecondsLeft = Math.max(0, state.miningSecondsLeft - elapsedSeconds);
+        // 3. Krypto-Mining Rigs offline korrekt mit Mehrfach-Drops berechnen
+        let remainingElapsed = elapsedSeconds;
+        while (remainingElapsed > 0) {
+          if (remainingElapsed >= state.miningSecondsLeft) {
+            remainingElapsed -= state.miningSecondsLeft;
+            state.miningSecondsLeft = 3600; // Reset auf 1 Stunde
+            state.market.forEach(m => {
+              if (m.type === 'crypto' && m.rigs > 0) {
+                m.owned += m.rigs * 0.1; // Krypto-Drop gutschreiben
+              }
+            });
+          } else {
+            state.miningSecondsLeft -= remainingElapsed;
+            remainingElapsed = 0;
+          }
+        }
 
-        // Sofort speichern, BEVOR der Alert blockiert
+        // Sofort lokal sichern
         saveGameLocally();
 
         if (offlineEarnings > 1) {
@@ -1045,6 +1062,8 @@
           }, 500);
         }
       }
+    }
+
     }
 
     // --- INITIALISIERUNG & KERN-LOOPS ---
