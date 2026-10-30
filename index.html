@@ -511,22 +511,37 @@
       } catch (e) { console.error('Auto-Sync Fehler:', e); }
     }
 
-    async function loadGameFromCloud(uid) {
+        async function loadGameFromCloud(uid) {
       if (!window.FB) return;
       try {
         const docSnap = await window.FB.getDoc(window.FB.doc(window.FB.db, "saves", uid));
         if (docSnap.exists()) {
-          state = docSnap.data();
+          const cloudData = docSnap.data();
+          
+          const currentLocalMoney = state.money;
+          const currentLocalTotal = state.totalEarned;
+
+          state = { ...state, ...cloudData };
+
+          if (currentLocalMoney > state.money) {
+            state.money = currentLocalMoney;
+            state.totalEarned = Math.max(state.totalEarned, currentLocalTotal);
+          }
+
           if(state.companyName) {
             document.getElementById('auth-company-name').value = state.companyName;
             document.getElementById('auth-company-name').disabled = true;
           }
+          
+          processOfflineProgress();
+          saveGameLocally();
           updateUI();
           if(activeCurrentTab !== 'clicker') renderTabContent(activeCurrentTab);
         }
         fetchLeaderboard();
       } catch (e) { console.error('Ladefehler:', e); }
     }
+
 
     async function fetchLeaderboard() {
       if (!window.FB) return;
