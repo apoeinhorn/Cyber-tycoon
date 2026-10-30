@@ -341,7 +341,7 @@
           </div>
           <span id="pass-status-badge" class="text-[10px] font-mono text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">Inaktiv</span>
         </div>
-        <p class="text-[11px] text-slate-300 mb-3">Verdoppelt dein passives Einkommen, verdoppelt Klick-Power und gewährt 30 Tage lang ultimativen Schutz.</p>
+        <p class="text-[11px] text-slate-300 mb-3">Verdoppelt dein passives Einkommen, verdoppelt Klick-Power und schaltet den exklusiven <strong class="text-amber-300">Cyber-Emperor Avatar</strong> frei!</p>
         <button onclick="buyMonthlyPass()" id="btn-buy-pass" class="w-full py-2 bg-gradient-to-r from-amber-600 to-amber-500 text-white text-xs font-bold rounded-xl shadow-lg hover:brightness-110 transition">
           Pass aktivieren (💎 50 iCash / 30 Tage)
         </button>
@@ -439,6 +439,18 @@
     <div id="tab-fame" class="tab-panel space-y-4 hidden">
       <h3 class="font-bold text-sm text-white">9. Cloud-Sync & Weltrangliste</h3>
       
+      <!-- AVATAR AUSWAHL BEREICH -->
+      <div class="holo-card p-4 space-y-3 border-purple-500/30">
+        <div class="flex justify-between items-center">
+          <span class="font-bold text-xs text-white flex items-center gap-1.5">
+            <i data-lucide="user-cog" class="w-4 h-4 text-purple-400"></i> Imperium Profil-Avatar
+          </span>
+          <span id="current-avatar-display" class="text-xs font-mono text-purple-300 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded">🤖 Standard</span>
+        </div>
+        <p class="text-[11px] text-slate-400">Wähle deinen Hologramm-Avatar für die Weltrangliste. Schalte exklusive Avatare mit iCash frei oder nutze den Monats-Pass!</p>
+        <div id="avatar-selection-grid" class="grid grid-cols-2 gap-2 pt-1"></div>
+      </div>
+
       <div class="holo-card p-4 space-y-3">
         <div id="firebase-user-status" class="text-xs text-blue-400 font-mono font-medium">Verbinde mit Empire Core...</div>
         
@@ -525,7 +537,7 @@
     }
 
     let state = {
-      version: 5,
+      version: 6,
       companyName: '',
       language: 'de',
       money: 0,
@@ -540,10 +552,12 @@
       miningSecondsLeft: 3600,
       incomeTimerSeconds: 60,
       monthlyPassExpire: 0,
-      
-      // NEU: Tägliches Belohnungssystem
       dailyStreak: 0,
       lastClaimTimestamp: 0,
+
+      // NEU: Avatar System State
+      selectedAvatar: '🤖 Standard Klon',
+      unlockedAvatars: ['🤖 Standard Klon', '💻 Cyber Hacker'],
 
       permaUpgrades: [
         { id: 'pi1', name: 'Quantum Click Matrix', desc: 'Verdoppelt dauerhaft die Klick-Leistung.', cost: 5, level: 0, maxLevel: 10, mult: 2.0 },
@@ -646,6 +660,15 @@
       updateUI();
       renderTabContent(activeCurrentTab);
     };
+
+    // Verfügbare Avatare mit Preisen oder Bedingungen
+    const availableAvatars = [
+      { name: '🤖 Standard Klon', type: 'free' },
+      { name: '💻 Cyber Hacker', type: 'free' },
+      { name: '⚡ Quantum Overlord', type: 'icash', cost: 15 },
+      { name: '🔮 Sovereign AI', type: 'icash', cost: 30 },
+      { name: '👑 Cyber Emperor', type: 'pass' } // Nur nutzbar mit aktivem Pass
+    ];
 
     const deptImages = [
       "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80",
@@ -829,6 +852,7 @@
           await window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", user.uid), {
             companyName: state.companyName,
             totalValue: state.totalEarned,
+            avatar: state.selectedAvatar || '🤖 Standard Klon',
             updatedAt: Date.now()
           });
         }
@@ -858,6 +882,7 @@
             <div class="holo-card p-3 flex justify-between items-center text-xs">
               <div class="flex items-center space-x-2.5">
                 <span class="font-mono font-bold text-blue-400">#${rank++}</span>
+                <span class="text-base">${data.avatar || '🤖'}</span>
                 <span class="font-bold text-white">${data.companyName || 'Unbekannt'}</span>
               </div>
               <span class="font-mono text-emerald-400 font-bold">${formatMoney(data.totalValue || 0)}</span>
@@ -866,6 +891,61 @@
         });
       } catch (e) {
         console.error("Ranglisten-Fehler:", e);
+      }
+    }
+
+    function renderAvatarSelector() {
+      const grid = document.getElementById('avatar-selection-grid');
+      const disp = document.getElementById('current-avatar-display');
+      if(!grid) return;
+
+      if(disp) disp.innerText = state.selectedAvatar || '🤖 Standard Klon';
+      grid.innerHTML = '';
+
+      const passActive = isPassActive();
+
+      availableAvatars.forEach(av => {
+        const isUnlocked = av.type === 'free' || state.unlockedAvatars.includes(av.name) || (av.type === 'pass' && passActive);
+        const isSelected = state.selectedAvatar === av.name;
+
+        let actionBtn = '';
+        if (isSelected) {
+          actionBtn = `<span class="text-[10px] text-emerald-400 font-mono font-bold">Ausgewählt</span>`;
+        } else if (isUnlocked) {
+          actionBtn = `<button onclick="selectAvatar('${av.name}')" class="px-2 py-1 bg-blue-600/20 text-blue-300 border border-blue-500/30 rounded text-[10px] font-semibold hover:bg-blue-600/40">Nutzen</button>`;
+        } else if (av.type === 'icash') {
+          actionBtn = `<button onclick="buyAvatar('${av.name}', ${av.cost})" class="px-2 py-1 icash-btn rounded text-[10px] font-semibold">💎 ${av.cost}</button>`;
+        } else if (av.type === 'pass') {
+          actionBtn = `<span class="text-[10px] text-amber-400 font-mono">🔒 Pass nötig</span>`;
+        }
+
+        grid.innerHTML += `
+          <div class="p-2.5 bg-[#0f172a] border ${isSelected ? 'border-purple-500 ring-1 ring-purple-500/50' : 'border-blue-500/20'} rounded-xl flex items-center justify-between text-xs">
+            <span class="font-semibold text-white text-[11px]">${av.name}</span>
+            ${actionBtn}
+          </div>
+        `;
+      });
+    }
+
+    function selectAvatar(avatarName) {
+      state.selectedAvatar = avatarName;
+      updateUI();
+      renderAvatarSelector();
+      saveGameLocally();
+    }
+
+    function buyAvatar(avatarName, cost) {
+      if (state.icash >= cost) {
+        state.icash -= cost;
+        state.unlockedAvatars.push(avatarName);
+        state.selectedAvatar = avatarName;
+        alert(`🎉 Avatar "${avatarName}" erfolgreich freigeschaltet und ausgerüstet!`);
+        updateUI();
+        renderAvatarSelector();
+        saveGameLocally();
+      } else {
+        alert("Nicht genügend iCash, um diesen Avatar zu kaufen!");
       }
     }
 
@@ -929,7 +1009,7 @@
       renderTabContent(tabId);
       if(tabId === 'market') drawAllCandleCharts();
       if(tabId === 'hack') initHackMiniGame();
-      if(tabId === 'fame') fetchLeaderboard();
+      if(tabId === 'fame') { fetchLeaderboard(); renderAvatarSelector(); }
       if(tabId === 'daily') renderDailyRewards();
     }
 
@@ -1088,7 +1168,7 @@
         } else {
           state.monthlyPassExpire = Date.now() + thirtyDaysMs;
         }
-        alert("👑 Cyber Monats-Pass erfolgreich aktiviert! Alle Boni (Einkommen & Klicks) sind nun für 30 Tage verdoppelt!");
+        alert("👑 Cyber Monats-Pass erfolgreich aktiviert! Alle Boni sind verdoppelt und der 'Cyber Emperor' Avatar ist freigeschaltet!");
         updateUI();
         saveGameLocally();
       } else {
@@ -1118,7 +1198,6 @@
       }
     }
 
-    // Tägliches Belohnungs-System Daten & Logik
     const dailyRewardsList = [
       { day: 1, type: 'icash', val: 3, label: '💎 +3 iCash' },
       { day: 2, type: 'cash', val: 250, label: '💶 +€250 Kapital' },
@@ -1192,7 +1271,6 @@
       if (rew.type === 'icash') {
         state.icash += rew.val;
         if(rewardIndex === 6) {
-          // Tag 7 Bonus: Gibt zusätzlich 24h Pass Verlängerung
           const oneDayMs = 24 * 60 * 60 * 1000;
           if (isPassActive()) {
             state.monthlyPassExpire += oneDayMs;
@@ -1570,7 +1648,7 @@
         });
       }
 
-      if (tabId === 'fame') { fetchLeaderboard(); }
+      if (tabId === 'fame') { fetchLeaderboard(); renderAvatarSelector(); }
       if (tabId === 'settings') { renderLanguageTab(); }
     }
 
@@ -1784,6 +1862,7 @@
           window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", window.FB.auth.currentUser.uid), {
             companyName: state.companyName,
             totalValue: state.totalEarned,
+            avatar: state.selectedAvatar || '🤖 Standard Klon',
             updatedAt: Date.now()
           });
         }
