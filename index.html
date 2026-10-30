@@ -1021,12 +1021,17 @@
 
         state.miningSecondsLeft = Math.max(0, state.miningSecondsLeft - elapsedSeconds);
 
+        // WICHTIG: Sofort speichern, damit der Offline-Stand eingefroren wird!
+        saveGameLocally();
+
         if (offlineEarnings > 1) {
           setTimeout(() => {
             alert(`⚡ Willkommen zurück! Während deiner Abwesenheit hat dein Imperium ${formatMoney(offlineEarnings)} erwirtschaftet.`);
           }, 500);
         }
       }
+    }
+
       
       saveGameLocally();
     }
