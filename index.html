@@ -336,29 +336,8 @@
 
     <!-- TAB 9: EINSTELLUNGEN & SPRACHE -->
     <div id="tab-settings" class="tab-panel space-y-4 hidden">
-      <h3 class="font-cyber font-bold text-lg text-cyan-400">9. Einstellungen & Sprache / Settings / Paramètres</h3>
-      
-      <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-3">
-        <div class="font-cyber font-bold text-xs text-slate-200">Sprache / Language / Langue / Idioma / Lingua</div>
-        
-        <div class="grid grid-cols-1 gap-2">
-          <button onclick="setLanguage('de')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center">
-            <span>🇩🇪 Deutsch</span> <span class="text-[10px] text-slate-500">Aktiv</span>
-          </button>
-          <button onclick="setLanguage('en')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center">
-            <span>🇬🇧 English</span>
-          </button>
-          <button onclick="setLanguage('fr')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center">
-            <span>🇫🇷 Français</span>
-          </button>
-          <button onclick="setLanguage('es')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center">
-            <span>🇪🇸 Español</span>
-          </button>
-          <button onclick="setLanguage('it')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center">
-            <span>🇮🇹 Italiano</span>
-          </button>
-        </div>
-      </div>
+      <h3 class="font-cyber font-bold text-lg text-cyan-400">9. Einstellungen & Sprache</h3>
+      <div id="settings-content-box"></div>
     </div>
 
   </main>
@@ -452,31 +431,145 @@
       ]
     };
 
-    // --- SPRACH-SYSTEM ---
+    // --- SPRACH-SYSTEM (DE, EN, FR, ES, IT) ---
     const translations = {
       de: {
-        welcome: "⚡ Willkommen zurück! Während deiner Abwesenheit hat dein Imperium"
+        season: "Saison Okt 2026",
+        activeLabel: "Aktiv",
+        welcome: "⚡ Willkommen zurück! Während deiner Abwesenheit hat dein Imperium",
+        nav: [
+          "0. Dev-Konsole",
+          "1. Abteilungen",
+          "2. Forschungen",
+          "3. Börse & Krypto",
+          "4. Hardware Lab",
+          "5. Personal",
+          "6. Cyber Hack",
+          "7. Hauptquartier",
+          "8. Cloud Save & Bestenliste",
+          "9. Einstellungen & Sprache"
+        ]
       },
       en: {
-        welcome: "⚡ Welcome back! During your absence, your empire generated"
+        season: "Season Oct 2026",
+        activeLabel: "Active",
+        welcome: "⚡ Welcome back! During your absence, your empire generated",
+        nav: [
+          "0. Dev Console",
+          "1. Departments",
+          "2. Research",
+          "3. Market & Crypto",
+          "4. Hardware Lab",
+          "5. Staff",
+          "6. Cyber Hack",
+          "7. Headquarters",
+          "8. Cloud Save & Leaderboard",
+          "9. Settings & Language"
+        ]
       },
       fr: {
-        welcome: "⚡ Bon retour ! Pendant votre absence, votre empire a généré"
+        season: "Saison Oct 2026",
+        activeLabel: "Actif",
+        welcome: "⚡ Bon retour ! Pendant votre absence, votre empire a généré",
+        nav: [
+          "0. Console Dev",
+          "1. Départements",
+          "2. Recherches",
+          "3. Marché & Crypto",
+          "4. Labo Hardware",
+          "5. Personnel",
+          "6. Cyber Hack",
+          "7. Quartier Général",
+          "8. Sauvegarde Cloud & Classement",
+          "9. Paramètres & Langue"
+        ]
       },
       es: {
-        welcome: "⚡ ¡Bienvenido de nuevo! Durante tu ausencia, tu imperio generó"
+        season: "Temporada Oct 2026",
+        activeLabel: "Activo",
+        welcome: "⚡ ¡Bienvenido de nuevo! Durante tu ausencia, tu imperio generó",
+        nav: [
+          "0. Consola Dev",
+          "1. Departamentos",
+          "2. Investigaciones",
+          "3. Mercado y Cripto",
+          "4. Lab Hardware",
+          "5. Personal",
+          "6. Cyber Hack",
+          "7. Sede Central",
+          "8. Guardar Nube & Ranking",
+          "9. Ajustes & Idioma"
+        ]
       },
       it: {
-        welcome: "⚡ Bentornato! Durante la tua assenza, il tuo impero ha generato"
+        season: "Stagione Ott 2026",
+        activeLabel: "Attivo",
+        welcome: "⚡ Bentornato! Durante la tua assenza, il tuo impero ha generato",
+        nav: [
+          "0. Console Dev",
+          "1. Dipartimenti",
+          "2. Ricerche",
+          "3. Mercato e Crypto",
+          "4. Lab Hardware",
+          "5. Personale",
+          "6. Cyber Hack",
+          "7. Quartier Generale",
+          "8. Salvataggio Cloud & Classifica",
+          "9. Impostazioni & Lingua"
+        ]
       }
     };
 
     function setLanguage(lang) {
       state.language = lang;
       saveGameLocally();
+      updateDynamicTexts();
       updateUI();
       if(activeCurrentTab !== 'clicker') renderTabContent(activeCurrentTab);
-      alert(lang === 'de' ? 'Sprache zu Deutsch gewechselt!' : lang === 'en' ? 'Language changed to English!' : lang === 'fr' ? 'Langue changée en Français!' : lang === 'es' ? '¡Idioma cambiado al Español!' : 'Lingua cambiata in Italiano!');
+      renderLanguageTab();
+    }
+
+    function updateDynamicTexts() {
+      const lang = state.language || 'de';
+      const t = translations[lang];
+
+      const seasonTag = document.getElementById('season-tag');
+      if(seasonTag) seasonTag.innerText = t.season;
+
+      const navButtons = document.querySelectorAll('#menu-drawer button.nav-item span');
+      navButtons.forEach((span, idx) => {
+        if(t.nav[idx]) span.innerText = t.nav[idx];
+      });
+    }
+
+    function renderLanguageTab() {
+      const lang = state.language || 'de';
+      const t = translations[lang];
+      const activeText = t.activeLabel;
+
+      const container = document.getElementById('settings-content-box');
+      if (!container) return;
+
+      container.innerHTML = `
+        <div class="font-cyber font-bold text-xs text-slate-200 mb-2">Sprache wählen / Select Language</div>
+        <div class="grid grid-cols-1 gap-2">
+          <button onclick="setLanguage('de')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border ${lang === 'de' ? 'border-cyan-500 bg-cyan-500/10' : 'border-slate-800'} rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center transition">
+            <span>🇩🇪 Deutsch</span> ${lang === 'de' ? `<span class="text-[10px] text-cyan-400 font-mono font-bold">${activeText}</span>` : ''}
+          </button>
+          <button onclick="setLanguage('en')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border ${lang === 'en' ? 'border-cyan-500 bg-cyan-500/10' : 'border-slate-800'} rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center transition">
+            <span>🇬🇧 English</span> ${lang === 'en' ? `<span class="text-[10px] text-cyan-400 font-mono font-bold">${activeText}</span>` : ''}
+          </button>
+          <button onclick="setLanguage('fr')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border ${lang === 'fr' ? 'border-cyan-500 bg-cyan-500/10' : 'border-slate-800'} rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center transition">
+            <span>🇫🇷 Français</span> ${lang === 'fr' ? `<span class="text-[10px] text-cyan-400 font-mono font-bold">${activeText}</span>` : ''}
+          </button>
+          <button onclick="setLanguage('es')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border ${lang === 'es' ? 'border-cyan-500 bg-cyan-500/10' : 'border-slate-800'} rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center transition">
+            <span>🇪🇸 Español</span> ${lang === 'es' ? `<span class="text-[10px] text-cyan-400 font-mono font-bold">${activeText}</span>` : ''}
+          </button>
+          <button onclick="setLanguage('it')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border ${lang === 'it' ? 'border-cyan-500 bg-cyan-500/10' : 'border-slate-800'} rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center transition">
+            <span>🇮🇹 Italiano</span> ${lang === 'it' ? `<span class="text-[10px] text-cyan-400 font-mono font-bold">${activeText}</span>` : ''}
+          </button>
+        </div>
+      `;
     }
 
     // --- FIREBASE AUTH & LEADERBOARD FUNKTIONEN ---
@@ -596,6 +689,7 @@
           
           processOfflineProgress();
           saveGameLocally();
+          updateDynamicTexts();
           updateUI();
           if(activeCurrentTab !== 'clicker') renderTabContent(activeCurrentTab);
         }
@@ -684,7 +778,13 @@
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
       document.getElementById('tab-' + tabId).classList.remove('hidden');
       toggleMenu();
-      renderTabContent(tabId);
+      
+      if(tabId === 'settings') {
+        renderLanguageTab();
+      } else {
+        renderTabContent(tabId);
+      }
+      
       if(tabId === 'fame') fetchLeaderboard();
     }
 
@@ -751,16 +851,6 @@
       const mSec = state.miningSecondsLeft % 60;
       const mTimerEl = document.getElementById('mining-timer-display');
       if (mTimerEl) mTimerEl.innerText = `Nächster Drop in: ${String(mMin).padStart(2,'0')}:${String(mSec).padStart(2,'0')}`;
-    }
-
-    function buyClickUpgrade() {
-      if (state.money >= state.clickUpgCost) {
-        state.money -= state.clickUpgCost;
-        state.clickUpgLevel++;
-        state.clickUpgCost *= 1.35;
-        updateUI();
-        saveGameLocally();
-      }
     }
 
     function renderTabContent(tabId) {
@@ -1127,6 +1217,7 @@
 
     loadGameLocally();
     processOfflineProgress();
+    updateDynamicTexts();
     saveGameLocally();
     updateUI();
 
@@ -1196,7 +1287,7 @@
       }
 
       updateUI();
-      if (activeCurrentTab !== 'clicker' && activeCurrentTab !== 'fame') {
+      if (activeCurrentTab !== 'clicker' && activeCurrentTab !== 'fame' && activeCurrentTab !== 'settings') {
         renderTabContent(activeCurrentTab);
       }
     }, 1000);
