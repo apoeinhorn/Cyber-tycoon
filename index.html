@@ -93,16 +93,15 @@
   <!-- TOP APP BAR -->
   <header class="bg-[#0b0f19]/90 border-b border-slate-800 px-4 py-3 sticky top-0 z-30 backdrop-blur-md flex items-center justify-between">
     <!-- Cyberpunk Musik Player -->
-<div class="flex items-center space-x-1">
-  <audio id="bg-music" loop>
-    <!-- Du kannst hier jeden direkten MP3-Link oder eine lokale Datei einbinden -->
-    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=cyberpunk-2099-10701.mp3" type="audio/mpeg">
-  </audio>
-  <button onclick="toggleMusic()" id="music-btn" class="p-2 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl border border-slate-700 active:scale-95 transition">
-    <i data-lucide="volume-X" id="music-icon" class="w-5 h-5"></i>
-  </button>
-</div>
- <div id="save-status" class="text-[10px] text-slate-500 font-mono transition-opacity duration-300 opacity-0">
+    <div class="flex items-center space-x-1">
+      <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=cyberpunk-2099-10701.mp3" type="audio/mpeg">
+      </audio>
+      <button onclick="toggleMusic()" id="music-btn" class="p-2 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl border border-slate-700 active:scale-95 transition">
+        <i data-lucide="volume-X" id="music-icon" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <div id="save-status" class="text-[10px] text-slate-500 font-mono transition-opacity duration-300 opacity-0">
       Gespeichert ✓
     </div>
     <div class="flex items-center space-x-3">
@@ -568,7 +567,7 @@
       const currentKey = getMonthKey();
       const savedKey = localStorage.getItem('cyber_season_key');
       if (savedKey && savedKey !== currentKey) {
-        localStorage.removeItem('cyber_state');
+        localStorage.removeItem('cyber_tycoon_save');
         alert(`🏆 NEUE MONATLICHE SAISON GESTARTET!`);
       }
       localStorage.setItem('cyber_season_key', currentKey);
@@ -685,6 +684,7 @@
         state.clickUpgLevel++;
         state.clickUpgCost *= 1.35;
         updateUI();
+        saveGameLocally();
       }
     }
 
@@ -853,6 +853,7 @@
         d.count++;
         updateUI();
         renderTabContent('depts');
+        saveGameLocally();
       }
     }
 
@@ -863,6 +864,7 @@
         u.bought = true;
         updateUI();
         renderTabContent('upgrades');
+        saveGameLocally();
       }
     }
 
@@ -873,6 +875,7 @@
         item.owned++;
         updateUI();
         renderTabContent('market');
+        saveGameLocally();
       }
     }
 
@@ -883,6 +886,7 @@
         item.owned--;
         updateUI();
         renderTabContent('market');
+        saveGameLocally();
       }
     }
 
@@ -894,6 +898,7 @@
         item.rigs++;
         updateUI();
         renderTabContent('market');
+        saveGameLocally();
       }
     }
 
@@ -904,6 +909,7 @@
         p.launched = true;
         updateUI();
         renderTabContent('lab');
+        saveGameLocally();
       }
     }
 
@@ -915,6 +921,7 @@
         s.cost *= 1.35;
         updateUI();
         renderTabContent('staff');
+        saveGameLocally();
       }
     }
 
@@ -924,6 +931,7 @@
         h.cd = h.maxCd;
         updateUI();
         renderTabContent('hack');
+        saveGameLocally();
       }
     }
 
@@ -934,6 +942,7 @@
         hq.bought = true;
         updateUI();
         renderTabContent('hq');
+        saveGameLocally();
       }
     }
 
@@ -965,12 +974,11 @@
       }
     }
 
-        function saveGameLocally() {
+    function saveGameLocally() {
       localStorage.setItem('cyber_tycoon_save', JSON.stringify(state));
       localStorage.setItem('cyber_last_save_time', Date.now().toString());
       showSaveIndicator();
     }
-
 
     function loadGameLocally() {
       const saved = localStorage.getItem('cyber_tycoon_save');
@@ -983,10 +991,6 @@
         }
       }
     }
-
-       // Beim Start des Spiels laden
-    loadGameLocally();
-    processOfflineProgress();
 
     // --- OFFLINE PROGRESS & TIMER SYNC ---
     function processOfflineProgress() {
@@ -1023,12 +1027,17 @@
           }, 500);
         }
       }
+      
+      saveGameLocally();
     }
 
-    // --- INITIALISIERUNG & SEKUNDEN-LOOP ---
+    // --- INITIALISIERUNG & KERN-LOOPS ---
     checkSeasonReset();
     updateSeasonCountdown();
 
+    // Beim Start des Spiels laden
+    loadGameLocally();
+    processOfflineProgress();
 
     // Automatisches Speichern alle 30 Sekunden (Lokal + Cloud)
     setInterval(() => {
@@ -1108,54 +1117,14 @@
     }, 1000);
 
     updateUI();
-        // --- OFFLINE PROGRESS & TIMER SYNC ---
-    function processOfflineProgress() {
-      const lastSaveTime = localStorage.getItem('cyber_last_save_time');
-      if (!lastSaveTime) return;
 
-      const now = Date.now();
-      const elapsedSeconds = Math.floor((now - parseInt(lastSaveTime)) / 1000);
-
-      if (elapsedSeconds > 10) { // Ab 10 Sekunden Abwesenheit greift der Offline-Modus
-        // 1. Passives Einkommen nachholen (Einkommen pro Minute / 60 = pro Sekunde)
-        const passivePerSec = getPassiveIncome() / 60;
-        const offlineEarnings = passivePerSec * elapsedSeconds;
-
-        if (offlineEarnings > 0) {
-          state.money += offlineEarnings;
-          state.totalEarned += offlineEarnings;
-        }
-
-        // 2. Cyber Hack Timer offline weiterlaufen lassen
-        state.hacks.forEach(h => {
-          if (h.cd > 0) {
-            h.cd = Math.max(0, h.cd - elapsedSeconds);
-            if (h.cd === 0) {
-              state.money += h.reward;
-              state.totalEarned += h.reward;
-            }
-          }
-        });
-
-        // 3. Mining-Timer anpassen
-        state.miningSecondsLeft = Math.max(0, state.miningSecondsLeft - elapsedSeconds);
-
-        // Zeige eine kurze Info an, was offline verdient wurde
-        if (offlineEarnings > 1) {
-          setTimeout(() => {
-            alert(`⚡ Willkommen zurück! Während deiner Abwesenheit hat dein Imperium ${formatMoney(offlineEarnings)} erwirtschaftet.`);
-          }, 500);
-        }
-      }
-    }
-
-        // --- MUSIK STEUERUNG ---
+    // --- MUSIK STEUERUNG ---
     function toggleMusic() {
       const music = document.getElementById('bg-music');
       const icon = document.getElementById('music-icon');
       
       if (music.paused) {
-        music.volume = 0.3; // Angenehme Lautstärke (30%)
+        music.volume = 0.3;
         music.play().then(() => {
           icon.setAttribute('data-lucide', 'volume-2');
           icon.classList.remove('text-slate-400');
