@@ -511,7 +511,7 @@
       } catch (e) { console.error('Auto-Sync Fehler:', e); }
     }
 
-        async function loadGameFromCloud(uid) {
+    async function loadGameFromCloud(uid) {
       if (!window.FB) return;
       try {
         const docSnap = await window.FB.getDoc(window.FB.doc(window.FB.db, "saves", uid));
@@ -541,7 +541,6 @@
         fetchLeaderboard();
       } catch (e) { console.error('Ladefehler:', e); }
     }
-
 
     async function fetchLeaderboard() {
       if (!window.FB) return;
@@ -1064,8 +1063,6 @@
       }
     }
 
-    }
-
     // --- INITIALISIERUNG & KERN-LOOPS ---
     checkSeasonReset();
     updateSeasonCountdown();
@@ -1101,8 +1098,6 @@
         }
       } catch (e) { console.error('Hintergrund-Speicherfehler:', e); }
     }
-
-  
 
     setInterval(() => {
       autoSyncLeaderboard();
