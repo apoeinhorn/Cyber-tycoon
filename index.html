@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>CORP-EMPIRE // HOLO-EDITION 2026</title>
+  <title>Cyber Tycoon // HOLO-EDITION 2026</title>
   <link rel="manifest" href="./manifest.json">
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -38,7 +38,7 @@
         const logoutBtnEl = document.getElementById('firebase-logout-btn');
 
         if (user) {
-          if(userStatusEl) userStatusEl.innerText = `CORP SECURE: ${user.email}`;
+          if(userStatusEl) userStatusEl.innerText = `CYBER SECURE: ${user.email}`;
           if(authFormsEl) authFormsEl.classList.add('hidden');
           if(logoutBtnEl) logoutBtnEl.classList.remove('hidden');
 
@@ -155,7 +155,7 @@
 
     <div class="text-center">
       <h1 class="font-extrabold text-xs tracking-widest uppercase text-white flex items-center justify-center gap-1.5">
-        <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> CORP-EMPIRE
+        <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> CYBER TYCOON
       </h1>
       <span id="season-tag" class="text-[9px] text-blue-400 font-mono tracking-wider">HOLO EDITION 2026</span>
     </div>
@@ -185,7 +185,7 @@
       <div class="flex justify-between items-center pb-3 border-b border-blue-500/15 mb-3">
         <div class="flex items-center space-x-2 text-white font-bold text-xs tracking-wide">
           <i data-lucide="command" class="w-4 h-4 text-blue-500"></i>
-          <span>HOLO DIRECTORY</span>
+          <span>CYBER DIRECTORY</span>
         </div>
         <button onclick="toggleMenu()" class="text-slate-400 p-1 hover:text-white rounded-lg">
           <i data-lucide="x" class="w-5 h-5"></i>
@@ -308,7 +308,7 @@
             <div class="text-[10px] text-emerald-400 font-mono mt-0.5">+€0.01 Klick-Leistung</div>
           </div>
           <button onclick="buyClickUpgrade()" id="btn-buy-click-upg" class="px-3.5 py-2 holo-btn text-xs rounded-lg font-semibold">
-            <span id="tab0-buy">Kaufen</span> (<span id="click-upgrade-cost">€0.50</span>)
+            <span id="tab0-buy">Kaufen</span> (<span id="click-upgrade-cost" class="text-emerald-400 font-bold">€0.50</span>)
           </button>
         </div>
 
@@ -537,7 +537,7 @@
     }
 
     let state = {
-      version: 7,
+      version: 8,
       companyName: '',
       language: 'de',
       money: 0,
