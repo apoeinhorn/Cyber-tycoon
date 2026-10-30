@@ -166,7 +166,7 @@
       </div>
       <div class="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[#0f172a] border border-emerald-500/20 text-emerald-400 text-[11px] font-mono shadow-lg">
         <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
-        <span id="stat-money">€0.00</span>
+        <span id="stat-money" class="text-emerald-400 font-bold">€0.00</span>
       </div>
     </div>
   </header>
@@ -224,7 +224,7 @@
 
       <button onclick="switchTab('lab')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="flask-conical" class="w-4 h-4 text-slate-500"></i>
-        <span>4. Engineering Lab</span>
+        <span>4. Advanced Lab</span>
       </button>
 
       <button onclick="switchTab('staff')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
@@ -272,7 +272,7 @@
     <div class="grid grid-cols-3 gap-2 mb-4">
       <div class="holo-card p-3 relative overflow-hidden">
         <div class="text-[9px] text-slate-400 font-mono uppercase tracking-wider">Passiv / Min</div>
-        <div id="stat-income" class="font-mono font-bold text-xs text-blue-400 mt-1">+€0.00</div>
+        <div id="stat-income" class="font-mono font-bold text-xs text-emerald-400 mt-1">+€0.00</div>
       </div>
       <div class="holo-card p-3 relative overflow-hidden">
         <div class="text-[9px] text-slate-400 font-mono uppercase tracking-wider">iCash Guthaben</div>
@@ -299,13 +299,13 @@
           <div class="absolute inset-0 bg-blue-500/5 rounded-2xl group-hover:bg-blue-500/15 transition"></div>
           <i data-lucide="cpu" class="w-8 h-8 text-blue-400 mb-2 group-hover:scale-110 transition-transform"></i>
           <span id="tab0-btn" class="font-bold text-[11px] text-white tracking-wider">IMPULS SENDEN</span>
-          <span id="click-power-text" class="text-[10px] font-mono text-slate-400 mt-1">+€0.01 / Klick</span>
+          <span id="click-power-text" class="text-[10px] font-mono text-emerald-400 mt-1">+€0.01 / Klick</span>
         </button>
 
         <div class="w-full bg-[#0f172a]/80 border border-blue-500/20 rounded-xl p-3.5 mt-4 flex justify-between items-center text-left relative z-10 backdrop-blur-md">
           <div>
             <div class="font-bold text-xs text-white"><span id="tab0-booster">Quanten-Prozessor</span> (Lvl <span id="click-upgrade-level">0</span>)</div>
-            <div class="text-[10px] text-slate-400 font-mono mt-0.5">+€0.01 Klick-Leistung</div>
+            <div class="text-[10px] text-emerald-400 font-mono mt-0.5">+€0.01 Klick-Leistung</div>
           </div>
           <button onclick="buyClickUpgrade()" id="btn-buy-click-upg" class="px-3.5 py-2 holo-btn text-xs rounded-lg font-semibold">
             <span id="tab0-buy">Kaufen</span> (<span id="click-upgrade-cost">€0.50</span>)
@@ -537,7 +537,7 @@
     }
 
     let state = {
-      version: 6,
+      version: 7,
       companyName: '',
       language: 'de',
       money: 0,
@@ -554,8 +554,6 @@
       monthlyPassExpire: 0,
       dailyStreak: 0,
       lastClaimTimestamp: 0,
-
-      // NEU: Avatar System State
       selectedAvatar: '🤖 Standard Klon',
       unlockedAvatars: ['🤖 Standard Klon', '💻 Cyber Hacker'],
 
@@ -603,29 +601,29 @@
       ],
 
       market: [
-        { id: 'm1', type: 'stock', price: 15.00, change: 1.2, owned: 0, candles: [{o:14, h:15, l:13.8, c:15}, {o:15, h:15.5, l:14.5, c:14.8}, {o:14.8, h:15.2, l:14.6, c:15}] },
-        { id: 'm2', type: 'stock', price: 5.00, change: -0.4, owned: 0, candles: [{o:5.2, h:5.4, l:5.1, c:5.2}, {o:5.2, h:5.3, l:4.9, c:5.0}, {o:5.0, h:5.1, l:4.8, c:5.0}] },
-        { id: 'm3', type: 'stock', price: 45.00, change: 0.8, owned: 0, candles: [{o:43, h:44, l:42.5, c:43.5}, {o:43.5, h:44.2, l:43.1, c:44}, {o:44, h:45.2, l:43.9, c:45}] },
-        { id: 'm4', type: 'stock', price: 180.00, change: 2.1, owned: 0, candles: [{o:170, h:173, l:169, c:172}, {o:172, h:176, l:171, c:175}, {o:175, h:181, l:174, c:180}] },
-        { id: 'm5', type: 'crypto', price: 1200.00, change: 3.5, owned: 0, rigs: 0, rigCost: 500.00, candles: [{o:1150, h:1170, l:1140, c:1160}, {o:1160, h:1190, l:1155, c:1180}, {o:1180, h:1210, l:1175, c:1200}] },
-        { id: 'm6', type: 'crypto', price: 150.00, change: -1.1, owned: 0, rigs: 0, rigCost: 80.00, candles: [{o:155, h:157, l:153, c:154}, {o:154, h:155, l:151, c:152}, {o:152, h:153, l:149, c:150}] },
-        { id: 'm7', type: 'crypto', price: 12.00, change: 0.2, owned: 0, rigs: 0, rigCost: 20.00, candles: [{o:11.8, h:12.1, l:11.7, c:11.9}, {o:11.9, h:12.2, l:11.8, c:12.1}, {o:12.1, h:12.3, l:11.9, c:12.0}] }
+        { id: 'm1', type: 'stock', name: 'CyberCorp Aktien', price: 15.00, change: 1.2, owned: 0, candles: [{o:14, h:15, l:13.8, c:15}, {o:15, h:15.5, l:14.5, c:14.8}, {o:14.8, h:15.2, l:14.6, c:15}] },
+        { id: 'm2', type: 'stock', name: 'NanoTech Dynamics', price: 5.00, change: -0.4, owned: 0, candles: [{o:5.2, h:5.4, l:5.1, c:5.2}, {o:5.2, h:5.3, l:4.9, c:5.0}, {o:5.0, h:5.1, l:4.8, c:5.0}] },
+        { id: 'm3', type: 'stock', name: 'NeuralNet Systems', price: 45.00, change: 0.8, owned: 0, candles: [{o:43, h:44, l:42.5, c:43.5}, {o:43.5, h:44.2, l:43.1, c:44}, {o:44, h:45.2, l:43.9, c:45}] },
+        { id: 'm4', type: 'stock', name: 'OmniDrive Inc.', price: 180.00, change: 2.1, owned: 0, candles: [{o:170, h:173, l:169, c:172}, {o:172, h:176, l:171, c:175}, {o:175, h:181, l:174, c:180}] },
+        { id: 'm5', type: 'crypto', name: 'NeoCoin (Krypto)', price: 1200.00, change: 3.5, owned: 0, rigs: 0, rigCost: 500.00, candles: [{o:1150, h:1170, l:1140, c:1160}, {o:1160, h:1190, l:1155, c:1180}, {o:1180, h:1210, l:1175, c:1200}] },
+        { id: 'm6', type: 'crypto', name: 'HoloToken', price: 150.00, change: -1.1, owned: 0, rigs: 0, rigCost: 80.00, candles: [{o:155, h:157, l:153, c:154}, {o:154, h:155, l:151, c:152}, {o:152, h:153, l:149, c:150}] },
+        { id: 'm7', type: 'crypto', name: 'DarkByte Cash', price: 12.00, change: 0.2, owned: 0, rigs: 0, rigCost: 20.00, candles: [{o:11.8, h:12.1, l:11.7, c:11.9}, {o:11.9, h:12.2, l:11.8, c:12.1}, {o:12.1, h:12.3, l:11.9, c:12.0}] }
       ],
 
       products: [
-        { id: 'p1', cost: 1000.00, launched: false },
-        { id: 'p2', cost: 8500.00, launched: false },
-        { id: 'p3', cost: 65000.00, launched: false },
-        { id: 'p4', cost: 500000.00, launched: false },
-        { id: 'p5', cost: 4000000.00, launched: false }
+        { id: 'p1', name: 'KI-Assistent v1', cost: 1000.00, launched: false, bonus: 'Schaltet fortgeschrittene Datenströme frei' },
+        { id: 'p2', name: 'Quanten-Firewall', cost: 8500.00, launched: false, bonus: 'Erhöht globale Sicherheit & Ertrag' },
+        { id: 'p3', name: 'Holo-Projektor Linse', cost: 65000.00, launched: false, bonus: 'Steigert Sektor-Effizienz um +15%' },
+        { id: 'p4', name: 'Autonomer Android', cost: 500000.00, launched: false, bonus: 'Automatisiert manuelle Datenprozesse' },
+        { id: 'p5', name: 'Dyson-Kompaktkern', cost: 4000000.00, launched: false, bonus: 'Ultimativer Energie-Multiplikator' }
       ],
 
       staff: [
-        { id: 's1', cost: 20.00, count: 0 },
-        { id: 's2', cost: 250.00, count: 0 },
-        { id: 's3', cost: 1800.00, count: 0 },
-        { id: 's4', cost: 15000.00, count: 0 },
-        { id: 's5', cost: 100000.00, count: 0 }
+        { id: 's1', name: 'Junior Hacker', cost: 20.00, count: 0, desc: '+€0.01 Klick-Leistung pro Kopf' },
+        { id: 's2', name: 'Cyber-Analyst', cost: 250.00, count: 0, desc: '+1% passives Einkommen pro Kopf' },
+        { id: 's3', name: 'AI-Architekt', cost: 1800.00, count: 0, desc: '+1.5% passives Einkommen pro Kopf' },
+        { id: 's4', name: 'Syndikat-Direktor', cost: 15000.00, count: 0, desc: '+2% passives Einkommen pro Kopf' },
+        { id: 's5', name: 'Overlord Berater', cost: 100000.00, count: 0, desc: '+2.5% passives Einkommen pro Kopf' }
       ],
 
       hacks: [
@@ -637,18 +635,18 @@
       ],
 
       hqs: [
-        { id: 'hq1', cost: 0, mult: 1.0, bought: true },
-        { id: 'hq2', cost: 5000.00, mult: 1.2, bought: false },
-        { id: 'hq3', cost: 80000.00, mult: 1.35, bought: false },
-        { id: 'hq4', cost: 1200000.00, mult: 1.5, bought: false },
-        { id: 'hq5', cost: 20000000.00, mult: 1.8, bought: false }
+        { id: 'hq1', name: 'Keller-Serverraum', cost: 0, mult: 1.0, bought: true },
+        { id: 'hq2', name: 'Neon-Penthouse', cost: 5000.00, mult: 1.2, bought: false },
+        { id: 'hq3', name: 'Cyber-Tower Etage 50', cost: 80000.00, mult: 1.35, bought: false },
+        { id: 'hq4', name: 'Orbital-Plattform Alpha', cost: 1200000.00, mult: 1.5, bought: false },
+        { id: 'hq5', name: 'Quantum Citadel (Zentrale)', cost: 20000000.00, mult: 1.8, bought: false }
       ],
 
       orbitals: [
-        { id: 'o1', count: 0, baseCost: 50000.00, baseIncome: 1500.00 },
-        { id: 'o2', count: 0, baseCost: 750000.00, baseIncome: 18000.00 },
-        { id: 'o3', count: 0, baseCost: 10000000.00, baseIncome: 220000.00 },
-        { id: 'o4', count: 0, baseCost: 150000000.00, baseIncome: 3000000.00 }
+        { id: 'o1', name: 'Scout Drohne', count: 0, baseCost: 50000.00, baseIncome: 1500.00 },
+        { id: 'o2', name: 'Relais-Satellit', count: 0, baseCost: 750000.00, baseIncome: 18000.00 },
+        { id: 'o3', name: 'Ion-Plattform', count: 0, baseCost: 10000000.00, baseIncome: 220000.00 },
+        { id: 'o4', name: 'Solar-Dyson Satellit', count: 0, baseCost: 150000000.00, baseIncome: 3000000.00 }
       ]
     };
 
@@ -661,13 +659,12 @@
       renderTabContent(activeCurrentTab);
     };
 
-    // Verfügbare Avatare mit Preisen oder Bedingungen
     const availableAvatars = [
       { name: '🤖 Standard Klon', type: 'free' },
       { name: '💻 Cyber Hacker', type: 'free' },
       { name: '⚡ Quantum Overlord', type: 'icash', cost: 15 },
       { name: '🔮 Sovereign AI', type: 'icash', cost: 30 },
-      { name: '👑 Cyber Emperor', type: 'pass' } // Nur nutzbar mit aktivem Pass
+      { name: '👑 Cyber Emperor', type: 'pass' }
     ];
 
     const deptImages = [
@@ -1446,7 +1443,7 @@
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
                   <div class="font-bold text-xs text-white">${localizedName}</div>
-                  <div class="text-[11px] text-blue-400 font-mono mt-0.5">Stufe: ${d.count} (+${formatMoney(currentInc)}/min)</div>
+                  <div class="text-[11px] text-emerald-400 font-mono mt-0.5">Stufe: ${d.count} (+${formatMoney(currentInc)}/min)</div>
                 </div>
                 <button onclick="buyDept(${idx})" class="px-3 py-1.5 ${state.money >= cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold transition">
                   Erweitern (${formatMoney(cost)})
@@ -1470,7 +1467,7 @@
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
                   <div class="font-bold text-xs text-white">Quanten-Forschung #${idx+1}</div>
-                  <div class="text-[11px] text-slate-400 mt-0.5">Imperium-Upgrade</div>
+                  <div class="text-[11px] text-emerald-400 mt-0.5">Imperium-Boost: ${u.type === 'click' ? 'Verdoppelt Klick-Leistung' : 'Erhöht Gesamteinkommen'}</div>
                 </div>
                 <button onclick="buyUpgrade(${idx})" ${u.bought ? 'disabled' : ''} class="px-3 py-1.5 ${u.bought ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30' : (state.money >= u.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
                   ${u.bought ? 'Erforscht' : formatMoney(u.cost)}
@@ -1489,12 +1486,13 @@
           const badgeBg = isPos ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border-rose-500/30';
 
           let miningHtml = '';
+          let marketDesc = m.type === 'stock' ? 'Börsen-Aktie (Wertsteigerung & Dividende)' : 'Krypto-Token & passives Mining';
           if (m.type === 'crypto') {
             const rigCost = m.rigCost || 50;
             const rigsCount = m.rigs || 0;
             miningHtml = `
               <div class="mt-2 pt-2 border-t border-blue-500/10 flex justify-between items-center text-xs">
-                <span class="text-slate-400 font-mono">Mining-Rigs: <strong class="text-purple-400">${rigsCount}</strong></span>
+                <span class="text-slate-400 font-mono">Mining-Rigs: <strong class="text-purple-400">${rigsCount}</strong> (+${formatMoney(rigsCount * (m.price * 0.05))}/min)</span>
                 <button onclick="buyMiningRig(${idx})" class="px-2.5 py-1 icash-btn text-[11px] rounded-lg font-semibold">Rig kaufen (${formatMoney(rigCost)})</button>
               </div>
             `;
@@ -1505,9 +1503,10 @@
               <div class="flex justify-between items-start">
                 <div>
                   <div class="flex items-center gap-2">
-                    <span class="font-bold text-xs text-white">Asset #${idx+1}</span>
+                    <span class="font-bold text-xs text-white">${m.name || ('Asset #' + (idx+1))}</span>
                     <span class="text-[9px] text-blue-400 font-mono uppercase px-1.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">${m.type}</span>
                   </div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">${marketDesc}</div>
                   <div class="text-sm font-mono font-bold text-slate-200 mt-1">${formatMoney(m.price)}</div>
                 </div>
                 <div class="text-right">
@@ -1543,8 +1542,8 @@
               </div>
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
-                  <div class="font-bold text-xs text-white">Technologie #${idx+1}</div>
-                  <div class="text-[11px] text-slate-400 mt-0.5">High-Tech Innovation</div>
+                  <div class="font-bold text-xs text-white">${p.name}</div>
+                  <div class="text-[11px] text-emerald-400 mt-0.5">Effekt: ${p.bonus}</div>
                 </div>
                 <button onclick="launchProduct(${idx})" ${p.launched ? 'disabled' : ''} class="px-3 py-1.5 ${p.launched ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30' : (state.money >= p.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
                   ${p.launched ? 'Online' : 'Entwickeln (' + formatMoney(p.cost) + ')'}
@@ -1567,8 +1566,8 @@
               </div>
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
-                  <div class="font-bold text-xs text-white">Experte #${idx+1}</div>
-                  <div class="text-[11px] text-blue-400 mt-0.5">Anzahl: ${s.count}</div>
+                  <div class="font-bold text-xs text-white">${s.name}</div>
+                  <div class="text-[11px] text-emerald-400 mt-0.5">Bonus: ${s.desc} | Rekrutiert: ${s.count}</div>
                 </div>
                 <button onclick="hireStaff(${idx})" class="px-3 py-1.5 ${state.money >= s.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold transition">
                   Rekrutieren (${formatMoney(s.cost)})
@@ -1587,7 +1586,7 @@
             <div class="holo-card p-3.5 flex justify-between items-center">
               <div>
                 <div class="font-bold text-xs text-white">Operation #${idx+1}</div>
-                <div class="text-[11px] text-slate-400 mt-0.5">Injektion: <span class="text-emerald-400 font-mono font-bold">+${formatMoney(h.reward)}</span></div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Injektions-Ertrag: <span class="text-emerald-400 font-mono font-bold">+${formatMoney(h.reward)}</span></div>
               </div>
               <button onclick="executeHack(${idx})" ${h.cd > 0 ? 'disabled' : ''} class="px-3 py-1.5 ${h.cd > 0 ? 'bg-[#0f172a] text-slate-600 border border-blue-500/10' : 'bg-rose-950/80 text-rose-300 border border-rose-800'} text-xs rounded-lg font-semibold transition">
                 ${h.cd > 0 ? h.cd + 's' : 'INFILTRIEREN'}
@@ -1609,10 +1608,10 @@
               </div>
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
-                  <div class="font-bold text-xs text-white">HQ Stufe #${idx+1}</div>
-                  <div class="text-[11px] text-slate-400 mt-0.5">Multiplikator: x${hq.mult}</div>
+                  <div class="font-bold text-xs text-white">${hq.name}</div>
+                  <div class="text-[11px] text-emerald-400 mt-0.5">Multiplikator: x${hq.mult} auf gesamtes passives Einkommen</div>
                 </div>
-                <button onclick="buyHQ(${idx})" ${hq.bought || state.money < hq.cost ? 'disabled' : ''} class="px-3 py-1.5 ${hq.bought ? 'bg-[#0f172a] text-blue-400 border border-blue-500/30' : (state.money >= hq.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
+                <button onclick="buyHQ(${idx})" ${hq.bought || state.money < hq.cost ? 'disabled' : ''} class="px-3 py-1.5 ${hq.bought ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30' : (state.money >= hq.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
                   ${hq.bought ? 'Zentrale aktiv' : formatMoney(hq.cost)}
                 </button>
               </div>
@@ -1624,7 +1623,7 @@
       if (tabId === 'orbit') {
         const list = document.getElementById('list-orbit');
         list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">8. Orbital-Drohnen & Satelliten</h3>`;
-        if(!state.orbitals) state.orbitals = [{ id: 'o1', count: 0, baseCost: 50000.00, baseIncome: 1500.00 }, { id: 'o2', count: 0, baseCost: 750000.00, baseIncome: 18000.00 }, { id: 'o3', count: 0, baseCost: 10000000.00, baseIncome: 220000.00 }, { id: 'o4', count: 0, baseCost: 150000000.00, baseIncome: 3000000.00 }];
+        if(!state.orbitals) state.orbitals = [{ id: 'o1', name: 'Scout Drohne', count: 0, baseCost: 50000.00, baseIncome: 1500.00 }, { id: 'o2', name: 'Relais-Satellit', count: 0, baseCost: 750000.00, baseIncome: 18000.00 }, { id: 'o3', name: 'Ion-Plattform', count: 0, baseCost: 10000000.00, baseIncome: 220000.00 }, { id: 'o4', name: 'Solar-Dyson Satellit', count: 0, baseCost: 150000000.00, baseIncome: 3000000.00 }];
         
         state.orbitals.forEach((o, idx) => {
           const cost = o.baseCost * Math.pow(1.25, o.count);
@@ -1636,8 +1635,8 @@
               </div>
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
-                  <div class="font-bold text-xs text-white">Satellit #${idx+1}</div>
-                  <div class="text-[11px] text-slate-400 mt-0.5">Anzahl: ${o.count}</div>
+                  <div class="font-bold text-xs text-white">${o.name}</div>
+                  <div class="text-[11px] text-emerald-400 mt-0.5">Ertrag: +${formatMoney(o.baseIncome)}/min pro Satellit (Aktiv: ${o.count})</div>
                 </div>
                 <button onclick="buyOrbital(${idx})" class="px-3 py-1.5 ${state.money >= cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold transition">
                   Starten (${formatMoney(cost)})
@@ -1785,7 +1784,7 @@
     }
 
     function buyOrbital(idx) {
-      if(!state.orbitals) return;
+      if(!state.orbitals) state.orbitals = [{ id: 'o1', name: 'Scout Drohne', count: 0, baseCost: 50000.00, baseIncome: 1500.00 }, { id: 'o2', name: 'Relais-Satellit', count: 0, baseCost: 750000.00, baseIncome: 18000.00 }, { id: 'o3', name: 'Ion-Plattform', count: 0, baseCost: 10000000.00, baseIncome: 220000.00 }, { id: 'o4', name: 'Solar-Dyson Satellit', count: 0, baseCost: 150000000.00, baseIncome: 3000000.00 }];
       const o = state.orbitals[idx];
       const cost = o.baseCost * Math.pow(1.25, o.count);
       if (state.money >= cost) {
