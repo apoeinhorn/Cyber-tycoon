@@ -255,13 +255,11 @@
 
     <!-- TAB 1: ABTEILUNGEN -->
     <div id="tab-depts" class="tab-panel space-y-4 hidden">
-      <h3 class="font-cyber font-bold text-lg text-slate-100">1. Abteilungen ausbauen</h3>
       <div id="list-depts" class="space-y-3"></div>
     </div>
 
     <!-- TAB 2: FORSCHUNGEN -->
     <div id="tab-upgrades" class="tab-panel space-y-4 hidden">
-      <h3 class="font-cyber font-bold text-lg text-slate-100">2. Forschungen & Multiplikatoren</h3>
       <div id="list-upgrades" class="space-y-3"></div>
     </div>
 
@@ -279,13 +277,11 @@
 
     <!-- TAB 4: HARDWARE LAB -->
     <div id="tab-lab" class="tab-panel space-y-4 hidden">
-      <h3 class="font-cyber font-bold text-lg text-slate-100">4. Hardware Launch Lab</h3>
       <div id="list-lab" class="space-y-3"></div>
     </div>
 
     <!-- TAB 5: PERSONAL -->
     <div id="tab-staff" class="tab-panel space-y-4 hidden">
-      <h3 class="font-cyber font-bold text-lg text-slate-100">5. Spezialisten & Personal</h3>
       <div id="list-staff" class="space-y-3"></div>
     </div>
 
@@ -300,7 +296,6 @@
 
     <!-- TAB 7: HAUPTQUARTIER -->
     <div id="tab-hq" class="tab-panel space-y-4 hidden">
-      <h3 class="font-cyber font-bold text-lg text-slate-100">7. Hauptquartier Expansion</h3>
       <div id="list-hq" class="space-y-3"></div>
     </div>
 
@@ -337,7 +332,7 @@
     <!-- TAB 9: EINSTELLUNGEN & SPRACHE -->
     <div id="tab-settings" class="tab-panel space-y-4 hidden">
       <h3 class="font-cyber font-bold text-lg text-cyan-400">9. Einstellungen & Sprache</h3>
-      <div id="settings-content-box"></div>
+      <div id="settings-content-box" class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-3"></div>
     </div>
 
   </main>
@@ -431,92 +426,97 @@
       ]
     };
 
-    // --- SPRACH-SYSTEM (DE, EN, FR, ES, IT) ---
+    // --- MEHRSPRACHIGKEITS-WÖRTERBUCH (DE, EN, FR, ES, IT) ---
     const translations = {
       de: {
         season: "Saison Okt 2026",
+        passivLabel: "Passiv / Minute",
+        companyValLabel: "Monats-Firmenwert",
         activeLabel: "Aktiv",
         welcome: "⚡ Willkommen zurück! Während deiner Abwesenheit hat dein Imperium",
-        nav: [
-          "0. Dev-Konsole",
-          "1. Abteilungen",
-          "2. Forschungen",
-          "3. Börse & Krypto",
-          "4. Hardware Lab",
-          "5. Personal",
-          "6. Cyber Hack",
-          "7. Hauptquartier",
-          "8. Cloud Save & Bestenliste",
-          "9. Einstellungen & Sprache"
-        ]
+        nav: ["0. Dev-Konsole", "1. Abteilungen", "2. Forschungen", "3. Börse & Krypto", "4. Hardware Lab", "5. Personal", "6. Cyber Hack", "7. Hauptquartier", "8. Cloud Save & Bestenliste", "9. Einstellungen & Sprache"],
+        tab0: { title: "0. Dev-Konsole", desc: "Code manuell schreiben, um Startkapital aufzubauen.", btn: "CODE SCHREIBEN", booster: "Klick-Booster", buy: "Kaufen" },
+        tab1: { title: "1. Abteilungen ausbauen", buy: "Kaufen", lvl: "Level" },
+        tab2: { title: "2. Forschungen & Multiplikatoren", bought: "Erforscht" },
+        tab3: { title: "3. Börse & Krypto Mining", desc: "Handle Aktien und schürfe Krypto-Coins stündlich.", timer: "Nächster Drop in:", buy: "Kauf", sell: "Verkauf", rigs: "Rigs (Mincht stündlich)" },
+        tab4: { title: "4. Hardware Launch Lab", launched: "Gelauncht", launchBtn: "Launchen" },
+        tab5: { title: "5. Spezialisten & Personal", hired: "Angestellt", hireBtn: "Einstellen" },
+        tab6: { title: "6. Cyber Security Operations", desc: "Jeder Hack ist nur 1x pro Tag möglich. Beute wird nach Ablauf des Timers ausgezahlt.", reward: "Beute nach Timer:", hackBtn: "HACKEN (1x/Tag)" },
+        tab7: { title: "7. Hauptquartier Expansion", current: "Aktuell" },
+        tab8: { title: "8. Cloud Save & Bestenliste", email: "E-Mail Adresse", pass: "Passwort (min. 6 Zeichen)", comp: "Einmaliger Firmenname", login: "Login", reg: "Registrieren", logout: "Abmelden", saveBtn: "Spielstand & Bestenliste speichern", top: "Globale Top-Firmen", sync: "Auto-Sync (alle 6h)", empty: "Noch keine Einträge in der Bestenliste.", loading: "Lade Bestenliste..." },
+        tab9: { title: "9. Einstellungen & Sprache", select: "Sprache wählen / Select Language" }
       },
       en: {
         season: "Season Oct 2026",
+        passivLabel: "Passive / Minute",
+        companyValLabel: "Monthly Company Value",
         activeLabel: "Active",
         welcome: "⚡ Welcome back! During your absence, your empire generated",
-        nav: [
-          "0. Dev Console",
-          "1. Departments",
-          "2. Research",
-          "3. Market & Crypto",
-          "4. Hardware Lab",
-          "5. Staff",
-          "6. Cyber Hack",
-          "7. Headquarters",
-          "8. Cloud Save & Leaderboard",
-          "9. Settings & Language"
-        ]
+        nav: ["0. Dev Console", "1. Departments", "2. Research", "3. Market & Crypto", "4. Hardware Lab", "5. Staff", "6. Cyber Hack", "7. Headquarters", "8. Cloud Save & Leaderboard", "9. Settings & Language"],
+        tab0: { title: "0. Dev Console", desc: "Write code manually to build initial capital.", btn: "WRITE CODE", booster: "Click Booster", buy: "Buy" },
+        tab1: { title: "1. Upgrade Departments", buy: "Buy", lvl: "Level" },
+        tab2: { title: "2. Research & Multipliers", bought: "Researched" },
+        tab3: { title: "3. Market & Crypto Mining", desc: "Trade stocks and mine crypto coins hourly.", timer: "Next drop in:", buy: "Buy", sell: "Sell", rigs: "Rigs (Mining hourly)" },
+        tab4: { title: "4. Hardware Launch Lab", launched: "Launched", launchBtn: "Launch" },
+        tab5: { title: "5. Specialists & Staff", hired: "Hired", hireBtn: "Hire" },
+        tab6: { title: "6. Cyber Security Operations", desc: "Each hack is available once per day. Loot is paid out after the timer expires.", reward: "Loot after timer:", hackBtn: "HACK (1x/Day)" },
+        tab7: { title: "7. Headquarters Expansion", current: "Current" },
+        tab8: { title: "8. Cloud Save & Leaderboard", email: "Email Address", pass: "Password (min. 6 chars)", comp: "Unique Company Name", login: "Login", reg: "Register", logout: "Logout", saveBtn: "Save Game & Leaderboard", top: "Global Top Companies", sync: "Auto-Sync (every 6h)", empty: "No entries in leaderboard yet.", loading: "Loading leaderboard..." },
+        tab9: { title: "9. Settings & Language", select: "Select Language" }
       },
       fr: {
         season: "Saison Oct 2026",
+        passivLabel: "Passif / Minute",
+        companyValLabel: "Valeur de l'entreprise",
         activeLabel: "Actif",
         welcome: "⚡ Bon retour ! Pendant votre absence, votre empire a généré",
-        nav: [
-          "0. Console Dev",
-          "1. Départements",
-          "2. Recherches",
-          "3. Marché & Crypto",
-          "4. Labo Hardware",
-          "5. Personnel",
-          "6. Cyber Hack",
-          "7. Quartier Général",
-          "8. Sauvegarde Cloud & Classement",
-          "9. Paramètres & Langue"
-        ]
+        nav: ["0. Console Dev", "1. Départements", "2. Recherches", "3. Marché & Crypto", "4. Labo Hardware", "5. Personnel", "6. Cyber Hack", "7. Quartier Général", "8. Sauvegarde Cloud & Classement", "9. Paramètres & Langue"],
+        tab0: { title: "0. Console Dev", desc: "Écrivez du code manuellement pour accumuler du capital.", btn: "ÉCRIRE CODE", booster: "Booster de clic", buy: "Acheter" },
+        tab1: { title: "1. Développer les départements", buy: "Acheter", lvl: "Niveau" },
+        tab2: { title: "2. Recherches & Multiplicateurs", bought: "Recherché" },
+        tab3: { title: "3. Marché & Crypto Mining", desc: "Tradez des actions et minez des cryptos toutes les heures.", timer: "Prochain drop dans :", buy: "Achat", sell: "Vente", rigs: "Rigs (Minage horaire)" },
+        tab4: { title: "4. Labo Hardware", launched: "Lancé", launchBtn: "Lancer" },
+        tab5: { title: "5. Personnel & Spécialistes", hired: "Embauché", hireBtn: "Embaucher" },
+        tab6: { title: "6. Cyber Security Operations", desc: "Chaque hack n'est dispo qu'1x par jour. Récompense après le timer.", reward: "Butin après timer :", hackBtn: "PIRATER (1x/Jour)" },
+        tab7: { title: "7. Expansion du QG", current: "Actuel" },
+        tab8: { title: "8. Sauvegarde Cloud & Classement", email: "Adresse e-mail", pass: "Mot de passe (min. 6 car.)", comp: "Nom d'entreprise unique", login: "Connexion", reg: "S'inscrire", logout: "Déconnexion", saveBtn: "Sauvegarder & Classement", top: "Top Entreprises Globales", sync: "Auto-Sync (toutes les 6h)", empty: "Aucun classement pour l'instant.", loading: "Chargement du classement..." },
+        tab9: { title: "9. Paramètres & Langue", select: "Choisir la langue" }
       },
       es: {
         season: "Temporada Oct 2026",
+        passivLabel: "Pasivo / Minuto",
+        companyValLabel: "Valor de la empresa",
         activeLabel: "Activo",
         welcome: "⚡ ¡Bienvenido de nuevo! Durante tu ausencia, tu imperio generó",
-        nav: [
-          "0. Consola Dev",
-          "1. Departamentos",
-          "2. Investigaciones",
-          "3. Mercado y Cripto",
-          "4. Lab Hardware",
-          "5. Personal",
-          "6. Cyber Hack",
-          "7. Sede Central",
-          "8. Guardar Nube & Ranking",
-          "9. Ajustes & Idioma"
-        ]
+        nav: ["0. Consola Dev", "1. Departamentos", "2. Investigaciones", "3. Mercado y Cripto", "4. Lab Hardware", "5. Personal", "6. Cyber Hack", "7. Sede Central", "8. Guardar Nube & Ranking", "9. Ajustes & Idioma"],
+        tab0: { title: "0. Consola Dev", desc: "Escribe código manualmente para conseguir capital inicial.", btn: "ESCRIBIR CÓDIGO", booster: "Booster de Clic", buy: "Comprar" },
+        tab1: { title: "1. Ampliar Departamentos", buy: "Comprar", lvl: "Nivel" },
+        tab2: { title: "2. Investigaciones y Multiplicadores", bought: "Investigado" },
+        tab3: { title: "3. Mercado y Cripto Mining", desc: "Opera en bolsa y mina criptomonedas cada hora.", timer: "Próximo drop en:", buy: "Compra", sell: "Venta", rigs: "Rigs (Minado por hora)" },
+        tab4: { title: "4. Lab Hardware", launched: "Lanzado", launchBtn: "Lanzar" },
+        tab5: { title: "5. Personal y Especialistas", hired: "Contratado", hireBtn: "Contratar" },
+        tab6: { title: "6. Cyber Security Operations", desc: "Cada hack es 1x al día. La recompensa se entrega al finalizar el temporizador.", reward: "Botín tras temporizador:", hackBtn: "HACKEAR (1x/Día)" },
+        tab7: { title: "7. Expansión de la Sede Central", current: "Actual" },
+        tab8: { title: "8. Guardar Nube & Ranking", email: "Correo electrónico", pass: "Contraseña (mín. 6 car.)", comp: "Nombre de empresa único", login: "Iniciar sesión", reg: "Registrarse", logout: "Cerrar sesión", saveBtn: "Guardar Partida y Ranking", top: "Top Empresas Globales", sync: "Auto-Sync (cada 6h)", empty: "Aún no hay registros en el ranking.", loading: "Cargando ranking..." },
+        tab9: { title: "9. Ajustes & Idioma", select: "Elige idioma" }
       },
       it: {
         season: "Stagione Ott 2026",
+        passivLabel: "Passivo / Minuto",
+        companyValLabel: "Valore aziendale",
         activeLabel: "Attivo",
         welcome: "⚡ Bentornato! Durante la tua assenza, il tuo impero ha generato",
-        nav: [
-          "0. Console Dev",
-          "1. Dipartimenti",
-          "2. Ricerche",
-          "3. Mercato e Crypto",
-          "4. Lab Hardware",
-          "5. Personale",
-          "6. Cyber Hack",
-          "7. Quartier Generale",
-          "8. Salvataggio Cloud & Classifica",
-          "9. Impostazioni & Lingua"
-        ]
+        nav: ["0. Console Dev", "1. Dipartimenti", "2. Ricerche", "3. Mercato e Crypto", "4. Lab Hardware", "5. Personale", "6. Cyber Hack", "7. Quartier Generale", "8. Salvataggio Cloud & Classifica", "9. Impostazioni & Lingua"],
+        tab0: { title: "0. Console Dev", desc: "Scrivi codice manualmente per accumulare capitale.", btn: "SCRIVI CODICE", booster: "Booster Clic", buy: "Compra" },
+        tab1: { title: "1. Espandi Dipartimenti", buy: "Compra", lvl: "Livello" },
+        tab2: { title: "2. Ricerche & Moltiplicatori", bought: "Ricercato" },
+        tab3: { title: "3. Mercato e Crypto", desc: "Fai trading di azioni e scava crypto ogni ora.", timer: "Prossimo drop tra:", buy: "Compra", sell: "Vendi", rigs: "Rigs (Mining orario)" },
+        tab4: { title: "4. Lab Hardware", launched: "Lanciato", launchBtn: "Lancia" },
+        tab5: { title: "5. Personale & Specialisti", hired: "Assunto", hireBtn: "Assumi" },
+        tab6: { title: "6. Cyber Security Operations", desc: "Ogni hack è disponibile 1 volta al giorno. Il bottone eroga i fondi allo scadere.", reward: "Ricompensa dopo timer:", hackBtn: "HACKERKA (1x/Giorno)" },
+        tab7: { title: "7. Espansione Quartier Generale", current: "Attuale" },
+        tab8: { title: "8. Salvataggio Cloud & Classifica", email: "Indirizzo e-mail", pass: "Password (min. 6 caratteri)", comp: "Nome azienda unico", login: "Login", reg: "Registrati", logout: "Esci", saveBtn: "Salva Gioco & Classifica", top: "Top Aziende Globali", sync: "Auto-Sync (ogni 6h)", empty: "Nessun record nella classifica.", loading: "Caricamento classifica..." },
+        tab9: { title: "9. Impostazioni & Lingua", select: "Scegli lingua" }
       }
     };
 
@@ -525,8 +525,7 @@
       saveGameLocally();
       updateDynamicTexts();
       updateUI();
-      if(activeCurrentTab !== 'clicker') renderTabContent(activeCurrentTab);
-      renderLanguageTab();
+      renderTabContent(activeCurrentTab);
     }
 
     function updateDynamicTexts() {
@@ -540,6 +539,12 @@
       navButtons.forEach((span, idx) => {
         if(t.nav[idx]) span.innerText = t.nav[idx];
       });
+
+      const headerLabels = document.querySelectorAll('main > div.grid > div > div:first-child');
+      if(headerLabels.length >= 2) {
+        headerLabels[0].innerText = t.passivLabel;
+        headerLabels[1].innerText = t.companyValLabel;
+      }
     }
 
     function renderLanguageTab() {
@@ -551,7 +556,7 @@
       if (!container) return;
 
       container.innerHTML = `
-        <div class="font-cyber font-bold text-xs text-slate-200 mb-2">Sprache wählen / Select Language</div>
+        <div class="font-cyber font-bold text-xs text-slate-200 mb-2">${t.tab9.select}</div>
         <div class="grid grid-cols-1 gap-2">
           <button onclick="setLanguage('de')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border ${lang === 'de' ? 'border-cyan-500 bg-cyan-500/10' : 'border-slate-800'} rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center transition">
             <span>🇩🇪 Deutsch</span> ${lang === 'de' ? `<span class="text-[10px] text-cyan-400 font-mono font-bold">${activeText}</span>` : ''}
@@ -580,14 +585,8 @@
       const email = document.getElementById('auth-email').value;
       const pass = document.getElementById('auth-password').value;
 
-      if (!companyInput) {
-        alert('Bitte gib einen Firmennamen für die Bestenliste ein!');
-        return;
-      }
-      if (!email || !pass) {
-        alert('Bitte E-Mail und Passwort (min. 6 Zeichen) eingeben!');
-        return;
-      }
+      if (!companyInput) { alert('Bitte Firmennamen eingeben!'); return; }
+      if (!email || !pass) { alert('E-Mail und Passwort eingeben!'); return; }
 
       try {
         const nameQuery = await window.FB.getDocs(window.FB.query(window.FB.collection(window.FB.db, "leaderboard")));
@@ -598,19 +597,13 @@
           }
         });
 
-        if (nameExists) {
-          alert('Dieser Firmenname ist bereits vergeben! Wähle bitte einen anderen.');
-          return;
-        }
+        if (nameExists) { alert('Firmenname bereits vergeben!'); return; }
 
         state.companyName = companyInput;
         await window.FB.createUserWithEmailAndPassword(window.FB.auth, email, pass);
         await saveGameToCloudManual();
-        alert('Erfolgreich registriert & Firmenname gesichert!');
-      } catch (e) { 
-        alert('Registrierungs-Fehler: ' + e.message); 
-        console.error(e);
-      }
+        alert('Erfolgreich registriert!');
+      } catch (e) { alert('Fehler: ' + e.message); }
     }
 
     async function handleLogin() {
@@ -619,7 +612,7 @@
       const pass = document.getElementById('auth-password').value;
       try {
         await window.FB.signInWithEmailAndPassword(window.FB.auth, email, pass);
-        alert('Erfolgreich eingeloggt!');
+        alert('Eingeloggt!');
       } catch (e) { alert('Login-Fehler: ' + e.message); }
     }
 
@@ -630,14 +623,10 @@
     }
 
     async function saveGameToCloudManual() {
-      if (!window.FB || !window.FB.auth.currentUser) {
-        alert('Bitte zuerst über Firebase einloggen!');
-        return;
-      }
+      if (!window.FB || !window.FB.auth.currentUser) { alert('Zuerst einloggen!'); return; }
       try {
         const user = window.FB.auth.currentUser;
         await window.FB.setDoc(window.FB.doc(window.FB.db, "saves", user.uid), state);
-        
         if (state.companyName) {
           await window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", user.uid), {
             companyName: state.companyName,
@@ -645,9 +634,9 @@
             updatedAt: Date.now()
           });
         }
-        alert('Spielstand & Bestenliste erfolgreich aktualisiert!');
+        alert('Gespeichert!');
         fetchLeaderboard();
-      } catch (e) { alert('Speicherfehler: ' + e.message); }
+      } catch (e) { alert('Fehler: ' + e.message); }
     }
 
     async function autoSyncLeaderboard() {
@@ -662,7 +651,7 @@
           }, { merge: true });
           fetchLeaderboard();
         }
-      } catch (e) { console.error('Auto-Sync Fehler:', e); }
+      } catch (e) { console.error(e); }
     }
 
     async function loadGameFromCloud(uid) {
@@ -671,7 +660,6 @@
         const docSnap = await window.FB.getDoc(window.FB.doc(window.FB.db, "saves", uid));
         if (docSnap.exists()) {
           const cloudData = docSnap.data();
-          
           const currentLocalMoney = state.money;
           const currentLocalTotal = state.totalEarned;
 
@@ -683,8 +671,11 @@
           }
 
           if(state.companyName) {
-            document.getElementById('auth-company-name').value = state.companyName;
-            document.getElementById('auth-company-name').disabled = true;
+            const compInput = document.getElementById('auth-company-name');
+            if(compInput) {
+              compInput.value = state.companyName;
+              compInput.disabled = true;
+            }
           }
           
           processOfflineProgress();
@@ -694,12 +685,14 @@
           if(activeCurrentTab !== 'clicker') renderTabContent(activeCurrentTab);
         }
         fetchLeaderboard();
-      } catch (e) { console.error('Ladefehler:', e); }
+      } catch (e) { console.error(e); }
     }
 
     async function fetchLeaderboard() {
       if (!window.FB) return;
       try {
+        const lang = state.language || 'de';
+        const t = translations[lang].tab8;
         const q = window.FB.query(window.FB.collection(window.FB.db, "leaderboard"), window.FB.orderBy("totalValue", "desc"), window.FB.limit(10));
         const querySnapshot = await window.FB.getDocs(q);
         const listEl = document.getElementById('leaderboard-list');
@@ -719,14 +712,12 @@
           `;
         });
         if(rank === 1) {
-          listEl.innerHTML = `<div class="text-xs text-slate-500 italic">Noch keine Einträge in der Bestenliste.</div>`;
+          listEl.innerHTML = `<div class="text-xs text-slate-500 italic">${t.empty}</div>`;
         }
-      } catch (e) {
-        console.error("Bestenlisten-Fehler:", e);
-      }
+      } catch (e) { console.error(e); }
     }
 
-    // --- SEASON & TIMER LOGIC ---
+    // --- SEASON & TIMER ---
     function getMonthKey() {
       const d = new Date();
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -757,7 +748,7 @@
       if (el) el.innerText = `${String(days).padStart(2, '0')}d ${String(hours).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
     }
 
-    // --- DRAWER & NAVIGATION ---
+    // --- NAVIGATION ---
     let activeCurrentTab = 'clicker';
 
     function toggleMenu() {
@@ -779,12 +770,7 @@
       document.getElementById('tab-' + tabId).classList.remove('hidden');
       toggleMenu();
       
-      if(tabId === 'settings') {
-        renderLanguageTab();
-      } else {
-        renderTabContent(tabId);
-      }
-      
+      renderTabContent(tabId);
       if(tabId === 'fame') fetchLeaderboard();
     }
 
@@ -807,7 +793,7 @@
       let income = 0;
       state.departments.forEach(d => { income += d.count * d.baseIncome; });
       state.staff.forEach(s => {
-        if (s.bonus.includes('Passiv-Einkommen')) {
+        if (s.bonus.includes('Passiv') || s.bonus.includes('Passive') || s.bonus.includes('Passif')) {
           const pct = parseFloat(s.bonus) / 100;
           if (!isNaN(pct)) income *= (1 + s.count * pct);
         }
@@ -821,13 +807,16 @@
     function getClickPower() {
       let base = state.clickPower + (state.clickUpgLevel * 0.01);
       state.staff.forEach(s => {
-        if (s.bonus.includes('Klick-Power')) base += s.count * 0.01;
+        if (s.bonus.includes('Klick') || s.bonus.includes('Click') || s.bonus.includes('clic')) base += s.count * 0.01;
       });
       state.upgrades.filter(u => u.bought && u.type === 'click').forEach(u => { base *= u.mult; });
       return base;
     }
 
     function updateUI() {
+      const lang = state.language || 'de';
+      const t = translations[lang];
+
       document.getElementById('stat-money').innerText = formatMoney(state.money);
       document.getElementById('stat-income').innerText = '+' + formatMoney(getPassiveIncome()) + '/min';
       document.getElementById('stat-level').innerText = state.level;
@@ -850,32 +839,49 @@
       const mMin = Math.floor(state.miningSecondsLeft / 60);
       const mSec = state.miningSecondsLeft % 60;
       const mTimerEl = document.getElementById('mining-timer-display');
-      if (mTimerEl) mTimerEl.innerText = `Nächster Drop in: ${String(mMin).padStart(2,'0')}:${String(mSec).padStart(2,'0')}`;
+      if (mTimerEl) mTimerEl.innerText = `${t.tab3.timer} ${String(mMin).padStart(2,'0')}:${String(mSec).padStart(2,'0')}`;
     }
 
+    // --- RENDER KATEGORIEN MIT VOLLSTÄNDIGER SPRACH-ANPASSUNG ---
     function renderTabContent(tabId) {
+      const lang = state.language || 'de';
+      const t = translations[lang];
+
+      // Tab 0: Dev-Konsole Textupdate
+      if (tabId === 'clicker') {
+        const cTab = document.querySelector('#tab-clicker');
+        if(cTab) {
+          cTab.querySelector('h3').innerText = t.tab0.title;
+          cTab.querySelector('p').innerText = t.tab0.desc;
+          cTab.querySelector('#click-btn span:nth-child(2)').innerText = t.tab0.btn;
+          cTab.querySelector('#btn-buy-click-upg').childNodes[0].nodeValue = t.tab0.buy + ' (';
+        }
+      }
+
+      // Tab 1: Abteilungen
       if (tabId === 'depts') {
         const list = document.getElementById('list-depts');
-        list.innerHTML = '';
+        list.innerHTML = `<h3 class="font-cyber font-bold text-lg text-slate-100">${t.tab1.title}</h3>`;
         state.departments.forEach((d, idx) => {
           const cost = d.baseCost * Math.pow(1.22, d.count);
           list.innerHTML += `
             <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
               <div>
                 <div class="font-cyber font-bold text-sm text-slate-100">${d.name}</div>
-                <div class="text-xs text-cyan-400">Level: ${d.count} (+${formatMoney(d.baseIncome * d.count)}/min)</div>
+                <div class="text-xs text-cyan-400">${t.tab1.lvl}: ${d.count} (+${formatMoney(d.baseIncome * d.count)}/min)</div>
               </div>
               <button onclick="buyDept(${idx})" class="px-3.5 py-2 ${state.money >= cost ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} font-cyber text-xs rounded-xl font-bold transition">
-                Kaufen (${formatMoney(cost)})
+                ${t.tab1.buy} (${formatMoney(cost)})
               </button>
             </div>
           `;
         });
       }
 
+      // Tab 2: Forschungen
       if (tabId === 'upgrades') {
         const list = document.getElementById('list-upgrades');
-        list.innerHTML = '';
+        list.innerHTML = `<h3 class="font-cyber font-bold text-lg text-slate-100">${t.tab2.title}</h3>`;
         state.upgrades.forEach((u, idx) => {
           list.innerHTML += `
             <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
@@ -884,14 +890,19 @@
                 <div class="text-xs text-slate-400">${u.desc}</div>
               </div>
               <button onclick="buyUpgrade(${idx})" ${u.bought ? 'disabled' : ''} class="px-3.5 py-2 ${u.bought ? 'bg-slate-800 text-emerald-400' : (state.money >= u.cost ? 'bg-fuchsia-600 hover:bg-fuchsia-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed')} font-cyber text-xs rounded-xl font-bold transition">
-                ${u.bought ? 'Erforscht' : formatMoney(u.cost)}
+                ${u.bought ? t.tab2.bought : formatMoney(u.cost)}
               </button>
             </div>
           `;
         });
       }
 
+      // Tab 3: Börse & Krypto
       if (tabId === 'market') {
+        const marketTab = document.getElementById('tab-market');
+        marketTab.querySelector('h3').innerText = t.tab3.title;
+        marketTab.querySelector('p').innerText = t.tab3.desc;
+
         const list = document.getElementById('list-market');
         list.innerHTML = '';
         state.market.forEach((m, idx) => {
@@ -905,7 +916,7 @@
             const currentRigCost = m.rigCost * Math.pow(1.3, m.rigs);
             miningHTML = `
               <div class="mt-2 pt-2 border-t border-slate-800 text-xs flex justify-between items-center">
-                <span class="text-purple-300">Rigs: ${m.rigs} (Mincht stündlich)</span>
+                <span class="text-purple-300">Rigs: ${m.rigs} (${t.tab3.rigs})</span>
                 <button onclick="buyRig(${idx})" class="px-2.5 py-1 ${state.money >= currentRigCost ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} rounded font-cyber text-[10px]">
                   Rig (+1) (${formatMoney(currentRigCost)})
                 </button>
@@ -925,10 +936,9 @@
                   <div class="text-[10px] text-slate-500 font-mono">Wert: ${formatMoney(totalVal)}</div>
                 </div>
               </div>
-
               <div class="flex gap-2 mt-3">
-                <button onclick="buyStock(${idx})" class="flex-1 py-1.5 ${state.money >= m.price ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} font-cyber text-xs rounded-lg">Kauf</button>
-                <button onclick="sellStock(${idx})" class="flex-1 py-1.5 ${m.owned >= 1 ? 'bg-rose-600 hover:bg-rose-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} font-cyber text-xs rounded-lg">Verkauf</button>
+                <button onclick="buyStock(${idx})" class="flex-1 py-1.5 ${state.money >= m.price ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} font-cyber text-xs rounded-lg">${t.tab3.buy}</button>
+                <button onclick="sellStock(${idx})" class="flex-1 py-1.5 ${m.owned >= 1 ? 'bg-rose-600 hover:bg-rose-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} font-cyber text-xs rounded-lg">${t.tab3.sell}</button>
               </div>
               ${miningHTML}
             </div>
@@ -936,9 +946,10 @@
         });
       }
 
+      // Tab 4: Hardware Lab
       if (tabId === 'lab') {
         const list = document.getElementById('list-lab');
-        list.innerHTML = '';
+        list.innerHTML = `<h3 class="font-cyber font-bold text-lg text-slate-100">${t.tab4.title}</h3>`;
         state.products.forEach((p, idx) => {
           list.innerHTML += `
             <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
@@ -947,32 +958,38 @@
                 <div class="text-xs text-slate-400">${p.desc}</div>
               </div>
               <button onclick="launchProduct(${idx})" ${p.launched ? 'disabled' : ''} class="px-3.5 py-2 ${p.launched ? 'bg-slate-800 text-emerald-400' : (state.money >= p.cost ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed')} font-cyber text-xs rounded-xl font-bold transition">
-                ${p.launched ? 'Gelauncht' : 'Launchen (' + formatMoney(p.cost) + ')'}
+                ${p.launched ? t.tab4.launched : t.tab4.launchBtn + ' (' + formatMoney(p.cost) + ')'}
               </button>
             </div>
           `;
         });
       }
 
+      // Tab 5: Personal
       if (tabId === 'staff') {
         const list = document.getElementById('list-staff');
-        list.innerHTML = '';
+        list.innerHTML = `<h3 class="font-cyber font-bold text-lg text-slate-100">${t.tab5.title}</h3>`;
         state.staff.forEach((s, idx) => {
           list.innerHTML += `
             <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
               <div>
                 <div class="font-cyber font-bold text-sm text-slate-100">${s.name}</div>
-                <div class="text-xs text-cyan-400">${s.bonus} (Angestellt: ${s.count})</div>
+                <div class="text-xs text-cyan-400">${s.bonus} (${t.tab5.hired}: ${s.count})</div>
               </div>
               <button onclick="hireStaff(${idx})" class="px-3.5 py-2 ${state.money >= s.cost ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} font-cyber text-xs rounded-xl font-bold transition">
-                Einstellen (${formatMoney(s.cost)})
+                ${t.tab5.hireBtn} (${formatMoney(s.cost)})
               </button>
             </div>
           `;
         });
       }
 
+      // Tab 6: Cyber Hack
       if (tabId === 'hack') {
+        const hackTab = document.getElementById('tab-hack');
+        hackTab.querySelector('h3').innerText = t.tab6.title;
+        hackTab.querySelector('p').innerText = t.tab6.desc;
+
         const list = document.getElementById('list-hack');
         list.innerHTML = '';
         state.hacks.forEach((h, idx) => {
@@ -980,19 +997,20 @@
             <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
               <div>
                 <div class="font-cyber font-bold text-sm text-slate-100">${h.name}</div>
-                <div class="text-xs text-slate-400">Beute nach Timer: <span class="text-emerald-400 font-mono">+${formatMoney(h.reward)}</span></div>
+                <div class="text-xs text-slate-400">${t.tab6.reward} <span class="text-emerald-400 font-mono">+${formatMoney(h.reward)}</span></div>
               </div>
               <button onclick="executeHack(${idx})" ${h.cd > 0 ? 'disabled' : ''} class="px-3.5 py-2 ${h.cd > 0 ? 'bg-slate-800 text-slate-500' : 'bg-rose-600 hover:bg-rose-500 text-white'} font-cyber text-xs rounded-xl font-bold transition">
-                ${h.cd > 0 ? formatTime(h.cd) : 'HACKEN (1x/Tag)'}
+                ${h.cd > 0 ? formatTime(h.cd) : t.tab6.hackBtn}
               </button>
             </div>
           `;
         });
       }
 
+      // Tab 7: Hauptquartier
       if (tabId === 'hq') {
         const list = document.getElementById('list-hq');
-        list.innerHTML = '';
+        list.innerHTML = `<h3 class="font-cyber font-bold text-lg text-slate-100">${t.tab7.title}</h3>`;
         state.hqs.forEach((hq, idx) => {
           list.innerHTML += `
             <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
@@ -1001,11 +1019,34 @@
                 <div class="text-xs text-slate-400">${hq.desc}</div>
               </div>
               <button onclick="buyHQ(${idx})" ${hq.bought || state.money < hq.cost ? 'disabled' : ''} class="px-3.5 py-2 ${hq.bought ? 'bg-slate-800 text-cyan-400' : (state.money >= hq.cost ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed')} font-cyber text-xs rounded-xl font-bold transition">
-                ${hq.bought ? 'Aktuell' : formatMoney(hq.cost)}
+                ${hq.bought ? t.tab7.current : formatMoney(hq.cost)}
               </button>
             </div>
           `;
         });
+      }
+
+      // Tab 8: Cloud Save & Bestenliste
+      if (tabId === 'fame') {
+        const fameTab = document.getElementById('tab-fame');
+        fameTab.querySelector('h3').innerText = t.tab8.title;
+        document.getElementById('auth-company-name').placeholder = t.tab8.comp;
+        document.getElementById('auth-email').placeholder = t.tab8.email;
+        document.getElementById('auth-password').placeholder = t.tab8.pass;
+        fameTab.querySelector('button[onclick="handleLogin()"]').innerText = t.tab8.login;
+        fameTab.querySelector('button[onclick="handleRegister()"]').innerText = t.tab8.reg;
+        fameTab.querySelector('button[onclick="handleLogout()"]').innerText = t.tab8.logout;
+        fameTab.querySelector('button[onclick="saveGameToCloudManual()"]').innerText = t.tab8.saveBtn;
+        fameTab.querySelectorAll('h3')[1].innerText = t.tab8.top;
+        fameTab.querySelector('span.font-mono').innerText = t.tab8.sync;
+        fetchLeaderboard();
+      }
+
+      // Tab 9: Einstellungen
+      if (tabId === 'settings') {
+        const settingsTab = document.getElementById('tab-settings');
+        settingsTab.querySelector('h3').innerText = t.tab9.title;
+        renderLanguageTab();
       }
     }
 
@@ -1126,7 +1167,7 @@
       updateUI();
     });
 
-    // --- AUTOMATISCHES SPEICHERN & LADEN MIT VISUELLEM HINWEIS ---
+    // --- SPEICHERN & LADEN ---
     function showSaveIndicator() {
       const indicator = document.getElementById('save-status');
       if (indicator) {
@@ -1151,13 +1192,11 @@
         try {
           const parsed = JSON.parse(saved);
           state = { ...state, ...parsed };
-        } catch (e) {
-          console.error("Ladefehler aus lokalem Speicher:", e);
-        }
+        } catch (e) { console.error(e); }
       }
     }
 
-    // --- OFFLINE PROGRESS & TIMER SYNC ---
+    // --- OFFLINE FORTSCHRITT ---
     function processOfflineProgress() {
       const lastSaveTime = localStorage.getItem('cyber_last_save_time');
       if (!lastSaveTime) return;
@@ -1211,7 +1250,7 @@
       }
     }
 
-    // --- INITIALISIERUNG & KERN-LOOPS ---
+    // --- INITIALISIERUNG ---
     checkSeasonReset();
     updateSeasonCountdown();
 
@@ -1240,12 +1279,10 @@
             updatedAt: Date.now()
           }, { merge: true });
         }
-      } catch (e) { console.error('Hintergrund-Speicherfehler:', e); }
+      } catch (e) { console.error(e); }
     }
 
-    setInterval(() => {
-      autoSyncLeaderboard();
-    }, 6 * 3600 * 1000);
+    setInterval(() => { autoSyncLeaderboard(); }, 6 * 3600 * 1000);
 
     setInterval(() => {
       state.hacks.forEach(h => {
@@ -1292,13 +1329,11 @@
       }
     }, 1000);
 
-    setInterval(() => {
-      updateSeasonCountdown();
-    }, 1000);
+    setInterval(() => { updateSeasonCountdown(); }, 1000);
 
     updateUI();
 
-    // --- MUSIK STEUERUNG ---
+    // --- MUSIK ---
     function toggleMusic() {
       const music = document.getElementById('bg-music');
       const icon = document.getElementById('music-icon');
@@ -1310,9 +1345,7 @@
           icon.classList.remove('text-slate-400');
           icon.classList.add('text-cyan-400');
           lucide.createIcons();
-        }).catch(e => {
-          console.log("Audio-Autoplay blockiert vom Browser:", e);
-        });
+        }).catch(e => { console.log(e); });
       } else {
         music.pause();
         icon.setAttribute('data-lucide', 'volume-X');
