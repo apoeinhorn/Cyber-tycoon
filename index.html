@@ -1051,9 +1051,13 @@
     checkSeasonReset();
     updateSeasonCountdown();
 
-    // Beim Start des Spiels laden & Offline-Fortschritt berechnen
+    // 1. ALLERERSTER SCHRITT: Sofort lokal laden und Offline-Fortschritt berechnen
     loadGameLocally();
     processOfflineProgress();
+    
+    // 2. Sofort final sichern, damit der Stand eingefroren ist
+    saveGameLocally();
+    updateUI();
 
     // Automatisches Speichern alle 30 Sekunden (Lokal + Cloud)
     setInterval(() => {
@@ -1078,6 +1082,8 @@
         }
       } catch (e) { console.error('Hintergrund-Speicherfehler:', e); }
     }
+
+  
 
     setInterval(() => {
       autoSyncLeaderboard();
