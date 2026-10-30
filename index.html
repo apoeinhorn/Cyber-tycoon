@@ -422,7 +422,7 @@
 
       <div class="flex justify-between items-center pt-2">
         <h3 class="font-bold text-xs text-slate-300 uppercase tracking-wider">Globale Rangliste</h3>
-        <span class="text-[10px] text-slate-500 font-mono">Auto-Sync (6h)</span>
+        <span class="text-[10px] text-slate-500 font-mono">Auto-Sync (30s)</span>
       </div>
       <div id="leaderboard-list" class="space-y-2">
         <div class="text-xs text-slate-500 italic">Lade Rangliste...</div>
@@ -805,7 +805,6 @@
         return;
       }
       try {
-        listEl.innerHTML = `<div class="text-xs text-slate-500 italic">Lade Rangliste...</div>`;
         const q = window.FB.query(window.FB.collection(window.FB.db, "leaderboard"), window.FB.orderBy("totalValue", "desc"), window.FB.limit(10));
         const querySnapshot = await window.FB.getDocs(q);
         listEl.innerHTML = '';
@@ -828,7 +827,6 @@
         });
       } catch (e) {
         console.error("Ranglisten-Fehler:", e);
-        if(listEl) listEl.innerHTML = `<div class="text-xs text-rose-400">Rangliste konnte nicht geladen werden.</div>`;
       }
     }
 
@@ -1551,10 +1549,21 @@
       }
     }, 10000);
 
+    // Automatischer Hintergrund-Sync in die Cloud alle 30 Sekunden + Ranglisten-Aktualisierung
     setInterval(() => {
       saveGameLocally();
       if (window.FB && window.FB.auth.currentUser) {
         window.FB.setDoc(window.FB.doc(window.FB.db, "saves", window.FB.auth.currentUser.uid), state);
+        if (state.companyName) {
+          window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", window.FB.auth.currentUser.uid), {
+            companyName: state.companyName,
+            totalValue: state.totalEarned,
+            updatedAt: Date.now()
+          });
+        }
+      }
+      if (activeCurrentTab === 'fame') {
+        fetchLeaderboard();
       }
     }, 30000);
 
