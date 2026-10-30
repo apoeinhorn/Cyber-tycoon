@@ -965,10 +965,12 @@
       }
     }
 
-    function saveGameLocally() {
+        function saveGameLocally() {
       localStorage.setItem('cyber_tycoon_save', JSON.stringify(state));
+      localStorage.setItem('cyber_last_save_time', Date.now().toString());
       showSaveIndicator();
     }
+
 
     function loadGameLocally() {
       const saved = localStorage.getItem('cyber_tycoon_save');
@@ -982,12 +984,51 @@
       }
     }
 
-    // Beim Start des Spiels laden
+       // Beim Start des Spiels laden
     loadGameLocally();
+    processOfflineProgress();
+
+    // --- OFFLINE PROGRESS & TIMER SYNC ---
+    function processOfflineProgress() {
+      const lastSaveTime = localStorage.getItem('cyber_last_save_time');
+      if (!lastSaveTime) return;
+
+      const now = Date.now();
+      const elapsedSeconds = Math.floor((now - parseInt(lastSaveTime)) / 1000);
+
+      if (elapsedSeconds > 10) {
+        const passivePerSec = getPassiveIncome() / 60;
+        const offlineEarnings = passivePerSec * elapsedSeconds;
+
+        if (offlineEarnings > 0) {
+          state.money += offlineEarnings;
+          state.totalEarned += offlineEarnings;
+        }
+
+        state.hacks.forEach(h => {
+          if (h.cd > 0) {
+            h.cd = Math.max(0, h.cd - elapsedSeconds);
+            if (h.cd === 0) {
+              state.money += h.reward;
+              state.totalEarned += h.reward;
+            }
+          }
+        });
+
+        state.miningSecondsLeft = Math.max(0, state.miningSecondsLeft - elapsedSeconds);
+
+        if (offlineEarnings > 1) {
+          setTimeout(() => {
+            alert(`⚡ Willkommen zurück! Während deiner Abwesenheit hat dein Imperium ${formatMoney(offlineEarnings)} erwirtschaftet.`);
+          }, 500);
+        }
+      }
+    }
 
     // --- INITIALISIERUNG & SEKUNDEN-LOOP ---
     checkSeasonReset();
     updateSeasonCountdown();
+
 
     // Automatisches Speichern alle 30 Sekunden (Lokal + Cloud)
     setInterval(() => {
@@ -1067,6 +1108,47 @@
     }, 1000);
 
     updateUI();
+        // --- OFFLINE PROGRESS & TIMER SYNC ---
+    function processOfflineProgress() {
+      const lastSaveTime = localStorage.getItem('cyber_last_save_time');
+      if (!lastSaveTime) return;
+
+      const now = Date.now();
+      const elapsedSeconds = Math.floor((now - parseInt(lastSaveTime)) / 1000);
+
+      if (elapsedSeconds > 10) { // Ab 10 Sekunden Abwesenheit greift der Offline-Modus
+        // 1. Passives Einkommen nachholen (Einkommen pro Minute / 60 = pro Sekunde)
+        const passivePerSec = getPassiveIncome() / 60;
+        const offlineEarnings = passivePerSec * elapsedSeconds;
+
+        if (offlineEarnings > 0) {
+          state.money += offlineEarnings;
+          state.totalEarned += offlineEarnings;
+        }
+
+        // 2. Cyber Hack Timer offline weiterlaufen lassen
+        state.hacks.forEach(h => {
+          if (h.cd > 0) {
+            h.cd = Math.max(0, h.cd - elapsedSeconds);
+            if (h.cd === 0) {
+              state.money += h.reward;
+              state.totalEarned += h.reward;
+            }
+          }
+        });
+
+        // 3. Mining-Timer anpassen
+        state.miningSecondsLeft = Math.max(0, state.miningSecondsLeft - elapsedSeconds);
+
+        // Zeige eine kurze Info an, was offline verdient wurde
+        if (offlineEarnings > 1) {
+          setTimeout(() => {
+            alert(`⚡ Willkommen zurück! Während deiner Abwesenheit hat dein Imperium ${formatMoney(offlineEarnings)} erwirtschaftet.`);
+          }, 500);
+        }
+      }
+    }
+
         // --- MUSIK STEUERUNG ---
     function toggleMusic() {
       const music = document.getElementById('bg-music');
