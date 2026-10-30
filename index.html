@@ -41,6 +41,17 @@
           if(userStatusEl) userStatusEl.innerText = `CORP SECURE: ${user.email}`;
           if(authFormsEl) authFormsEl.classList.add('hidden');
           if(logoutBtnEl) logoutBtnEl.classList.remove('hidden');
+
+          // Cloud-Daten sofort automatisch herunterladen und einspielen!
+          try {
+            const docSnap = await getDoc(doc(db, "saves", user.uid));
+            if (docSnap.exists()) {
+              const cloudData = docSnap.data();
+              window.loadStateFromCloud(cloudData);
+            }
+          } catch(err) {
+            console.error("Cloud-Ladefehler:", err);
+          }
         } else {
           if(userStatusEl) userStatusEl.innerText = 'OFFLINE HOLO MODE';
           if(authFormsEl) authFormsEl.classList.remove('hidden');
@@ -482,7 +493,7 @@
 
     // --- GAME STATE ---
     let state = {
-      version: 3, // Versionierung zum Zurücksetzen alter hängender Timers
+      version: 3,
       companyName: '',
       language: 'de',
       money: 0,
@@ -584,7 +595,16 @@
       ]
     };
 
-    // --- BILDER & WÖRTERBUCH ---
+    // Globale Funktion zum Einspielen der Cloud-Daten
+    window.loadStateFromCloud = function(cloudData) {
+      state = { ...state, ...cloudData };
+      saveGameLocally();
+      updateDynamicTexts();
+      updateUI();
+      renderTabContent(activeCurrentTab);
+      console.log("Cloud-Stand erfolgreich synchronisiert!");
+    };
+
     const deptImages = [
       "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80",
       "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
@@ -696,16 +716,10 @@
           { name: "Deep Space Array", desc: "Intergalaktischer Daten-Relay." }
         ]
       },
-      en: {
-        season: "HOLO EDITION 2026",
-        passivLabel: "Passive / Min",
-        companyValLabel: "Total Assets",
-        nav: ["0. Core Terminal", "0.5. iCash Cyber-Vault", "1. Megastructures", "2. Quantum Research", "3. Market & Mining", "4. Advanced Lab", "5. Executive Crew", "6. Black-Ops & Hack", "7. Headquarters", "8. Orbital Drones", "9. Cloud & Leaderboard", "10. Settings"],
-        departments: [], upgrades: [], market: [], products: [], staff: [], hacks: [], hqs: [], orbitals: []
-      },
-      fr: { season: "HOLO EDITION 2026", passivLabel: "Revenu", companyValLabel: "Actifs", nav: ["0. Terminal", "0.5. iCash", "1. Structures", "2. Recherche", "3. Marché & Mining", "4. Lab", "5. Équipe", "6. Black-Ops", "7. HQ", "8. Satellites", "9. Cloud", "10. Paramètres"], departments: [], upgrades: [], market: [], products: [], staff: [], hacks: [], hqs: [], orbitals: [] },
-      es: { season: "HOLO EDITION 2026", passivLabel: "Ingreso", companyValLabel: "Activos", nav: ["0. Terminal", "0.5. iCash", "1. Estructuras", "2. Investigación", "3. Mercado & Minería", "4. Lab", "5. Equipo", "6. Black-Ops", "7. HQ", "8. Satélites", "9. Cloud", "10. Ajustes"], departments: [], upgrades: [], market: [], products: [], staff: [], hacks: [], hqs: [], orbitals: [] },
-      it: { season: "HOLO EDITION 2026", passivLabel: "Reddito", companyValLabel: "Asset", nav: ["0. Terminale", "0.5. iCash", "1. Strutture", "2. Ricerca", "3. Mercato & Mining", "4. Lab", "5. Team", "6. Black-Ops", "7. HQ", "8. Satelliti", "9. Cloud", "10. Impostazioni"], departments: [], upgrades: [], market: [], products: [], staff: [], hacks: [], hqs: [], orbitals: [] }
+      en: { season: "HOLO EDITION 2026", passivLabel: "Passive / Min", companyValLabel: "Total Assets", nav: [], departments: [], upgrades: [], market: [], products: [], staff: [], hacks: [], hqs: [], orbitals: [] },
+      fr: { season: "HOLO EDITION 2026", passivLabel: "Revenu", companyValLabel: "Actifs", nav: [], departments: [], upgrades: [], market: [], products: [], staff: [], hacks: [], hqs: [], orbitals: [] },
+      es: { season: "HOLO EDITION 2026", passivLabel: "Ingreso", companyValLabel: "Activos", nav: [], departments: [], upgrades: [], market: [], products: [], staff: [], hacks: [], hqs: [], orbitals: [] },
+      it: { season: "HOLO EDITION 2026", passivLabel: "Reddito", companyValLabel: "Asset", nav: [], departments: [], upgrades: [], market: [], products: [], staff: [], hacks: [], hqs: [], orbitals: [] }
     };
 
     function setLanguage(lang) {
@@ -719,7 +733,7 @@
     function updateDynamicTexts() {
       const lang = state.language || 'de';
       const t = translations[lang];
-      if(!t || !t.nav) return;
+      if(!t || !t.nav || t.nav.length === 0) return;
 
       const seasonTag = document.getElementById('season-tag');
       if(seasonTag) seasonTag.innerText = t.season;
@@ -751,20 +765,10 @@
           <button onclick="setLanguage('en')" class="p-3 bg-[#0f172a] hover:bg-[#1e293b] border ${lang === 'en' ? 'border-blue-500 text-white' : 'border-blue-500/20 text-slate-400'} rounded-xl text-xs text-left font-semibold flex justify-between items-center transition">
             <span>🇬🇧 English</span> ${lang === 'en' ? '<span class="text-[10px] text-blue-400 font-mono">Active</span>' : ''}
           </button>
-          <button onclick="setLanguage('fr')" class="p-3 bg-[#0f172a] hover:bg-[#1e293b] border ${lang === 'fr' ? 'border-blue-500 text-white' : 'border-blue-500/20 text-slate-400'} rounded-xl text-xs text-left font-semibold flex justify-between items-center transition">
-            <span>🇫🇷 Français</span> ${lang === 'fr' ? '<span class="text-[10px] text-blue-400 font-mono">Actif</span>' : ''}
-          </button>
-          <button onclick="setLanguage('es')" class="p-3 bg-[#0f172a] hover:bg-[#1e293b] border ${lang === 'es' ? 'border-blue-500 text-white' : 'border-blue-500/20 text-slate-400'} rounded-xl text-xs text-left font-semibold flex justify-between items-center transition">
-            <span>🇪🇸 Español</span> ${lang === 'es' ? '<span class="text-[10px] text-blue-400 font-mono">Activo</span>' : ''}
-          </button>
-          <button onclick="setLanguage('it')" class="p-3 bg-[#0f172a] hover:bg-[#1e293b] border ${lang === 'it' ? 'border-blue-500 text-white' : 'border-blue-500/20 text-slate-400'} rounded-xl text-xs text-left font-semibold flex justify-between items-center transition">
-            <span>🇮🇹 Italiano</span> ${lang === 'it' ? '<span class="text-[10px] text-blue-400 font-mono">Attivo</span>' : ''}
-          </button>
         </div>
       `;
     }
 
-    // --- FIREBASE AUTH & LEADERBOARD ---
     async function handleRegister() {
       if (!window.FB) { alert('Firebase nicht initialisiert.'); return; }
       const companyInput = document.getElementById('auth-company-name').value.trim();
@@ -788,7 +792,7 @@
       const pass = document.getElementById('auth-password').value;
       try {
         await window.FB.signInWithEmailAndPassword(window.FB.auth, email, pass);
-        alert('Eingeloggt!');
+        alert('Eingeloggt & Stand geladen!');
       } catch (e) { alert('Login-Fehler: ' + e.message); }
     }
 
@@ -838,7 +842,6 @@
       } catch (e) { console.error(e); }
     }
 
-    // --- SEASON & TIMERS ---
     function getMonthKey() {
       const d = new Date();
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -849,7 +852,6 @@
       const savedKey = localStorage.getItem('empire_season_key');
       if (savedKey && savedKey !== currentKey) {
         localStorage.removeItem('empire_tycoon_save');
-        alert(`🏆 NEUE MONATLICHE SAISON GESTARTET!`);
       }
       localStorage.setItem('empire_season_key', currentKey);
     }
@@ -876,7 +878,6 @@
       if (el) el.innerText = `Drop: ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
 
-    // --- NAVIGATION & UI ---
     let activeCurrentTab = 'clicker';
 
     function toggleMenu() {
@@ -1010,7 +1011,6 @@
         state.exp = 0;
         state.expNeeded = Math.floor(state.expNeeded * 1.8);
 
-        // iCash Belohnung bei Level-Up
         const pi4 = state.permaUpgrades.find(u => u.id === 'pi4');
         const bonusYield = pi4 ? pi4.level * 2 : 0;
         const reward = 3 + Math.floor(state.level / 2) + bonusYield;
@@ -1021,7 +1021,6 @@
       updateUI();
     }
 
-    // --- HACKER MINIGAME ---
     let correctHackNode = 0;
     function initHackMiniGame() {
       const nodesContainer = document.getElementById('hack-game-nodes');
@@ -1064,7 +1063,6 @@
       updateUI();
     }
 
-    // --- CANDLESTICK CHARTS ---
     function drawCandleChart(canvasId, candles) {
       const canvas = document.getElementById(canvasId);
       if (!canvas) return;
@@ -1112,7 +1110,6 @@
       state.market.forEach((m, idx) => { drawCandleChart(`chart-${idx}`, m.candles); });
     }
 
-    // --- RENDER TABS ---
     function renderTabContent(tabId) {
       const lang = state.language || 'de';
       const t = translations[lang] || translations['de'];
@@ -1369,7 +1366,6 @@
       if (tabId === 'settings') { renderLanguageTab(); }
     }
 
-    // --- ACTIONS ---
     function buyPermaUpgrade(idx) {
       const pu = state.permaUpgrades[idx];
       if (state.icash >= pu.cost && pu.level < pu.maxLevel) {
@@ -1523,7 +1519,6 @@
       addExp(5);
     });
 
-    // --- SAVE & LOAD ---
     function showSaveIndicator() {
       const indicator = document.getElementById('save-status');
       if (indicator) {
@@ -1547,20 +1542,13 @@
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          // Erzwinge Reset bei alter Version damit Timer nicht hängen
-          if(!parsed.version || parsed.version < 3) {
-            console.log("Alte Version erkannt, Timers zurückgesetzt.");
-          } else {
+          if(parsed.version && parsed.version >= 3) {
             state = { ...state, ...parsed };
           }
-          if(!state.permaUpgrades) state.permaUpgrades = [{ id: 'pi1', name: 'Quantum Click Matrix', desc: 'Verdoppelt dauerhaft die Klick-Leistung.', cost: 5, level: 0, maxLevel: 10, mult: 2.0 }, { id: 'pi2', name: 'Neural Income Booster', desc: 'Erhöht das gesamte passive Einkommen um +50% pro Stufe.', cost: 10, level: 0, maxLevel: 10, mult: 1.5 }, { id: 'pi3', name: 'Auto-Impulse Core', desc: 'Generiert alle 10 Sekunden automatisch 1 Klick-Impuls.', cost: 25, level: 0, maxLevel: 1, mult: 1.0 }, { id: 'pi4', name: 'Syndicate iCash Yield', desc: 'Erhöht iCash-Belohnungen bei Level-ups um +2.', cost: 30, level: 0, maxLevel: 5, mult: 1.0 }];
-          if(state.icash === undefined) state.icash = 0;
-          if(state.miningSecondsLeft === undefined) state.miningSecondsLeft = 3600;
         } catch (e) { console.error(e); }
       }
     }
 
-    // --- GAME LOOP ---
     checkSeasonReset();
     updateSeasonCountdown();
 
