@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Cyber Tech Tycoon - Leaderboard Edition</title>
+  <title>CORP-EMPIRE // HOLO-EDITION 2026</title>
   <link rel="manifest" href="./manifest.json">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   
-  <!-- Firebase SDKs & Echte Config -->
+  <!-- Firebase SDKs & Config -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -38,12 +38,11 @@
         const logoutBtnEl = document.getElementById('firebase-logout-btn');
 
         if (user) {
-          if(userStatusEl) userStatusEl.innerText = `Eingeloggt als: ${user.email}`;
+          if(userStatusEl) userStatusEl.innerText = `CORP SECURE: ${user.email}`;
           if(authFormsEl) authFormsEl.classList.add('hidden');
           if(logoutBtnEl) logoutBtnEl.classList.remove('hidden');
-          loadGameFromCloud(user.uid);
         } else {
-          if(userStatusEl) userStatusEl.innerText = 'Nicht eingeloggt (Lokaler Modus)';
+          if(userStatusEl) userStatusEl.innerText = 'OFFLINE HOLO MODE';
           if(authFormsEl) authFormsEl.classList.remove('hidden');
           if(logoutBtnEl) logoutBtnEl.classList.add('hidden');
         }
@@ -55,294 +54,440 @@
   </script>
   
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
     
     * {
       touch-action: manipulation;
       user-select: none;
       -webkit-user-select: none;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    .font-cyber { font-family: 'Chakra Petch', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
 
     body {
-      background-color: #05070f;
-      color: #f3f4f6;
+      background-color: #020408;
+      color: #94a3b8;
       overflow-x: hidden;
     }
 
+    .holo-card {
+      background: rgba(11, 16, 29, 0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .holo-card:hover {
+      border-color: rgba(59, 130, 246, 0.5);
+      box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .holo-btn {
+      background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+      border: 1px solid #60a5fa;
+      color: #ffffff;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    }
+
+    .holo-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, #2563eb, #60a5fa);
+      box-shadow: 0 6px 22px rgba(59, 130, 246, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .icash-btn {
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      border: 1px solid #c084fc;
+      color: #ffffff;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+    }
+
+    .icash-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, #6d28d9, #c084fc);
+      box-shadow: 0 6px 22px rgba(168, 85, 247, 0.6);
+      transform: translateY(-1px);
+    }
+
     .menu-drawer {
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8);
+      transition: transform 0.35s cubic-bezier(0.1, 1, 0.1, 1);
+      box-shadow: 40px 0 80px rgba(0, 0, 0, 0.95);
     }
 
     ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: #05070f; }
-    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-
-    @keyframes pulseGlow {
-      0%, 100% { border-color: rgba(6, 182, 212, 0.6); box-shadow: 0 0 15px rgba(6, 182, 212, 0.2); }
-      50% { border-color: rgba(217, 70, 239, 0.6); box-shadow: 0 0 15px rgba(217, 70, 239, 0.2); }
-    }
-    .glow-border { animation: pulseGlow 3s infinite; }
+    ::-webkit-scrollbar-track { background: #020408; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 2px; }
   </style>
 </head>
-<body class="bg-[#05070f] text-gray-100 min-h-screen flex flex-col relative overflow-x-hidden">
+<body class="bg-[#020408] text-slate-300 min-h-screen flex flex-col relative overflow-x-hidden">
 
   <!-- TOP APP BAR -->
-  <header class="bg-[#0b0f19]/90 border-b border-slate-800 px-4 py-3 sticky top-0 z-30 backdrop-blur-md flex items-center justify-between">
-    <div class="flex items-center space-x-2">
-      <button id="btn-toggle-menu" onclick="toggleMenu()" class="p-2 bg-slate-900 hover:bg-slate-800 text-cyan-400 rounded-xl border border-slate-700 active:scale-95 transition">
+  <header class="bg-[#070b14]/90 backdrop-blur-2xl border-b border-blue-500/10 px-4 py-3.5 sticky top-0 z-30 flex items-center justify-between">
+    <div class="flex items-center space-x-2.5">
+      <button id="btn-toggle-menu" onclick="toggleMenu()" class="p-2.5 bg-[#0f172a] hover:bg-[#1e293b] text-blue-400 rounded-xl border border-blue-500/20 transition shadow-lg">
         <i data-lucide="menu" class="w-5 h-5"></i>
       </button>
-      <!-- HIER SPIELT DEINE HOCHGELADENE CYBER.MP3 AB -->
+      
+      <!-- AUDIO STREAM -->
       <audio id="bg-music" loop>
-      <source src="https://n11a-eu.rcs.revma.com/1z19ak79n98uv" type="audio/mpeg">
-
+        <source src="https://n11a-eu.rcs.revma.com/1z19ak79n98uv" type="audio/mpeg">
       </audio>
-      <button onclick="toggleMusic()" id="music-btn" class="p-2 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl border border-slate-700 active:scale-95 transition">
-        <i data-lucide="volume-X" id="music-icon" class="w-5 h-5"></i>
+      
+      <button onclick="toggleMusic()" id="music-btn" class="p-2.5 bg-[#0f172a] hover:bg-[#1e293b] text-slate-400 rounded-xl border border-blue-500/20 transition shadow-lg flex items-center gap-1.5">
+        <i data-lucide="volume-x" id="music-icon" class="w-5 h-5"></i>
+        <span class="text-[10px] font-mono text-slate-400 hidden sm:inline" id="music-label">MUSIC OFF</span>
       </button>
     </div>
 
     <div class="text-center">
-      <h1 class="font-cyber font-bold text-base text-slate-100 leading-none bg-gradient-to-r from-cyan-400 to-fuchsia-500 bg-clip-text text-transparent">CYBER TYCOON</h1>
-      <span id="season-tag" class="text-[9px] text-fuchsia-400 font-mono">Saison Okt 2026</span>
+      <h1 class="font-extrabold text-xs tracking-widest uppercase text-white flex items-center justify-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> CORP-EMPIRE
+      </h1>
+      <span id="season-tag" class="text-[9px] text-blue-400 font-mono tracking-wider">HOLO EDITION 2026</span>
     </div>
 
     <div class="flex items-center space-x-2 text-xs font-semibold">
-      <div class="px-2 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-cyan-400 font-cyber font-bold text-[11px]">
-        Lvl <span id="stat-level">1</span>
+      <div class="px-2.5 py-1 rounded-lg bg-[#0f172a] border border-blue-500/20 text-slate-300 font-mono text-[11px] shadow-lg">
+        LVL <span id="stat-level" class="text-white font-bold">1</span>
       </div>
-      <div class="flex items-center space-x-1 px-2 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-emerald-400 text-[11px]">
-        <i data-lucide="wallet" class="w-3 h-3"></i>
-        <span id="stat-money" class="font-mono">€0.00</span>
+      <div class="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[#0f172a] border border-emerald-500/20 text-emerald-400 text-[11px] font-mono shadow-lg">
+        <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+        <span id="stat-money">€0.00</span>
       </div>
     </div>
   </header>
   
-  <div id="save-status" class="absolute top-14 right-4 text-[10px] text-slate-500 font-mono transition-opacity duration-300 opacity-0 z-40">
-    Gespeichert ✓
+  <div id="save-status" class="absolute top-16 right-4 text-[10px] text-blue-400 font-mono transition-opacity duration-300 opacity-0 z-40 bg-[#0f172a] border border-blue-500/30 px-3 py-1 rounded-lg shadow-2xl">
+    [ HOLO-SYNC GESPEICHERT ]
   </div>
 
   <!-- OVERLAY BACKDROP -->
-  <div id="menu-backdrop" onclick="toggleMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity"></div>
+  <div id="menu-backdrop" onclick="toggleMenu()" class="fixed inset-0 bg-black/80 backdrop-blur-md z-40 hidden transition-opacity"></div>
 
-  <!-- SLIDE-OUT HAMBURGER SIDEBAR -->
-  <aside id="menu-drawer" class="menu-drawer fixed top-0 left-0 bottom-0 w-72 bg-[#080d1a] border-r border-slate-800 z-50 transform -translate-x-full flex flex-col justify-between">
-    <div class="overflow-y-auto p-4 space-y-2">
+  <!-- SIDEBAR -->
+  <aside id="menu-drawer" class="menu-drawer fixed top-0 left-0 bottom-0 w-72 bg-[#050810] border-r border-blue-500/20 z-50 transform -translate-x-full flex flex-col justify-between">
+    <div class="overflow-y-auto p-4 space-y-1.5">
       
-      <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-2">
-        <div class="flex items-center space-x-2 text-cyan-400">
-          <i data-lucide="cpu" class="w-5 h-5"></i>
-          <span class="font-cyber font-bold text-base text-slate-100">NAVIGATION</span>
+      <div class="flex justify-between items-center pb-3 border-b border-blue-500/15 mb-3">
+        <div class="flex items-center space-x-2 text-white font-bold text-xs tracking-wide">
+          <i data-lucide="command" class="w-4 h-4 text-blue-500"></i>
+          <span>HOLO DIRECTORY</span>
         </div>
-        <button onclick="toggleMenu()" class="text-slate-400 p-1 hover:text-white">
+        <button onclick="toggleMenu()" class="text-slate-400 p-1 hover:text-white rounded-lg">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <button onclick="switchTab('clicker')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/30">
-        <i data-lucide="terminal" class="w-4 h-4"></i>
-        <span>0. Dev-Konsole</span>
+      <button onclick="switchTab('clicker')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-white bg-blue-600/20 border border-blue-500/40 shadow-lg">
+        <i data-lucide="cpu" class="w-4 h-4 text-blue-400"></i>
+        <span>0. Core Terminal</span>
       </button>
 
-      <button onclick="switchTab('depts')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-slate-300 hover:bg-slate-800/50 hover:text-cyan-400 transition">
-        <i data-lucide="building-2" class="w-4 h-4"></i>
-        <span>1. Abteilungen</span>
+      <button onclick="switchTab('icash')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
+        <i data-lucide="gem" class="w-4 h-4 text-purple-400"></i>
+        <span>0.5. iCash Cyber-Zentrale</span>
       </button>
 
-      <button onclick="switchTab('upgrades')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-slate-300 hover:bg-slate-800/50 hover:text-cyan-400 transition">
-        <i data-lucide="wrench" class="w-4 h-4"></i>
-        <span>2. Forschungen</span>
+      <button onclick="switchTab('depts')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
+        <i data-lucide="layers" class="w-4 h-4 text-slate-500"></i>
+        <span>1. Megastrukturen & Sektoren</span>
       </button>
 
-      <button onclick="switchTab('market')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-slate-300 hover:bg-slate-800/50 hover:text-cyan-400 transition">
-        <i data-lucide="candlestick-chart" class="w-4 h-4"></i>
-        <span>3. Börse & Krypto</span>
+      <button onclick="switchTab('upgrades')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
+        <i data-lucide="zap" class="w-4 h-4 text-slate-500"></i>
+        <span>2. Quanten-Forschung</span>
       </button>
 
-      <button onclick="switchTab('lab')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-slate-300 hover:bg-slate-800/50 hover:text-cyan-400 transition">
-        <i data-lucide="rocket" class="w-4 h-4"></i>
-        <span>4. Hardware Lab</span>
+      <button onclick="switchTab('market')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
+        <i data-lucide="bar-chart-3" class="w-4 h-4 text-slate-500"></i>
+        <span>3. Börse & Mining Charts</span>
       </button>
 
-      <button onclick="switchTab('staff')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-slate-300 hover:bg-slate-800/50 hover:text-cyan-400 transition">
-        <i data-lucide="users" class="w-4 h-4"></i>
-        <span>5. Personal</span>
+      <button onclick="switchTab('lab')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
+        <i data-lucide="flask-conical" class="w-4 h-4 text-slate-500"></i>
+        <span>4. Engineering Lab</span>
       </button>
 
-      <button onclick="switchTab('hack')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-slate-300 hover:bg-slate-800/50 hover:text-cyan-400 transition">
-        <i data-lucide="shield-alert" class="w-4 h-4"></i>
-        <span>6. Cyber Hack</span>
+      <button onclick="switchTab('staff')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
+        <i data-lucide="users-round" class="w-4 h-4 text-slate-500"></i>
+        <span>5. Vorstand & Experten</span>
       </button>
 
-      <button onclick="switchTab('hq')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-slate-300 hover:bg-slate-800/50 hover:text-cyan-400 transition">
-        <i data-lucide="landmark" class="w-4 h-4"></i>
-        <span>7. Hauptquartier</span>
+      <button onclick="switchTab('hack')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
+        <i data-lucide="shield-alert" class="w-4 h-4 text-slate-500"></i>
+        <span>6. Black-Ops Infiltration & Mini-Hack</span>
       </button>
 
-      <button onclick="switchTab('fame')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-fuchsia-400 hover:bg-fuchsia-500/10 transition">
-        <i data-lucide="award" class="w-4 h-4"></i>
-        <span>8. Cloud Save & Bestenliste</span>
+      <button onclick="switchTab('hq')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
+        <i data-lucide="building-2" class="w-4 h-4 text-slate-500"></i>
+        <span>7. Corporate Headquarters</span>
       </button>
 
-      <button onclick="switchTab('settings')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-cyan-400 hover:bg-cyan-500/10 transition">
-        <i data-lucide="settings" class="w-4 h-4"></i>
-        <span>9. Einstellungen & Sprache</span>
+      <button onclick="switchTab('orbit')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
+        <i data-lucide="orbit" class="w-4 h-4 text-indigo-400"></i>
+        <span>8. Orbital-Drohnen & Satelliten</span>
+      </button>
+
+      <button onclick="switchTab('fame')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
+        <i data-lucide="globe" class="w-4 h-4 text-slate-500"></i>
+        <span>9. Cloud-Sync & Weltrangliste</span>
+      </button>
+
+      <button onclick="switchTab('settings')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
+        <i data-lucide="sliders" class="w-4 h-4 text-slate-500"></i>
+        <span>10. System-Einstellungen</span>
       </button>
 
     </div>
 
-    <div class="p-4 border-t border-slate-800 bg-slate-950">
-      <div class="text-[11px] text-fuchsia-400 font-mono">Reset am 1. jedes Monats</div>
-      <div id="season-countdown" class="text-xs text-slate-300 font-bold font-mono">00d 00h 00m 00s</div>
+    <div class="p-4 border-t border-blue-500/15 bg-[#020408]">
+      <div class="text-[10px] text-slate-500 font-mono uppercase tracking-wider">Saison-Reset in:</div>
+      <div id="season-countdown" class="text-xs text-slate-200 font-bold font-mono mt-0.5">00d 00h 00m 00s</div>
     </div>
   </aside>
 
-  <!-- MAIN CONTENT CONTAINER -->
+  <!-- MAIN CONTAINER -->
   <main class="flex-1 max-w-2xl w-full mx-auto p-4 flex flex-col">
     
     <!-- HEADER STATS -->
-    <div class="grid grid-cols-2 gap-3 mb-4">
-      <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
-        <div class="text-[10px] text-slate-400 uppercase font-semibold">Passiv / Minute</div>
-        <div id="stat-income" class="font-cyber font-bold text-base text-cyan-400">+€0.00/min</div>
+    <div class="grid grid-cols-3 gap-2 mb-4">
+      <div class="holo-card p-3 relative overflow-hidden">
+        <div class="text-[9px] text-slate-400 font-mono uppercase tracking-wider">Passiv / Min</div>
+        <div id="stat-income" class="font-mono font-bold text-xs text-blue-400 mt-1">+€0.00</div>
       </div>
-      <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
-        <div class="text-[10px] text-slate-400 uppercase font-semibold">Monats-Firmenwert</div>
-        <div id="stat-total-value" class="font-cyber font-bold text-base text-fuchsia-400">€0.00</div>
+      <div class="holo-card p-3 relative overflow-hidden">
+        <div class="text-[9px] text-slate-400 font-mono uppercase tracking-wider">iCash Guthaben</div>
+        <div id="stat-icash" class="font-mono font-bold text-xs text-purple-400 mt-1">💎 0 iCash</div>
+      </div>
+      <div class="holo-card p-3 relative overflow-hidden">
+        <div class="text-[9px] text-slate-400 font-mono uppercase tracking-wider">Gesamt-Assets</div>
+        <div id="stat-total-value" class="font-mono font-bold text-xs text-emerald-400 mt-1">€0.00</div>
       </div>
     </div>
 
-    <!-- TAB 0: DEV-KONSOLE -->
+    <!-- TAB 0: TERMINAL -->
     <div id="tab-clicker" class="tab-panel space-y-4">
-      <div class="bg-slate-900/90 rounded-2xl p-5 border-2 border-slate-800 glow-border flex flex-col items-center justify-center relative overflow-hidden">
-        <div class="text-center mb-3">
-          <h3 class="font-cyber font-bold text-lg text-slate-100">0. Dev-Konsole</h3>
-          <p class="text-xs text-slate-400">Code manuell schreiben, um Startkapital aufzubauen.</p>
+      <div class="holo-card p-6 flex flex-col items-center justify-center relative overflow-hidden text-center">
+        <div class="absolute inset-0 h-32 opacity-30 pointer-events-none overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-gradient-to-b from-[#0b101d]/40 via-[#0b101d]/90 to-[#0b101d]"></div>
         </div>
 
-        <button id="click-btn" class="w-36 h-36 rounded-full bg-slate-950 border-4 border-cyan-500/80 flex flex-col items-center justify-center shadow-2xl active:scale-95 transition-transform my-2">
-          <i data-lucide="terminal" class="w-9 h-9 text-cyan-400 mb-1"></i>
-          <span class="font-cyber font-bold text-slate-100 text-xs">CODE SCHREIBEN</span>
-          <span id="click-power-text" class="text-[11px] font-mono font-semibold text-fuchsia-400 mt-1">+€0.01 / Klick</span>
+        <h3 id="tab0-title" class="font-bold text-base text-white tracking-wide relative z-10 mt-1">0. Core Terminal Overdrive</h3>
+        <p id="tab0-desc" class="text-xs text-slate-400 mt-1 mb-6 relative z-10">Generiere Datenimpulse, um das Imperium zu skalieren.</p>
+
+        <button id="click-btn" class="w-36 h-36 rounded-2xl bg-[#0f172a]/90 border-2 border-blue-500/40 hover:border-blue-400 flex flex-col items-center justify-center shadow-2xl active:scale-95 transition-all group my-2 cursor-pointer relative z-10 backdrop-blur-md">
+          <div class="absolute inset-0 bg-blue-500/5 rounded-2xl group-hover:bg-blue-500/15 transition"></div>
+          <i data-lucide="cpu" class="w-8 h-8 text-blue-400 mb-2 group-hover:scale-110 transition-transform"></i>
+          <span id="tab0-btn" class="font-bold text-[11px] text-white tracking-wider">IMPULS SENDEN</span>
+          <span id="click-power-text" class="text-[10px] font-mono text-slate-400 mt-1">+€0.01 / Klick</span>
         </button>
 
-        <div class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 mt-3 flex justify-between items-center">
+        <div class="w-full bg-[#0f172a]/80 border border-blue-500/20 rounded-xl p-3.5 mt-4 flex justify-between items-center text-left relative z-10 backdrop-blur-md">
           <div>
-            <div class="font-cyber font-bold text-xs text-slate-200">Klick-Booster (Level <span id="click-upgrade-level">0</span>)</div>
-            <div class="text-[10px] text-cyan-400 font-mono">+€0.01 Klick-Power</div>
+            <div class="font-bold text-xs text-white"><span id="tab0-booster">Quanten-Prozessor</span> (Lvl <span id="click-upgrade-level">0</span>)</div>
+            <div class="text-[10px] text-slate-400 font-mono mt-0.5">+€0.01 Klick-Leistung</div>
           </div>
-          <button onclick="buyClickUpgrade()" id="btn-buy-click-upg" class="px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-cyber text-xs rounded-lg font-bold transition">
-            Kaufen (<span id="click-upgrade-cost">€0.50</span>)
+          <button onclick="buyClickUpgrade()" id="btn-buy-click-upg" class="px-3.5 py-2 holo-btn text-xs rounded-lg font-semibold">
+            <span id="tab0-buy">Kaufen</span> (<span id="click-upgrade-cost">€0.50</span>)
           </button>
         </div>
 
-        <div class="w-full mt-4">
-          <div class="flex justify-between text-xs mb-1">
-            <span class="text-slate-400">Level <span id="player-level-text" class="text-cyan-400 font-bold">1</span></span>
-            <span id="exp-text" class="text-cyan-400 font-mono">0 / 200 EXP</span>
+        <div class="w-full mt-5 text-left relative z-10">
+          <div class="flex justify-between text-xs mb-1.5 font-mono">
+            <span class="text-slate-400">Empire Rang <span id="player-level-text" class="text-white font-bold">1</span> (Belohnung: iCash)</span>
+            <span id="exp-text" class="text-blue-400">0 / 200 EXP</span>
           </div>
-          <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
-            <div id="exp-bar" class="h-full bg-gradient-to-r from-cyan-500 to-fuchsia-500 transition-all duration-200" style="width: 0%"></div>
+          <div class="w-full h-2 bg-[#0f172a] rounded-full overflow-hidden border border-blue-500/20">
+            <div id="exp-bar" class="h-full bg-blue-500 rounded-full transition-all duration-300 shadow-[0_0_10px_#3b82f6]" style="width: 0%"></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- TAB 1: ABTEILUNGEN -->
-    <div id="tab-depts" class="tab-panel space-y-4 hidden">
+    <!-- TAB 0.5: iCash Cyber-Zentrale -->
+    <div id="tab-icash" class="tab-panel space-y-3 hidden">
+      <div class="holo-card p-4 bg-gradient-to-r from-purple-950/40 via-[#0b101d] to-[#0b101d] border-purple-500/30">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <i data-lucide="gem" class="w-4 h-4 text-purple-400"></i> iCash Cyber-Zentrale (Permanente Boni)
+        </h3>
+        <p class="text-xs text-slate-400 mt-1">Steige im Level auf oder gewinne iCash im Black-Ops Minispiel, um hier mächtige permanente Boni freizuschalten!</p>
+      </div>
+      <div id="list-icash-features" class="space-y-3"></div>
+    </div>
+
+    <!-- TAB 1: SEKTOREN -->
+    <div id="tab-depts" class="tab-panel space-y-3 hidden">
       <div id="list-depts" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 2: FORSCHUNGEN -->
-    <div id="tab-upgrades" class="tab-panel space-y-4 hidden">
+    <!-- TAB 2: FORSCHUNG -->
+    <div id="tab-upgrades" class="tab-panel space-y-3 hidden">
       <div id="list-upgrades" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 3: BÖRSE & KRYPTO -->
-    <div id="tab-market" class="tab-panel space-y-4 hidden">
-      <div class="flex justify-between items-center">
+    <!-- TAB 3: BÖRSE & MINING -->
+    <div id="tab-market" class="tab-panel space-y-3 hidden">
+      <div class="flex justify-between items-center mb-1">
         <div>
-          <h3 class="font-cyber font-bold text-lg text-slate-100">3. Börse & Krypto Mining</h3>
-          <p class="text-xs text-slate-400">Handle Aktien und schürfe Krypto-Coins stündlich.</p>
+          <h3 class="font-bold text-sm text-white">3. Börse & Mining Charts</h3>
+          <p class="text-xs text-slate-400">Echtzeit-Kerzencharts, Krypto-Mining & Cluster.</p>
         </div>
-        <div class="text-right text-xs text-cyan-400 font-mono" id="mining-timer-display">Nächster Drop in: 60:00</div>
+        <div class="text-xs text-blue-400 font-mono bg-[#0f172a] px-2.5 py-1 rounded-lg border border-blue-500/20 shadow-lg" id="mining-timer-display">Drop: 60:00</div>
       </div>
       <div id="list-market" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 4: HARDWARE LAB -->
-    <div id="tab-lab" class="tab-panel space-y-4 hidden">
+    <!-- TAB 4: LAB -->
+    <div id="tab-lab" class="tab-panel space-y-3 hidden">
       <div id="list-lab" class="space-y-3"></div>
     </div>
 
     <!-- TAB 5: PERSONAL -->
-    <div id="tab-staff" class="tab-panel space-y-4 hidden">
+    <div id="tab-staff" class="tab-panel space-y-3 hidden">
       <div id="list-staff" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 6: CYBER HACK -->
+    <!-- TAB 6: HACK & BLACK OPS -->
     <div id="tab-hack" class="tab-panel space-y-4 hidden">
       <div>
-        <h3 class="font-cyber font-bold text-lg text-slate-100">6. Cyber Security Operations</h3>
-        <p class="text-xs text-slate-400">Jeder Hack ist nur 1x pro Tag möglich. Beute wird nach Ablauf des Timers ausgezahlt.</p>
+        <h3 class="font-bold text-sm text-white">6. Black-Ops Infiltration & Mini-Hack</h3>
+        <p class="text-xs text-slate-400">Schnellere Infiltrationen und das interaktive Terminal-Hacken für iCash!</p>
       </div>
+
+      <!-- INTERAKTIVES MINispiel: HACKER-TERMINAL -->
+      <div class="holo-card p-4 border-purple-500/40 bg-gradient-to-b from-purple-950/20 to-[#0b101d]">
+        <div class="flex justify-between items-center mb-2">
+          <span class="font-mono text-xs font-bold text-purple-400 flex items-center gap-1">
+            <i data-lucide="terminal" class="w-4 h-4"></i> CYBER-NODE BYPASS (Mini-Hack)
+          </span>
+          <span class="text-[10px] font-mono text-slate-400">Ziel: Korrekten Code finden</span>
+        </div>
+        <p class="text-xs text-slate-300 mb-3" id="hack-game-instruction">Wähle den richtigen Node, um den Firewall-Schutz zu durchbrechen und 💎 +2 iCash + €10.00 abzustauben!</p>
+        <div id="hack-game-nodes" class="grid grid-cols-3 gap-2 mb-2"></div>
+        <div id="hack-game-status" class="text-xs font-mono text-blue-400 text-center h-5 mt-2"></div>
+      </div>
+
       <div id="list-hack" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 7: HAUPTQUARTIER -->
-    <div id="tab-hq" class="tab-panel space-y-4 hidden">
+    <!-- TAB 7: HQ -->
+    <div id="tab-hq" class="tab-panel space-y-3 hidden">
       <div id="list-hq" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 8: CLOUD SAVE & LEADERBOARD -->
+    <!-- TAB 8: ORBITAL DROHNEN -->
+    <div id="tab-orbit" class="tab-panel space-y-3 hidden">
+      <div>
+        <h3 class="font-bold text-sm text-white">8. Orbital-Drohnen & Satelliten</h3>
+        <p class="text-xs text-slate-400">Positioniere High-Tech-Flotten im Orbit für globale Boni.</p>
+      </div>
+      <div id="list-orbit" class="space-y-3"></div>
+    </div>
+
+    <!-- TAB 9: CLOUD & LEADERBOARD -->
     <div id="tab-fame" class="tab-panel space-y-4 hidden">
-      <h3 class="font-cyber font-bold text-lg text-fuchsia-400">8. Cloud Save & Bestenliste</h3>
+      <h3 class="font-bold text-sm text-white">9. Cloud-Sync & Weltrangliste</h3>
       
-      <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-3">
-        <div id="firebase-user-status" class="text-xs text-cyan-400 font-mono font-bold">Verbinde mit Firebase...</div>
+      <div class="holo-card p-4 space-y-3">
+        <div id="firebase-user-status" class="text-xs text-blue-400 font-mono font-medium">Verbinde mit Empire Core...</div>
         
         <div id="firebase-auth-forms" class="space-y-2">
-          <input type="text" id="auth-company-name" placeholder="Einmaliger Firmenname" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
-          <input type="email" id="auth-email" placeholder="E-Mail Adresse" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
-          <input type="password" id="auth-password" placeholder="Passwort (min. 6 Zeichen)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+          <input type="text" id="auth-company-name" placeholder="Unternehmensname" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
+          <input type="email" id="auth-email" placeholder="E-Mail" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
+          <input type="password" id="auth-password" placeholder="Passwort (min. 6 Zeichen)" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
           <div class="flex gap-2 pt-1">
-            <button onclick="handleLogin()" class="flex-1 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-cyber text-xs rounded-xl font-bold transition">Login</button>
-            <button onclick="handleRegister()" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 font-cyber text-xs rounded-xl font-bold transition">Registrieren</button>
+            <button onclick="handleLogin()" class="flex-1 py-2 holo-btn text-xs rounded-xl font-semibold">Login</button>
+            <button onclick="handleRegister()" class="flex-1 py-2 bg-[#0f172a] hover:bg-[#1e293b] text-slate-200 border border-blue-500/20 text-xs rounded-xl font-semibold transition">Registrieren</button>
           </div>
         </div>
 
-        <button id="firebase-logout-btn" onclick="handleLogout()" class="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white font-cyber text-xs rounded-xl font-bold transition hidden">Abmelden</button>
-        <button onclick="saveGameToCloudManual()" class="w-full py-2 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-cyber text-xs rounded-xl font-bold transition">Spielstand & Bestenliste speichern</button>
+        <button id="firebase-logout-btn" onclick="handleLogout()" class="w-full py-2 bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-800 text-xs rounded-xl font-semibold transition hidden">Abmelden</button>
+        <button onclick="saveGameToCloudManual()" class="w-full py-2 holo-btn text-xs rounded-xl font-semibold">Cloud-Sync erzwingen</button>
       </div>
 
       <div class="flex justify-between items-center pt-2">
-        <h3 class="font-cyber font-bold text-md text-fuchsia-400">Globale Top-Firmen</h3>
-        <span class="text-[10px] text-slate-400 font-mono">Auto-Sync (alle 6h)</span>
+        <h3 class="font-bold text-xs text-slate-300 uppercase tracking-wider">Globale Rangliste</h3>
+        <span class="text-[10px] text-slate-500 font-mono">Auto-Sync (6h)</span>
       </div>
       <div id="leaderboard-list" class="space-y-2">
-        <div class="text-xs text-slate-500 italic">Lade Bestenliste...</div>
+        <div class="text-xs text-slate-500 italic">Lade Rangliste...</div>
       </div>
     </div>
 
-    <!-- TAB 9: EINSTELLUNGEN & SPRACHE -->
+    <!-- TAB 10: SETTINGS -->
     <div id="tab-settings" class="tab-panel space-y-4 hidden">
-      <h3 class="font-cyber font-bold text-lg text-cyan-400">9. Einstellungen & Sprache</h3>
-      <div id="settings-content-box" class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-3"></div>
+      <h3 class="font-bold text-sm text-white">10. System-Einstellungen</h3>
+      <div id="settings-content-box" class="holo-card p-4 space-y-3"></div>
     </div>
 
   </main>
 
   <script>
+    // --- AUDIO SYNTH & MUSIC CONTROLLER ---
+    let audioCtx = null;
+    function initAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playClickBeep() {
+      try {
+        initAudioContext();
+        if(!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(580, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(220, audioCtx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
+      } catch(e) {}
+    }
+
+    let isMusicPlaying = false;
+    function toggleMusic() {
+      const music = document.getElementById('bg-music');
+      const icon = document.getElementById('music-icon');
+      const label = document.getElementById('music-label');
+      
+      if (!music) return;
+      
+      if (isMusicPlaying) {
+        music.pause();
+        isMusicPlaying = false;
+        icon.setAttribute('data-lucide', 'volume-x');
+        if(label) label.innerText = "MUSIC OFF";
+      } else {
+        music.play().then(() => {
+          isMusicPlaying = true;
+          icon.setAttribute('data-lucide', 'volume-2');
+          if(label) label.innerText = "LIVE STREAM";
+        }).catch(err => {
+          alert("Browser blockiert Autoplay. Bitte erneut klicken.");
+        });
+      }
+      lucide.createIcons();
+    }
+
     // --- GAME STATE ---
     let state = {
+      version: 3, // Versionierung zum Zurücksetzen alter hängender Timers
       companyName: '',
       language: 'de',
       money: 0,
       totalEarned: 0,
+      icash: 0,
       clickPower: 0.01,
       clickUpgLevel: 0,
       clickUpgCost: 0.50,
@@ -351,6 +496,13 @@
       expNeeded: 200,
       miningSecondsLeft: 3600,
       incomeTimerSeconds: 60,
+
+      permaUpgrades: [
+        { id: 'pi1', name: 'Quantum Click Matrix', desc: 'Verdoppelt dauerhaft die Klick-Leistung.', cost: 5, level: 0, maxLevel: 10, mult: 2.0 },
+        { id: 'pi2', name: 'Neural Income Booster', desc: 'Erhöht das gesamte passive Einkommen um +50% pro Stufe.', cost: 10, level: 0, maxLevel: 10, mult: 1.5 },
+        { id: 'pi3', name: 'Auto-Impulse Core', desc: 'Generiert alle 10 Sekunden automatisch 1 Klick-Impuls.', cost: 25, level: 0, maxLevel: 1, mult: 1.0 },
+        { id: 'pi4', name: 'Syndicate iCash Yield', desc: 'Erhöht iCash-Belohnungen bei Level-ups um +2.', cost: 30, level: 0, maxLevel: 5, mult: 1.0 }
+      ],
 
       departments: [
         { id: 'd1', count: 0, baseCost: 1.50, baseIncome: 0.05 },
@@ -383,13 +535,13 @@
       ],
 
       market: [
-        { id: 'm1', type: 'stock', price: 15.00, change: 1.2, owned: 0 },
-        { id: 'm2', type: 'stock', price: 5.00, change: -0.4, owned: 0 },
-        { id: 'm3', type: 'stock', price: 45.00, change: 0.8, owned: 0 },
-        { id: 'm4', type: 'stock', price: 180.00, change: 2.1, owned: 0 },
-        { id: 'm5', type: 'crypto', price: 1200.00, change: 3.5, owned: 0, rigs: 0, rigCost: 500.00 },
-        { id: 'm6', type: 'crypto', price: 150.00, change: -1.1, owned: 0, rigs: 0, rigCost: 80.00 },
-        { id: 'm7', type: 'crypto', price: 12.00, change: 0.2, owned: 0, rigs: 0, rigCost: 20.00 }
+        { id: 'm1', type: 'stock', price: 15.00, change: 1.2, owned: 0, candles: [{o:14, h:15, l:13.8, c:15}, {o:15, h:15.5, l:14.5, c:14.8}, {o:14.8, h:15.2, l:14.6, c:15}] },
+        { id: 'm2', type: 'stock', price: 5.00, change: -0.4, owned: 0, candles: [{o:5.2, h:5.4, l:5.1, c:5.2}, {o:5.2, h:5.3, l:4.9, c:5.0}, {o:5.0, h:5.1, l:4.8, c:5.0}] },
+        { id: 'm3', type: 'stock', price: 45.00, change: 0.8, owned: 0, candles: [{o:43, h:44, l:42.5, c:43.5}, {o:43.5, h:44.2, l:43.1, c:44}, {o:44, h:45.2, l:43.9, c:45}] },
+        { id: 'm4', type: 'stock', price: 180.00, change: 2.1, owned: 0, candles: [{o:170, h:173, l:169, c:172}, {o:172, h:176, l:171, c:175}, {o:175, h:181, l:174, c:180}] },
+        { id: 'm5', type: 'crypto', price: 1200.00, change: 3.5, owned: 0, rigs: 0, rigCost: 500.00, candles: [{o:1150, h:1170, l:1140, c:1160}, {o:1160, h:1190, l:1155, c:1180}, {o:1180, h:1210, l:1175, c:1200}] },
+        { id: 'm6', type: 'crypto', price: 150.00, change: -1.1, owned: 0, rigs: 0, rigCost: 80.00, candles: [{o:155, h:157, l:153, c:154}, {o:154, h:155, l:151, c:152}, {o:152, h:153, l:149, c:150}] },
+        { id: 'm7', type: 'crypto', price: 12.00, change: 0.2, owned: 0, rigs: 0, rigCost: 20.00, candles: [{o:11.8, h:12.1, l:11.7, c:11.9}, {o:11.9, h:12.2, l:11.8, c:12.1}, {o:12.1, h:12.3, l:11.9, c:12.0}] }
       ],
 
       products: [
@@ -409,11 +561,11 @@
       ],
 
       hacks: [
-        { id: 'h1', reward: 0.50, cd: 0, maxCd: 86400 },
-        { id: 'h2', reward: 3.50, cd: 0, maxCd: 86400 },
-        { id: 'h3', reward: 25.00, cd: 0, maxCd: 86400 },
-        { id: 'h4', reward: 150.00, cd: 0, maxCd: 86400 },
-        { id: 'h5', reward: 1000.00, cd: 0, maxCd: 86400 }
+        { id: 'h1', reward: 0.50, cd: 0, maxCd: 5 },
+        { id: 'h2', reward: 3.50, cd: 0, maxCd: 12 },
+        { id: 'h3', reward: 25.00, cd: 0, maxCd: 20 },
+        { id: 'h4', reward: 150.00, cd: 0, maxCd: 30 },
+        { id: 'h5', reward: 1000.00, cd: 0, maxCd: 45 }
       ],
 
       hqs: [
@@ -422,291 +574,138 @@
         { id: 'hq3', cost: 80000.00, mult: 1.35, bought: false },
         { id: 'hq4', cost: 1200000.00, mult: 1.5, bought: false },
         { id: 'hq5', cost: 20000000.00, mult: 1.8, bought: false }
+      ],
+
+      orbitals: [
+        { id: 'o1', count: 0, baseCost: 50000.00, baseIncome: 1500.00 },
+        { id: 'o2', count: 0, baseCost: 750000.00, baseIncome: 18000.00 },
+        { id: 'o3', count: 0, baseCost: 10000000.00, baseIncome: 220000.00 },
+        { id: 'o4', count: 0, baseCost: 150000000.00, baseIncome: 3000000.00 }
       ]
     };
 
-    // --- VOLLSTÄNDIGES MEHRSPRACHIGKEITS-WÖRTERBUCH (DE, EN, FR, ES, IT) ---
+    // --- BILDER & WÖRTERBUCH ---
+    const deptImages = [
+      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=600&q=80"
+    ];
+
+    const upgradeImages = [
+      "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=600&q=80"
+    ];
+
+    const labImages = [
+      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80"
+    ];
+
+    const staffImages = [
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=600&q=80"
+    ];
+
+    const hqImages = [
+      "https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80"
+    ];
+
+    const orbitalImages = [
+      "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?auto=format&fit=crop&w=600&q=80"
+    ];
+
     const translations = {
       de: {
-        season: "Saison Okt 2026",
-        passivLabel: "Passiv / Minute",
-        companyValLabel: "Monats-Firmenwert",
-        activeLabel: "Aktiv",
-        welcome: "⚡ Willkommen zurück! Während deiner Abwesenheit hat dein Imperium",
-        nav: ["0. Dev-Konsole", "1. Abteilungen", "2. Forschungen", "3. Börse & Krypto", "4. Hardware Lab", "5. Personal", "6. Cyber Hack", "7. Hauptquartier", "8. Cloud Save & Bestenliste", "9. Einstellungen & Sprache"],
-        tab0: { title: "0. Dev-Konsole", desc: "Code manuell schreiben, um Startkapital aufzubauen.", btn: "CODE SCHREIBEN", booster: "Klick-Booster", buy: "Kaufen" },
-        tab1: { title: "1. Abteilungen ausbauen", buy: "Kaufen", lvl: "Level" },
-        tab2: { title: "2. Forschungen & Multiplikatoren", bought: "Erforscht" },
-        tab3: { title: "3. Börse & Krypto Mining", desc: "Handle Aktien und schürfe Krypto-Coins stündlich.", timer: "Nächster Drop in:", buy: "Kauf", sell: "Verkauf", rigs: "Rigs (Mincht stündlich)" },
-        tab4: { title: "4. Hardware Launch Lab", launched: "Gelauncht", launchBtn: "Launchen" },
-        tab5: { title: "5. Spezialisten & Personal", hired: "Angestellt", hireBtn: "Einstellen" },
-        tab6: { title: "6. Cyber Security Operations", desc: "Jeder Hack ist nur 1x pro Tag möglich. Beute wird nach Ablauf des Timers ausgezahlt.", reward: "Beute nach Timer:", hackBtn: "HACKEN (1x/Tag)" },
-        tab7: { title: "7. Hauptquartier Expansion", current: "Aktuell" },
-        tab8: { title: "8. Cloud Save & Bestenliste", email: "E-Mail Adresse", pass: "Passwort (min. 6 Zeichen)", comp: "Einmaliger Firmenname", login: "Login", reg: "Registrieren", logout: "Abmelden", saveBtn: "Spielstand & Bestenliste speichern", top: "Globale Top-Firmen", sync: "Auto-Sync (alle 6h)", empty: "Noch keine Einträge in der Bestenliste.", loading: "Lade Bestenliste..." },
-        tab9: { title: "9. Einstellungen & Sprache", select: "Sprache wählen / Select Language" },
-        
+        season: "HOLO EDITION 2026",
+        passivLabel: "Passiv / Min",
+        companyValLabel: "Gesamt-Assets",
+        nav: ["0. Core Terminal", "0.5. iCash Cyber-Zentrale", "1. Megastrukturen", "2. Quanten-Forschung", "3. Börse & Mining Charts", "4. Advanced Lab", "5. Experten", "6. Black-Ops & Mini-Hack", "7. HQ", "8. Satelliten", "9. Cloud & Rangliste", "10. Einstellungen"],
         departments: [
-          { name: "Mamas Garage Studio" }, { name: "Freelance Coder Squad" }, { name: "Darknet Server Node" },
-          { name: "Web3 & Crypto Lab" }, { name: "Indie Game Studio" }, { name: "AI Chatbot Cluster" },
-          { name: "SaaS Enterprise Engine" }, { name: "Cybernetic Bio-Augmenter" }, { name: "Quantum Cloud Grid" },
-          { name: "Autonomous Mech Factory" }, { name: "Neural Link Implant Corp" }, { name: "Sub-Orbital Satellite Net" },
-          { name: "Fusion Energy Generator" }, { name: "Deep Space Mining Rig" }, { name: "Planetary AI Hivemind" }
+          { name: "Alpha Cyber-Grid" }, { name: "Nano-Assembler Plant" }, { name: "Quantum Node Array" },
+          { name: "Synthetic Bio-Lab" }, { name: "Neural Matrix Hub" }, { name: "Holographic Forge" },
+          { name: "Orbital Ion Engine" }, { name: "Dark Matter Reactor" }, { name: "Singularity Core" },
+          { name: "Autonomous Mech Unit" }, { name: "Deep Neural Link" }, { name: "Interstellar Relay" },
+          { name: "Dyson Swarm Node" }, { name: "Asteroid Mining Fleet" }, { name: "Omniscient Hivemind" }
         ],
         upgrades: [
-          { name: "Mechanische RGB-Tastatur", desc: "Verdoppelt Klick-Power." }, { name: "Ergonomischer Titan-Stuhl", desc: "+25% Passiv-Einkommen." },
-          { name: "Giga-Koffein Infusion", desc: "Verdoppelt Klick-Power." }, { name: "Glasfaser Gigabit-Standleitung", desc: "+30% Passiv-Einkommen." },
-          { name: "AI Auto-Code Autopilot", desc: "Starke Klick-Steigerung." }, { name: "Cloud Cluster CI/CD Pipeline", desc: "+35% Passiv-Einkommen." },
-          { name: "Quantum Compiler V8", desc: "Erweiterte Klick-Power." }, { name: "Neural Sync Headset Mod", desc: "+40% Passiv-Einkommen." },
-          { name: "Darknet Algorithmus Matrix", desc: "+50% Passiv-Einkommen." }
+          { name: "Photon Synapse Keyboard", desc: "Verdoppelt Klick-Power." }, { name: "Ergonomischer Exec-Sessel", desc: "+25% Gesamt-Einkommen." },
+          { name: "Quantum-Core Infusion", desc: "Verdoppelt Klick-Power." }, { name: "Tachyon Backbone", desc: "+30% Einkommen." },
+          { name: "Synaptischer Autopilot", desc: "Massiver Klick-Boost." }, { name: "Hyper-Pipeline CI/CD", desc: "+35% Ertrag." },
+          { name: "Compiler V9.9 Quantum", desc: "Erweiterte Klick-Power." }, { name: "Neural Global Link", desc: "+40% Netzwerkeinnahmen." },
+          { name: "Singularitäts Algorithmus", desc: "+50% Imperium-Einkommen." }
         ],
         market: [
-          { name: "NVIDIA Cyber-Tech" }, { name: "CyberCorp Inc." }, { name: "BioGenetics Corp" }, { name: "RoboDynamics Ltd" },
-          { name: "CyberCoin (CBC)" }, { name: "ByteToken (BYT)" }, { name: "Void Coin (VOID)" }
+          { name: "AeroSpace Vanguard" }, { name: "QuantumSyndicate" }, { name: "BioHelix Global" }, { name: "CyberDrive Systems" },
+          { name: "QuantumCoin (QTC)" }, { name: "DarkMatter Token (DRK)" }, { name: "VoidShard (VOID)" }
         ],
         products: [
-          { name: "CyberPhone Alpha", desc: "+10% Hype." }, { name: "Neural VR Visor", desc: "+15% Hype." },
-          { name: "Smart CyberGlasses AR", desc: "+20% Hype." }, { name: "Autonomous Security Drone", desc: "+25% Hype." },
-          { name: "Cyber Mech-Dog Patrol", desc: "+30% Hype." }
+          { name: "Quantum Neural Phone X", desc: "+10% weltweiter Hype." }, { name: "Neural Immersion Visor", desc: "+15% Hype-Faktor." },
+          { name: "Holographic AR Lenses", desc: "+20% Marktanteil." }, { name: "Autonomous Defense Drone", desc: "+25% Corporation-Wert." },
+          { name: "Cyber-Sentinel Hound", desc: "+30% Dominanz." }
         ],
         staff: [
-          { name: "Junior Coder", bonus: "+€0.01 Klick-Power" }, { name: "Senior Fullstack Dev", bonus: "+1% Passiv-Einkommen" },
-          { name: "AI Prompt Engineer", bonus: "+1.5% Passiv-Einkommen" }, { name: "Cyber Security Officer", bonus: "+2% Passiv-Einkommen" },
-          { name: "Growth Hacking Lead", bonus: "+2.5% Passiv-Einkommen" }
+          { name: "Elite Netrunner", bonus: "+€0.01 Klick-Power" }, { name: "Lead Code Architect", bonus: "+1% Einkommen" },
+          { name: "AI Prompt Specialist", bonus: "+1.5% Einkommen" }, { name: "Cyber Security Watchdog", bonus: "+2% Einkommen" },
+          { name: "Venture Growth Lead", bonus: "+2.5% Einkommen" }
         ],
         hacks: [
-          { name: "Kebab-Bistro Wifi" }, { name: "Stadtsparkassen Server" }, { name: "Offshore Crypto Pool" },
-          { name: "Rivalisierendes Tech-Startup" }, { name: "Polizeipräsidium Mainframe" }
+          { name: "Sub-Network Node Breach" }, { name: "Offshore Central Bank" }, { name: "Global Darkpool Raid" },
+          { name: "Rival Mega-Corp Vault" }, { name: "Defense Ministry Terminal" }
         ],
         hqs: [
-          { name: "Mamas Garage", desc: "Staubiger Raum, kostenlos." }, { name: "Open Space Startup Loft", desc: "+20% Gesamtertrag." },
-          { name: "Tech Park Campus Building", desc: "1.35x Gesamtertrag." }, { name: "Cyber Skyscraper Tower", desc: "1.5x Gesamtertrag." },
-          { name: "Underground Bunkernet Facility", desc: "1.8x Gesamtertrag." }
+          { name: "Orbital Research Pod", desc: "Kompakte Raumstation, kostenlos." }, { name: "Silicon Valley Loft", desc: "+20% gesamter Ertrag." },
+          { name: "Autonomous Tech Campus", desc: "1.35x Multiplikator." }, { name: "Skyline Mega-Monolith", desc: "1.5x Multiplikator." },
+          { name: "Quantum Orbital Citadel", desc: "1.8x ultimativer Imperium-Boost." }
+        ],
+        orbitals: [
+          { name: "Comms Sat-Alpha", desc: "Erster Satellit im erdnahen Orbit." },
+          { name: "Solar Relay Node", desc: "Bündelt Sonnenenergie für passive Injektionen." },
+          { name: "Defense Drone Platform", desc: "Autonome Schutzschicht im All." },
+          { name: "Deep Space Array", desc: "Intergalaktischer Daten-Relay." }
         ]
       },
       en: {
-        season: "Season Oct 2026",
-        passivLabel: "Passive / Minute",
-        companyValLabel: "Monthly Company Value",
-        activeLabel: "Active",
-        welcome: "⚡ Welcome back! During your absence, your empire generated",
-        nav: ["0. Dev Console", "1. Departments", "2. Research", "3. Market & Crypto", "4. Hardware Lab", "5. Staff", "6. Cyber Hack", "7. Headquarters", "8. Cloud Save & Leaderboard", "9. Settings & Language"],
-        tab0: { title: "0. Dev Console", desc: "Write code manually to build initial capital.", btn: "WRITE CODE", booster: "Click Booster", buy: "Buy" },
-        tab1: { title: "1. Upgrade Departments", buy: "Buy", lvl: "Level" },
-        tab2: { title: "2. Research & Multipliers", bought: "Researched" },
-        tab3: { title: "3. Market & Crypto Mining", desc: "Trade stocks and mine crypto coins hourly.", timer: "Next drop in:", buy: "Buy", sell: "Sell", rigs: "Rigs (Mining hourly)" },
-        tab4: { title: "4. Hardware Launch Lab", launched: "Launched", launchBtn: "Launch" },
-        tab5: { title: "5. Specialists & Staff", hired: "Hired", hireBtn: "Hire" },
-        tab6: { title: "6. Cyber Security Operations", desc: "Each hack is available once per day. Loot is paid out after the timer expires.", reward: "Loot after timer:", hackBtn: "HACK (1x/Day)" },
-        tab7: { title: "7. Headquarters Expansion", current: "Current" },
-        tab8: { title: "8. Cloud Save & Leaderboard", email: "Email Address", pass: "Password (min. 6 chars)", comp: "Unique Company Name", login: "Login", reg: "Register", logout: "Logout", saveBtn: "Save Game & Leaderboard", top: "Global Top Companies", sync: "Auto-Sync (every 6h)", empty: "No entries in leaderboard yet.", loading: "Loading leaderboard..." },
-        tab9: { title: "9. Settings & Language", select: "Select Language" },
-
-        departments: [
-          { name: "Mom's Garage Studio" }, { name: "Freelance Coder Squad" }, { name: "Darknet Server Node" },
-          { name: "Web3 & Crypto Lab" }, { name: "Indie Game Studio" }, { name: "AI Chatbot Cluster" },
-          { name: "SaaS Enterprise Engine" }, { name: "Cybernetic Bio-Augmenter" }, { name: "Quantum Cloud Grid" },
-          { name: "Autonomous Mech Factory" }, { name: "Neural Link Implant Corp" }, { name: "Sub-Orbital Satellite Net" },
-          { name: "Fusion Energy Generator" }, { name: "Deep Space Mining Rig" }, { name: "Planetary AI Hivemind" }
-        ],
-        upgrades: [
-          { name: "Mechanical RGB Keyboard", desc: "Doubles click power." }, { name: "Ergonomic Titanium Chair", desc: "+25% passive income." },
-          { name: "Giga-Caffeine Infusion", desc: "Doubles click power." }, { name: "Fiber Optic Gigabit Line", desc: "+30% passive income." },
-          { name: "AI Auto-Code Autopilot", desc: "Strong click boost." }, { name: "Cloud Cluster CI/CD Pipeline", desc: "+35% passive income." },
-          { name: "Quantum Compiler V8", desc: "Advanced click power." }, { name: "Neural Sync Headset Mod", desc: "+40% passive income." },
-          { name: "Darknet Algorithm Matrix", desc: "+50% passive income." }
-        ],
-        market: [
-          { name: "NVIDIA Cyber-Tech" }, { name: "CyberCorp Inc." }, { name: "BioGenetics Corp" }, { name: "RoboDynamics Ltd" },
-          { name: "CyberCoin (CBC)" }, { name: "ByteToken (BYT)" }, { name: "Void Coin (VOID)" }
-        ],
-        products: [
-          { name: "CyberPhone Alpha", desc: "+10% Hype." }, { name: "Neural VR Visor", desc: "+15% Hype." },
-          { name: "Smart CyberGlasses AR", desc: "+20% Hype." }, { name: "Autonomous Security Drone", desc: "+25% Hype." },
-          { name: "Cyber Mech-Dog Patrol", desc: "+30% Hype." }
-        ],
-        staff: [
-          { name: "Junior Coder", bonus: "+€0.01 Click Power" }, { name: "Senior Fullstack Dev", bonus: "+1% Passive Income" },
-          { name: "AI Prompt Engineer", bonus: "+1.5% Passive Income" }, { name: "Cyber Security Officer", bonus: "+2% Passive Income" },
-          { name: "Growth Hacking Lead", bonus: "+2.5% Passive Income" }
-        ],
-        hacks: [
-          { name: "Kebab Bistro Wifi" }, { name: "City Savings Bank Server" }, { name: "Offshore Crypto Pool" },
-          { name: "Rival Tech Startup" }, { name: "Police HQ Mainframe" }
-        ],
-        hqs: [
-          { name: "Mom's Garage", desc: "Dusty room, free." }, { name: "Open Space Startup Loft", desc: "+20% total earnings." },
-          { name: "Tech Park Campus Building", desc: "1.35x total earnings." }, { name: "Cyber Skyscraper Tower", desc: "1.5x total earnings." },
-          { name: "Underground Bunkernet Facility", desc: "1.8x total earnings." }
-        ]
+        season: "HOLO EDITION 2026",
+        passivLabel: "Passive / Min",
+        companyValLabel: "Total Assets",
+        nav: ["0. Core Terminal", "0.5. iCash Cyber-Vault", "1. Megastructures", "2. Quantum Research", "3. Market & Mining", "4. Advanced Lab", "5. Executive Crew", "6. Black-Ops & Hack", "7. Headquarters", "8. Orbital Drones", "9. Cloud & Leaderboard", "10. Settings"],
+        departments: [], upgrades: [], market: [], products: [], staff: [], hacks: [], hqs: [], orbitals: []
       },
-      fr: {
-        season: "Saison Oct 2026",
-        passivLabel: "Passif / Minute",
-        companyValLabel: "Valeur de l'entreprise",
-        activeLabel: "Actif",
-        welcome: "⚡ Bon retour ! Pendant votre absence, votre empire a généré",
-        nav: ["0. Console Dev", "1. Départements", "2. Recherches", "3. Marché & Crypto", "4. Labo Hardware", "5. Personnel", "6. Cyber Hack", "7. Quartier Général", "8. Sauvegarde Cloud & Classement", "9. Paramètres & Langue"],
-        tab0: { title: "0. Console Dev", desc: "Écrivez du code manuellement pour accumuler du capital.", btn: "ÉCRIRE CODE", booster: "Booster de clic", buy: "Acheter" },
-        tab1: { title: "1. Développer les départements", buy: "Acheter", lvl: "Niveau" },
-        tab2: { title: "2. Recherches & Multiplicateurs", bought: "Recherché" },
-        tab3: { title: "3. Marché & Crypto Mining", desc: "Tradez des actions et minez des cryptos toutes les heures.", timer: "Prochain drop dans :", buy: "Achat", sell: "Vente", rigs: "Rigs (Minage horaire)" },
-        tab4: { title: "4. Labo Hardware", launched: "Lancé", launchBtn: "Lancer" },
-        tab5: { title: "5. Personnel & Spécialistes", hired: "Embauché", hireBtn: "Embaucher" },
-        tab6: { title: "6. Cyber Security Operations", desc: "Chaque hack n'est dispo qu'1x par jour. Récompense après le timer.", reward: "Butin après timer :", hackBtn: "PIRATER (1x/Jour)" },
-        tab7: { title: "7. Expansion du QG", current: "Actuel" },
-        tab8: { title: "8. Sauvegarde Cloud & Classement", email: "Adresse e-mail", pass: "Mot de passe (min. 6 car.)", comp: "Nom d'entreprise unique", login: "Connexion", reg: "S'inscrire", logout: "Déconnexion", saveBtn: "Sauvegarder & Classement", top: "Top Entreprises Globales", sync: "Auto-Sync (toutes les 6h)", empty: "Aucun classement pour l'instant.", loading: "Chargement du classement..." },
-        tab9: { title: "9. Paramètres & Langue", select: "Choisir la langue" },
-
-        departments: [
-          { name: "Studio Garage de Maman" }, { name: "Équipe Codeurs Freelance" }, { name: "Nœud Serveur Darknet" },
-          { name: "Labo Web3 & Crypto" }, { name: "Studio de Jeux Indé" }, { name: "Cluster Chatbot IA" },
-          { name: "Moteur SaaS Entreprise" }, { name: "Bio-Augmenteur Cybernétique" }, { name: "Grille Cloud Quantique" },
-          { name: "Usine Mecha Autonome" }, { name: "Corp d'Implants Neural Link" }, { name: "Réseau Satellite Sub-Orbital" },
-          { name: "Générateur d'Énergie Fusion" }, { name: "Plateforme Minage Deep Space" }, { name: "Hivemind IA Planétaire" }
-        ],
-        upgrades: [
-          { name: "Clavier RGB Mécanique", desc: "Double la puissance de clic." }, { name: "Chaise Titane Ergonomique", desc: "+25% revenu passif." },
-          { name: "Perfusion Giga-Caféine", desc: "Double la puissance de clic." }, { name: "Ligne Fibre Optique Gigabit", desc: "+30% revenu passif." },
-          { name: "Autopilot IA Auto-Code", desc: "Gros boost de clic." }, { name: "Pipeline CI/CD Cloud Cluster", desc: "+35% revenu passif." },
-          { name: "Compilateur Quantique V8", desc: "Puissance de clic avancée." }, { name: "Mod Casque Neural Sync", desc: "+40% revenu passif." },
-          { name: "Matrice d'Algorithme Darknet", desc: "+50% revenu passif." }
-        ],
-        market: [
-          { name: "NVIDIA Cyber-Tech" }, { name: "CyberCorp Inc." }, { name: "BioGenetics Corp" }, { name: "RoboDynamics Ltd" },
-          { name: "CyberCoin (CBC)" }, { name: "ByteToken (BYT)" }, { name: "Void Coin (VOID)" }
-        ],
-        products: [
-          { name: "CyberPhone Alpha", desc: "+10% Hype." }, { name: "Neural VR Visor", desc: "+15% Hype." },
-          { name: "Smart CyberGlasses AR", desc: "+20% Hype." }, { name: "Autonomous Security Drone", desc: "+25% Hype." },
-          { name: "Cyber Mech-Dog Patrol", desc: "+30% Hype." }
-        ],
-        staff: [
-          { name: "Codeur Junior", bonus: "+€0.01 Puissance Clic" }, { name: "Dév Fullstack Senior", bonus: "+1% Revenu Passif" },
-          { name: "Ingénieur Prompt IA", bonus: "+1.5% Revenu Passif" }, { name: "Officier Cyber Sécurité", bonus: "+2% Revenu Passif" },
-          { name: "Lead Growth Hacking", bonus: "+2.5% Revenu Passif" }
-        ],
-        hacks: [
-          { name: "Wifi Bistro Kebab" }, { name: "Serveur Caisse d'Épargne" }, { name: "Pool Crypto Offshore" },
-          { name: "Startup Tech Rival" }, { name: "Mainframe Poste de Police" }
-        ],
-        hqs: [
-          { name: "Garage de Maman", desc: "Pièce poussiéreuse, gratuit." }, { name: "Loft Startup Open Space", desc: "+20% gain total." },
-          { name: "Immeuble Campus Tech Park", desc: "1.35x gain total." }, { name: "Tour Gratte-Ciel Cyber", desc: "1.5x gain total." },
-          { name: "Installation Bunkernet Souterraine", desc: "1.8x gain total." }
-        ]
-      },
-      es: {
-        season: "Temporada Oct 2026",
-        passivLabel: "Pasivo / Minuto",
-        companyValLabel: "Valor de la empresa",
-        activeLabel: "Activo",
-        welcome: "⚡ ¡Bienvenido de nuevo! Durante tu ausencia, tu imperio generó",
-        nav: ["0. Consola Dev", "1. Departamentos", "2. Investigaciones", "3. Mercado y Cripto", "4. Lab Hardware", "5. Personal", "6. Cyber Hack", "7. Sede Central", "8. Guardar Nube & Ranking", "9. Ajustes & Idioma"],
-        tab0: { title: "0. Consola Dev", desc: "Escribe código manualmente para conseguir capital inicial.", btn: "ESCRIBIR CÓDIGO", booster: "Booster de Clic", buy: "Comprar" },
-        tab1: { title: "1. Ampliar Departamentos", buy: "Comprar", lvl: "Nivel" },
-        tab2: { title: "2. Investigaciones y Multiplicadores", bought: "Investigado" },
-        tab3: { title: "3. Mercado y Cripto Mining", desc: "Opera en bolsa y mina criptomonedas cada hora.", timer: "Próximo drop en:", buy: "Compra", sell: "Venta", rigs: "Rigs (Minado por hora)" },
-        tab4: { title: "4. Lab Hardware", launched: "Lanzado", launchBtn: "Lanzar" },
-        tab5: { title: "5. Personal y Especialistas", hired: "Contratado", hireBtn: "Contratar" },
-        tab6: { title: "6. Cyber Security Operations", desc: "Cada hack es 1x al día. La recompensa se entrega al finalizar el temporizador.", reward: "Botín tras temporizador:", hackBtn: "HACKEAR (1x/Día)" },
-        tab7: { title: "7. Expansión de la Sede Central", current: "Actual" },
-        tab8: { title: "8. Guardar Nube & Ranking", email: "Correo electrónico", pass: "Contraseña (mín. 6 car.)", comp: "Nombre de empresa único", login: "Iniciar sesión", reg: "Registrarse", logout: "Cerrar sesión", saveBtn: "Guardar Partida y Ranking", top: "Top Empresas Globales", sync: "Auto-Sync (cada 6h)", empty: "Aún no hay registros en el ranking.", loading: "Cargando ranking..." },
-        tab9: { title: "9. Ajustes & Idioma", select: "Elige idioma" },
-
-        departments: [
-          { name: "Estudio Garage de Mamá" }, { name: "Escuadrón Coder Freelance" }, { name: "Nodo Servidor Darknet" },
-          { name: "Lab Web3 & Crypto" }, { name: "Estudio de Juegos Indie" }, { name: "Clúster Chatbot IA" },
-          { name: "Motor SaaS Enterprise" }, { name: "Bio-Augmenter Cibernético" }, { name: "Red Cloud Cuántica" },
-          { name: "Fábrica Mecha Autónoma" }, { name: "Corp Implantes Neural Link" }, { name: "Red Satelital Suborbital" },
-          { name: "Generador de Energía de Fusión" }, { name: "Plataforma Minería Deep Space" }, { name: "Hivemind IA Planetaria" }
-        ],
-        upgrades: [
-          { name: "Teclado Mecánico RGB", desc: "Duplica el poder de clic." }, { name: "Silla de Titanio Ergónomica", desc: "+25% ingresos pasivos." },
-          { name: "Infusión de Giga-Cafeína", desc: "Duplica el poder de clic." }, { name: "Línea de Fibra Óptica Gigabit", desc: "+30% ingresos pasivos." },
-          { name: "Autopilot IA Auto-Code", desc: "Gran impulso de clic." }, { name: "Pipeline CI/CD Cloud Cluster", desc: "+35% ingresos pasivos." },
-          { name: "Compilador Cuántico V8", desc: "Poder de clic avanzado." }, { name: "Mod Casco Neural Sync", desc: "+40% ingresos pasivos." },
-          { name: "Matriz Algoritmo Darknet", desc: "+50% ingresos pasivos." }
-        ],
-        market: [
-          { name: "NVIDIA Cyber-Tech" }, { name: "CyberCorp Inc." }, { name: "BioGenetics Corp" }, { name: "RoboDynamics Ltd" },
-          { name: "CyberCoin (CBC)" }, { name: "ByteToken (BYT)" }, { name: "Void Coin (VOID)" }
-        ],
-        products: [
-          { name: "CyberPhone Alpha", desc: "+10% Hype." }, { name: "Neural VR Visor", desc: "+15% Hype." },
-          { name: "Smart CyberGlasses AR", desc: "+20% Hype." }, { name: "Autonomous Security Drone", desc: "+25% Hype." },
-          { name: "Cyber Mech-Dog Patrol", desc: "+30% Hype." }
-        ],
-        staff: [
-          { name: "Coder Junior", bonus: "+€0.01 Poder de Clic" }, { name: "Dev Fullstack Senior", bonus: "+1% Ingresos Pasivos" },
-          { name: "Ingeniero Prompt IA", bonus: "+1.5% Ingresos Pasivos" }, { name: "Oficial Ciberseguridad", bonus: "+2% Ingresos Pasivos" },
-          { name: "Líder Growth Hacking", bonus: "+2.5% Ingresos Pasivos" }
-        ],
-        hacks: [
-          { name: "Wifi Kebab Bistro" }, { name: "Servidor Caja de Ahorros" }, { name: "Pool Cripto Offshore" },
-          { name: "Startup Tech Rival" }, { name: "Mainframe Comisaría de Policía" }
-        ],
-        hqs: [
-          { name: "Garage de Mamá", desc: "Habitación polvorienta, gratis." }, { name: "Loft Startup Open Space", desc: "+20% ganancias totales." },
-          { name: "Edificio Campus Tech Park", desc: "1.35x ganancias totales." }, { name: "Torre Rascacielos Cyber", desc: "1.5x ganancias totales." },
-          { name: "Instalación Bunkernet Subterránea", desc: "1.8x ganancias totales." }
-        ]
-      },
-      it: {
-        season: "Stagione Ott 2026",
-        passivLabel: "Passivo / Minuto",
-        companyValLabel: "Valore aziendale",
-        activeLabel: "Attivo",
-        welcome: "⚡ Bentornato! Durante la tua assenza, il tuo impero ha generato",
-        nav: ["0. Console Dev", "1. Dipartimenti", "2. Ricerche", "3. Mercato e Crypto", "4. Lab Hardware", "5. Personale", "6. Cyber Hack", "7. Quartier Generale", "8. Salvataggio Cloud & Classifica", "9. Impostazioni & Lingua"],
-        tab0: { title: "0. Console Dev", desc: "Scrivi codice manualmente per accumulare capitale.", btn: "SCRIVI CODICE", booster: "Booster Clic", buy: "Compra" },
-        tab1: { title: "1. Espandi Dipartimenti", buy: "Compra", lvl: "Livello" },
-        tab2: { title: "2. Ricerche & Moltiplicatori", bought: "Ricercato" },
-        tab3: { title: "3. Mercato e Crypto", desc: "Fai trading di azioni e scava crypto ogni ora.", timer: "Prossimo drop tra:", buy: "Compra", sell: "Vendi", rigs: "Rigs (Mining orario)" },
-        tab4: { title: "4. Lab Hardware", launched: "Lanciato", launchBtn: "Lancia" },
-        tab5: { title: "5. Personale & Specialisti", hired: "Assunto", hireBtn: "Assumi" },
-        tab6: { title: "6. Cyber Security Operations", desc: "Ogni hack è disponibile 1 volta al giorno. Il bottone eroga i fondi allo scadere.", reward: "Ricompensa dopo timer:", hackBtn: "HACKERKA (1x/Giorno)" },
-        tab7: { title: "7. Espansione Quartier Generale", current: "Attuale" },
-        tab8: { title: "8. Salvataggio Cloud & Classifica", email: "Indirizzo e-mail", pass: "Password (min. 6 caratteri)", comp: "Nome azienda unico", login: "Login", reg: "Registrati", logout: "Esci", saveBtn: "Salva Gioco & Classifica", top: "Top Aziende Globali", sync: "Auto-Sync (ogni 6h)", empty: "Nessun record nella classifica.", loading: "Caricamento classifica..." },
-        tab9: { title: "9. Impostazioni & Lingua", select: "Scegli lingua" },
-
-        departments: [
-          { name: "Studio Garage di Mamma" }, { name: "Squadra Coder Freelance" }, { name: "Nodo Server Darknet" },
-          { name: "Lab Web3 & Crypto" }, { name: "Studio di Videogiochi Indie" }, { name: "Cluster Chatbot IA" },
-          { name: "Motore SaaS Enterprise" }, { name: "Bio-Augmenter Cibernetico" }, { name: "Griglia Cloud Quantica" },
-          { name: "Fabbrica Mecha Autonoma" }, { name: "Corp Impianti Neural Link" }, { name: "Rete Satellitare Suborbitale" },
-          { name: "Generatore di Energia a Fusione" }, { name: "Piattaforma Mining Deep Space" }, { name: "Hivemind IA Planetaria" }
-        ],
-        upgrades: [
-          { name: "Tastiera Meccanica RGB", desc: "Raddoppia il potere del clic." }, { name: "Sedia in Titanio Ergonomica", desc: "+25% reddito passivo." },
-          { name: "Infusione Giga-Caffeina", desc: "Raddoppia il potere del clic." }, { name: "Linea in Fibra Ottica Gigabit", desc: "+30% reddito passivo." },
-          { name: "Autopilot IA Auto-Code", desc: "Forte aumento clic." }, { name: "Pipeline CI/CD Cloud Cluster", desc: "+35% reddito passivo." },
-          { name: "Compilatore Quantico V8", desc: "Potere di clic avanzato." }, { name: "Mod Cuffie Neural Sync", desc: "+40% reddito passivo." },
-          { name: "Matrice Algoritmo Darknet", desc: "+50% reddito passivo." }
-        ],
-        market: [
-          { name: "NVIDIA Cyber-Tech" }, { name: "CyberCorp Inc." }, { name: "BioGenetics Corp" }, { name: "RoboDynamics Ltd" },
-          { name: "CyberCoin (CBC)" }, { name: "ByteToken (BYT)" }, { name: "Void Coin (VOID)" }
-        ],
-        products: [
-          { name: "CyberPhone Alpha", desc: "+10% Hype." }, { name: "Neural VR Visor", desc: "+15% Hype." },
-          { name: "Smart CyberGlasses AR", desc: "+20% Hype." }, { name: "Autonomous Security Drone", desc: "+25% Hype." },
-          { name: "Cyber Mech-Dog Patrol", desc: "+30% Hype." }
-        ],
-        staff: [
-          { name: "Junior Coder", bonus: "+€0.01 Potere Clic" }, { name: "Senior Fullstack Dev", bonus: "+1% Reddito Passivo" },
-          { name: "AI Prompt Engineer", bonus: "+1.5% Reddito Passivo" }, { name: "Cyber Security Officer", bonus: "+2% Reddito Passivo" },
-          { name: "Growth Hacking Lead", bonus: "+2.5% Reddito Passivo" }
-        ],
-        hacks: [
-          { name: "Wifi Kebab Bistro" }, { name: "Server Cassa di Risparmio" }, { name: "Pool Crypto Offshore" },
-          { name: "Startup Tech Rivale" }, { name: "Mainframe Questura di Polizia" }
-        ],
-        hqs: [
-          { name: "Garage di Mamma", desc: "Stanza polverosa, gratis." }, { name: "Loft Startup Open Space", desc: "+20% guadagni totali." },
-          { name: "Edificio Campus Tech Park", desc: "1.35x guadagni totali." }, { name: "Torre Grattacielo Cyber", desc: "1.5x guadagni totali." },
-          { name: "Impianto Bunkernet Sotterraneo", desc: "1.8x guadagni totali." }
-        ]
-      }
+      fr: { season: "HOLO EDITION 2026", passivLabel: "Revenu", companyValLabel: "Actifs", nav: ["0. Terminal", "0.5. iCash", "1. Structures", "2. Recherche", "3. Marché & Mining", "4. Lab", "5. Équipe", "6. Black-Ops", "7. HQ", "8. Satellites", "9. Cloud", "10. Paramètres"], departments: [], upgrades: [], market: [], products: [], staff: [], hacks: [], hqs: [], orbitals: [] },
+      es: { season: "HOLO EDITION 2026", passivLabel: "Ingreso", companyValLabel: "Activos", nav: ["0. Terminal", "0.5. iCash", "1. Estructuras", "2. Investigación", "3. Mercado & Minería", "4. Lab", "5. Equipo", "6. Black-Ops", "7. HQ", "8. Satélites", "9. Cloud", "10. Ajustes"], departments: [], upgrades: [], market: [], products: [], staff: [], hacks: [], hqs: [], orbitals: [] },
+      it: { season: "HOLO EDITION 2026", passivLabel: "Reddito", companyValLabel: "Asset", nav: ["0. Terminale", "0.5. iCash", "1. Strutture", "2. Ricerca", "3. Mercato & Mining", "4. Lab", "5. Team", "6. Black-Ops", "7. HQ", "8. Satelliti", "9. Cloud", "10. Impostazioni"], departments: [], upgrades: [], market: [], products: [], staff: [], hacks: [], hqs: [], orbitals: [] }
     };
 
     function setLanguage(lang) {
@@ -720,6 +719,7 @@
     function updateDynamicTexts() {
       const lang = state.language || 'de';
       const t = translations[lang];
+      if(!t || !t.nav) return;
 
       const seasonTag = document.getElementById('season-tag');
       if(seasonTag) seasonTag.innerText = t.season;
@@ -730,64 +730,51 @@
       });
 
       const headerLabels = document.querySelectorAll('main > div.grid > div > div:first-child');
-      if(headerLabels.length >= 2) {
+      if(headerLabels.length >= 3) {
         headerLabels[0].innerText = t.passivLabel;
-        headerLabels[1].innerText = t.companyValLabel;
+        headerLabels[1].innerText = "iCash Guthaben";
+        headerLabels[2].innerText = t.companyValLabel;
       }
     }
 
     function renderLanguageTab() {
       const lang = state.language || 'de';
-      const t = translations[lang];
-      const activeText = t.activeLabel;
-
       const container = document.getElementById('settings-content-box');
       if (!container) return;
 
       container.innerHTML = `
-        <div class="font-cyber font-bold text-xs text-slate-200 mb-2">${t.tab9.select}</div>
+        <div class="font-bold text-xs text-slate-200 mb-2">Sprache / Language</div>
         <div class="grid grid-cols-1 gap-2">
-          <button onclick="setLanguage('de')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border ${lang === 'de' ? 'border-cyan-500 bg-cyan-500/10' : 'border-slate-800'} rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center transition">
-            <span>🇩🇪 Deutsch</span> ${lang === 'de' ? `<span class="text-[10px] text-cyan-400 font-mono font-bold">${activeText}</span>` : ''}
+          <button onclick="setLanguage('de')" class="p-3 bg-[#0f172a] hover:bg-[#1e293b] border ${lang === 'de' ? 'border-blue-500 text-white' : 'border-blue-500/20 text-slate-400'} rounded-xl text-xs text-left font-semibold flex justify-between items-center transition">
+            <span>🇩🇪 Deutsch</span> ${lang === 'de' ? '<span class="text-[10px] text-blue-400 font-mono">Aktiv</span>' : ''}
           </button>
-          <button onclick="setLanguage('en')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border ${lang === 'en' ? 'border-cyan-500 bg-cyan-500/10' : 'border-slate-800'} rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center transition">
-            <span>🇬🇧 English</span> ${lang === 'en' ? `<span class="text-[10px] text-cyan-400 font-mono font-bold">${activeText}</span>` : ''}
+          <button onclick="setLanguage('en')" class="p-3 bg-[#0f172a] hover:bg-[#1e293b] border ${lang === 'en' ? 'border-blue-500 text-white' : 'border-blue-500/20 text-slate-400'} rounded-xl text-xs text-left font-semibold flex justify-between items-center transition">
+            <span>🇬🇧 English</span> ${lang === 'en' ? '<span class="text-[10px] text-blue-400 font-mono">Active</span>' : ''}
           </button>
-          <button onclick="setLanguage('fr')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border ${lang === 'fr' ? 'border-cyan-500 bg-cyan-500/10' : 'border-slate-800'} rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center transition">
-            <span>🇫🇷 Français</span> ${lang === 'fr' ? `<span class="text-[10px] text-cyan-400 font-mono font-bold">${activeText}</span>` : ''}
+          <button onclick="setLanguage('fr')" class="p-3 bg-[#0f172a] hover:bg-[#1e293b] border ${lang === 'fr' ? 'border-blue-500 text-white' : 'border-blue-500/20 text-slate-400'} rounded-xl text-xs text-left font-semibold flex justify-between items-center transition">
+            <span>🇫🇷 Français</span> ${lang === 'fr' ? '<span class="text-[10px] text-blue-400 font-mono">Actif</span>' : ''}
           </button>
-          <button onclick="setLanguage('es')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border ${lang === 'es' ? 'border-cyan-500 bg-cyan-500/10' : 'border-slate-800'} rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center transition">
-            <span>🇪🇸 Español</span> ${lang === 'es' ? `<span class="text-[10px] text-cyan-400 font-mono font-bold">${activeText}</span>` : ''}
+          <button onclick="setLanguage('es')" class="p-3 bg-[#0f172a] hover:bg-[#1e293b] border ${lang === 'es' ? 'border-blue-500 text-white' : 'border-blue-500/20 text-slate-400'} rounded-xl text-xs text-left font-semibold flex justify-between items-center transition">
+            <span>🇪🇸 Español</span> ${lang === 'es' ? '<span class="text-[10px] text-blue-400 font-mono">Activo</span>' : ''}
           </button>
-          <button onclick="setLanguage('it')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border ${lang === 'it' ? 'border-cyan-500 bg-cyan-500/10' : 'border-slate-800'} rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center transition">
-            <span>🇮🇹 Italiano</span> ${lang === 'it' ? `<span class="text-[10px] text-cyan-400 font-mono font-bold">${activeText}</span>` : ''}
+          <button onclick="setLanguage('it')" class="p-3 bg-[#0f172a] hover:bg-[#1e293b] border ${lang === 'it' ? 'border-blue-500 text-white' : 'border-blue-500/20 text-slate-400'} rounded-xl text-xs text-left font-semibold flex justify-between items-center transition">
+            <span>🇮🇹 Italiano</span> ${lang === 'it' ? '<span class="text-[10px] text-blue-400 font-mono">Attivo</span>' : ''}
           </button>
         </div>
       `;
     }
 
-    // --- FIREBASE AUTH & LEADERBOARD FUNKTIONEN ---
+    // --- FIREBASE AUTH & LEADERBOARD ---
     async function handleRegister() {
       if (!window.FB) { alert('Firebase nicht initialisiert.'); return; }
-      
       const companyInput = document.getElementById('auth-company-name').value.trim();
       const email = document.getElementById('auth-email').value;
       const pass = document.getElementById('auth-password').value;
 
-      if (!companyInput) { alert('Bitte Firmennamen eingeben!'); return; }
+      if (!companyInput) { alert('Bitte Unternehmensnamen eingeben!'); return; }
       if (!email || !pass) { alert('E-Mail und Passwort eingeben!'); return; }
 
       try {
-        const nameQuery = await window.FB.getDocs(window.FB.query(window.FB.collection(window.FB.db, "leaderboard")));
-        let nameExists = false;
-        nameQuery.forEach(doc => {
-          if (doc.data().companyName && doc.data().companyName.toLowerCase() === companyInput.toLowerCase()) {
-            nameExists = true;
-          }
-        });
-
-        if (nameExists) { alert('Firmenname bereits vergeben!'); return; }
-
         state.companyName = companyInput;
         await window.FB.createUserWithEmailAndPassword(window.FB.auth, email, pass);
         await saveGameToCloudManual();
@@ -823,90 +810,35 @@
             updatedAt: Date.now()
           });
         }
-        alert('Gespeichert!');
+        alert('Cloud-Sync erfolgreich!');
         fetchLeaderboard();
       } catch (e) { alert('Fehler: ' + e.message); }
-    }
-
-    async function autoSyncLeaderboard() {
-      if (!window.FB || !window.FB.auth.currentUser) return;
-      try {
-        const user = window.FB.auth.currentUser;
-        if (state.companyName) {
-          await window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", user.uid), {
-            companyName: state.companyName,
-            totalValue: state.totalEarned,
-            updatedAt: Date.now()
-          }, { merge: true });
-          fetchLeaderboard();
-        }
-      } catch (e) { console.error(e); }
-    }
-
-    async function loadGameFromCloud(uid) {
-      if (!window.FB) return;
-      try {
-        const docSnap = await window.FB.getDoc(window.FB.doc(window.FB.db, "saves", uid));
-        if (docSnap.exists()) {
-          const cloudData = docSnap.data();
-          const currentLocalMoney = state.money;
-          const currentLocalTotal = state.totalEarned;
-
-          state = { ...state, ...cloudData };
-
-          if (currentLocalMoney > state.money) {
-            state.money = currentLocalMoney;
-            state.totalEarned = Math.max(state.totalEarned, currentLocalTotal);
-          }
-
-          if(state.companyName) {
-            const compInput = document.getElementById('auth-company-name');
-            if(compInput) {
-              compInput.value = state.companyName;
-              compInput.disabled = true;
-            }
-          }
-          
-          processOfflineProgress();
-          saveGameLocally();
-          updateDynamicTexts();
-          updateUI();
-          if(activeCurrentTab !== 'clicker') renderTabContent(activeCurrentTab);
-        }
-        fetchLeaderboard();
-      } catch (e) { console.error(e); }
     }
 
     async function fetchLeaderboard() {
       if (!window.FB) return;
       try {
-        const lang = state.language || 'de';
-        const t = translations[lang].tab8;
         const q = window.FB.query(window.FB.collection(window.FB.db, "leaderboard"), window.FB.orderBy("totalValue", "desc"), window.FB.limit(10));
         const querySnapshot = await window.FB.getDocs(q);
         const listEl = document.getElementById('leaderboard-list');
         listEl.innerHTML = '';
-        
         let rank = 1;
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
           listEl.innerHTML += `
-            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-              <div class="flex items-center space-x-2">
-                <span class="font-mono font-bold text-fuchsia-400">#${rank++}</span>
-                <span class="font-cyber font-bold text-slate-100">${data.companyName}</span>
+            <div class="holo-card p-3 flex justify-between items-center text-xs">
+              <div class="flex items-center space-x-2.5">
+                <span class="font-mono font-bold text-blue-400">#${rank++}</span>
+                <span class="font-bold text-white">${data.companyName}</span>
               </div>
               <span class="font-mono text-emerald-400 font-bold">${formatMoney(data.totalValue)}</span>
             </div>
           `;
         });
-        if(rank === 1) {
-          listEl.innerHTML = `<div class="text-xs text-slate-500 italic">${t.empty}</div>`;
-        }
       } catch (e) { console.error(e); }
     }
 
-    // --- SEASON & TIMER ---
+    // --- SEASON & TIMERS ---
     function getMonthKey() {
       const d = new Date();
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -914,12 +846,12 @@
 
     function checkSeasonReset() {
       const currentKey = getMonthKey();
-      const savedKey = localStorage.getItem('cyber_season_key');
+      const savedKey = localStorage.getItem('empire_season_key');
       if (savedKey && savedKey !== currentKey) {
-        localStorage.removeItem('cyber_tycoon_save');
+        localStorage.removeItem('empire_tycoon_save');
         alert(`🏆 NEUE MONATLICHE SAISON GESTARTET!`);
       }
-      localStorage.setItem('cyber_season_key', currentKey);
+      localStorage.setItem('empire_season_key', currentKey);
     }
 
     function updateSeasonCountdown() {
@@ -937,7 +869,14 @@
       if (el) el.innerText = `${String(days).padStart(2, '0')}d ${String(hours).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
     }
 
-    // --- NAVIGATION ---
+    function updateMiningTimerDisplay() {
+      const m = Math.floor(state.miningSecondsLeft / 60);
+      const s = state.miningSecondsLeft % 60;
+      const el = document.getElementById('mining-timer-display');
+      if (el) el.innerText = `Drop: ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    // --- NAVIGATION & UI ---
     let activeCurrentTab = 'clicker';
 
     function toggleMenu() {
@@ -960,6 +899,8 @@
       toggleMenu();
       
       renderTabContent(tabId);
+      if(tabId === 'market') drawAllCandleCharts();
+      if(tabId === 'hack') initHackMiniGame();
       if(tabId === 'fame') fetchLeaderboard();
     }
 
@@ -971,21 +912,32 @@
       return '€' + num.toFixed(2);
     }
 
-    function formatTime(seconds) {
-      const h = Math.floor(seconds / 3600);
-      const m = Math.floor((seconds % 3600) / 60);
-      const s = seconds % 60;
-      return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    }
-
     function getBaseIncomeForDept(idx) {
       const baseIncomes = [0.05, 0.40, 2.50, 15.00, 90.00, 450.00, 2400.00, 12000.00, 65000.00, 350000.00, 1800000.00, 9000000.00, 45000000.00, 220000000.00, 1100000000.00];
-      return baseIncomes[idx] || 0.05;
+      let base = baseIncomes[idx] || 0.05;
+      const count = state.departments[idx].count;
+      let milestoneMultiplier = 1 + Math.floor(count / 10) * 0.25;
+      return base * milestoneMultiplier;
     }
 
     function getPassiveIncome() {
       let income = 0;
       state.departments.forEach((d, idx) => { income += d.count * getBaseIncomeForDept(idx); });
+
+      if(state.orbitals) {
+        state.orbitals.forEach(o => { income += o.count * o.baseIncome; });
+      }
+
+      state.market.forEach(m => {
+        if(m.type === 'crypto' && m.rigs > 0) {
+          income += m.rigs * (m.price * 0.05);
+        }
+      });
+
+      const pi2 = state.permaUpgrades.find(u => u.id === 'pi2');
+      if (pi2 && pi2.level > 0) {
+        income *= Math.pow(1.5, pi2.level);
+      }
 
       let staffMultiplier = 1;
       state.staff.forEach(s => {
@@ -1013,6 +965,12 @@
 
     function getClickPower() {
       let base = state.clickPower + (state.clickUpgLevel * 0.01);
+      
+      const pi1 = state.permaUpgrades.find(u => u.id === 'pi1');
+      if (pi1 && pi1.level > 0) {
+        base *= Math.pow(2.0, pi1.level);
+      }
+
       state.staff.forEach(s => {
         if (s.id === 's1') base += s.count * 0.01;
       });
@@ -1023,10 +981,8 @@
     }
 
     function updateUI() {
-      const lang = state.language || 'de';
-      const t = translations[lang];
-
       document.getElementById('stat-money').innerText = formatMoney(state.money);
+      document.getElementById('stat-icash').innerText = `💎 ${state.icash} iCash`;
       document.getElementById('stat-income').innerText = '+' + formatMoney(getPassiveIncome()) + '/min';
       document.getElementById('stat-level').innerText = state.level;
       document.getElementById('player-level-text').innerText = state.level;
@@ -1037,51 +993,175 @@
       document.getElementById('click-upgrade-cost').innerText = formatMoney(state.clickUpgCost);
       const btnUpg = document.getElementById('btn-buy-click-upg');
       if (state.money >= state.clickUpgCost) {
-        btnUpg.className = "px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-cyber text-xs rounded-lg font-bold transition cursor-pointer";
+        btnUpg.className = "px-3.5 py-2 holo-btn text-xs rounded-lg font-semibold cursor-pointer";
       } else {
-        btnUpg.className = "px-3 py-1.5 bg-slate-800 text-slate-500 font-cyber text-xs rounded-lg font-bold transition cursor-not-allowed";
+        btnUpg.className = "px-3.5 py-2 bg-[#0f172a] text-slate-600 border border-blue-500/10 text-xs rounded-lg font-semibold cursor-not-allowed";
       }
 
       document.getElementById('exp-text').innerText = `${Math.floor(state.exp)} / ${state.expNeeded} EXP`;
       document.getElementById('exp-bar').style.width = Math.min(100, (state.exp / state.expNeeded) * 100) + '%';
-
-      const mMin = Math.floor(state.miningSecondsLeft / 60);
-      const mSec = state.miningSecondsLeft % 60;
-      const mTimerEl = document.getElementById('mining-timer-display');
-      if (mTimerEl) mTimerEl.innerText = `${t.tab3.timer} ${String(mMin).padStart(2,'0')}:${String(mSec).padStart(2,'0')}`;
+      updateMiningTimerDisplay();
     }
 
-    // --- RENDER KATEGORIEN MIT KOMPLETTEN SPRACH-ÜBERSETZUNGEN ---
+    function addExp(amount) {
+      state.exp += amount;
+      if (state.exp >= state.expNeeded) {
+        state.level++;
+        state.exp = 0;
+        state.expNeeded = Math.floor(state.expNeeded * 1.8);
+
+        // iCash Belohnung bei Level-Up
+        const pi4 = state.permaUpgrades.find(u => u.id === 'pi4');
+        const bonusYield = pi4 ? pi4.level * 2 : 0;
+        const reward = 3 + Math.floor(state.level / 2) + bonusYield;
+        state.icash += reward;
+
+        alert(`🎉 LEVEL UP! Du hast Level ${state.level} erreicht und 💎 +${reward} iCash erhalten!`);
+      }
+      updateUI();
+    }
+
+    // --- HACKER MINIGAME ---
+    let correctHackNode = 0;
+    function initHackMiniGame() {
+      const nodesContainer = document.getElementById('hack-game-nodes');
+      const statusEl = document.getElementById('hack-game-status');
+      if(!nodesContainer) return;
+
+      nodesContainer.innerHTML = '';
+      statusEl.innerText = '';
+      correctHackNode = Math.floor(Math.random() * 3);
+
+      for(let i=0; i<3; i++) {
+        const codeNum = Math.floor(1000 + Math.random() * 9000);
+        nodesContainer.innerHTML += `
+          <button onclick="attemptHackNode(${i})" class="p-3 bg-[#0f172a] hover:bg-purple-950/40 border border-purple-500/30 rounded-xl font-mono text-xs text-purple-300 font-bold transition flex flex-col items-center justify-center gap-1 shadow-lg">
+            <i data-lucide="shield" class="w-4 h-4 text-purple-400"></i>
+            <span>NODE #${i+1} [${codeNum}]</span>
+          </button>
+        `;
+      }
+      lucide.createIcons();
+    }
+
+    function attemptHackNode(selectedIdx) {
+      const statusEl = document.getElementById('hack-game-status');
+      if(selectedIdx === correctHackNode) {
+        const rewardCash = 10.00 * state.level;
+        const rewardIcash = 2;
+        state.money += rewardCash;
+        state.totalEarned += rewardCash;
+        state.icash += rewardIcash;
+        statusEl.className = "text-xs font-mono text-emerald-400 text-center h-5 mt-2 font-bold";
+        statusEl.innerText = `[SUCCESS] Firewall umgangen! +💎 ${rewardIcash} iCash & +${formatMoney(rewardCash)}`;
+        addExp(30);
+        setTimeout(initHackMiniGame, 1800);
+      } else {
+        statusEl.className = "text-xs font-mono text-rose-400 text-center h-5 mt-2 font-bold";
+        statusEl.innerText = `[ACCESS DENIED] Falscher Node! Trace gestartet. Neuer Code...`;
+        setTimeout(initHackMiniGame, 1500);
+      }
+      updateUI();
+    }
+
+    // --- CANDLESTICK CHARTS ---
+    function drawCandleChart(canvasId, candles) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width;
+      const height = canvas.height;
+
+      ctx.clearRect(0, 0, width, height);
+      if (!candles || candles.length === 0) return;
+
+      let minVal = Infinity;
+      let maxVal = -Infinity;
+      candles.forEach(c => {
+        if (c.l < minVal) minVal = c.l;
+        if (c.h > maxVal) maxVal = c.h;
+      });
+      const range = maxVal - minVal || 1;
+      const candleWidth = Math.max(4, Math.floor(width / candles.length) - 5);
+
+      candles.forEach((c, i) => {
+        const x = i * (width / candles.length) + (width / candles.length / 2);
+        const yHigh = height - ((c.h - minVal) / range) * (height - 16) - 8;
+        const yLow = height - ((c.l - minVal) / range) * (height - 16) - 8;
+        const yOpen = height - ((c.o - minVal) / range) * (height - 16) - 8;
+        const yClose = height - ((c.c - minVal) / range) * (height - 16) - 8;
+
+        const isGreen = c.c >= c.o;
+        const color = isGreen ? '#34d399' : '#f87171';
+
+        ctx.beginPath();
+        ctx.moveTo(x, yHigh);
+        ctx.lineTo(x, yLow);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        const bodyTop = Math.min(yOpen, yClose);
+        const bodyHeight = Math.max(2, Math.abs(yClose - yOpen));
+        ctx.fillStyle = color;
+        ctx.fillRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
+      });
+    }
+
+    function drawAllCandleCharts() {
+      state.market.forEach((m, idx) => { drawCandleChart(`chart-${idx}`, m.candles); });
+    }
+
+    // --- RENDER TABS ---
     function renderTabContent(tabId) {
       const lang = state.language || 'de';
-      const t = translations[lang];
+      const t = translations[lang] || translations['de'];
 
-      if (tabId === 'clicker') {
-        const cTab = document.querySelector('#tab-clicker');
-        if(cTab) {
-          cTab.querySelector('h3').innerText = t.tab0.title;
-          cTab.querySelector('p').innerText = t.tab0.desc;
-          cTab.querySelector('#click-btn span:nth-child(2)').innerText = t.tab0.btn;
-          cTab.querySelector('#btn-buy-click-upg').childNodes[0].nodeValue = t.tab0.buy + ' (';
-        }
+      if (tabId === 'icash') {
+        const list = document.getElementById('list-icash-features');
+        list.innerHTML = '';
+        state.permaUpgrades.forEach((pu, idx) => {
+          const canBuy = state.icash >= pu.cost && pu.level < pu.maxLevel;
+          list.innerHTML += `
+            <div class="holo-card p-4 flex justify-between items-center">
+              <div>
+                <div class="font-bold text-xs text-white flex items-center gap-1.5">
+                  <i data-lucide="gem" class="w-3.5 h-3.5 text-purple-400"></i> ${pu.name} (Stufe ${pu.level}/${pu.maxLevel})
+                </div>
+                <div class="text-[11px] text-slate-400 mt-1">${pu.desc}</div>
+              </div>
+              <button onclick="buyPermaUpgrade(${idx})" ${pu.level >= pu.maxLevel ? 'disabled' : ''} class="px-3.5 py-2 ${pu.level >= pu.maxLevel ? 'bg-[#0f172a] text-purple-400 border border-purple-500/30' : (canBuy ? 'icash-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-purple-500/10 cursor-not-allowed')} text-xs rounded-xl font-semibold transition">
+                ${pu.level >= pu.maxLevel ? 'Max' : `💎 ${pu.cost} iCash`}
+              </button>
+            </div>
+          `;
+        });
+        lucide.createIcons();
       }
 
       if (tabId === 'depts') {
         const list = document.getElementById('list-depts');
-        list.innerHTML = `<h3 class="font-cyber font-bold text-lg text-slate-100">${t.tab1.title}</h3>`;
+        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">1. Megastrukturen & Sektoren</h3>`;
         state.departments.forEach((d, idx) => {
           const cost = d.baseCost * Math.pow(1.22, d.count);
-          const baseInc = getBaseIncomeForDept(idx);
-          const localizedName = t.departments[idx] ? t.departments[idx].name : `Department ${idx+1}`;
+          const currentInc = getBaseIncomeForDept(idx) * d.count;
+          const localizedName = t.departments && t.departments[idx] ? t.departments[idx].name : `Sektor ${idx+1}`;
+          const imgUrl = deptImages[idx % deptImages.length];
+
           list.innerHTML += `
-            <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
-              <div>
-                <div class="font-cyber font-bold text-sm text-slate-100">${localizedName}</div>
-                <div class="text-xs text-cyan-400">${t.tab1.lvl}: ${d.count} (+${formatMoney(baseInc * d.count)}/min)</div>
+            <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
+              <div class="sm:w-32 h-24 sm:h-auto relative overflow-hidden bg-[#070b14]">
+                <img src="${imgUrl}" class="w-full h-full object-cover">
               </div>
-              <button onclick="buyDept(${idx})" class="px-3.5 py-2 ${state.money >= cost ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} font-cyber text-xs rounded-xl font-bold transition">
-                ${t.tab1.buy} (${formatMoney(cost)})
-              </button>
+              <div class="p-4 flex-1 flex justify-between items-center">
+                <div>
+                  <div class="font-bold text-xs text-white">${localizedName}</div>
+                  <div class="text-[11px] text-blue-400 font-mono mt-0.5">Stufe: ${d.count} (+${formatMoney(currentInc)}/min)</div>
+                </div>
+                <button onclick="buyDept(${idx})" class="px-3 py-1.5 ${state.money >= cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold transition">
+                  Erweitern (${formatMoney(cost)})
+                </button>
+              </div>
             </div>
           `;
         });
@@ -1089,86 +1169,100 @@
 
       if (tabId === 'upgrades') {
         const list = document.getElementById('list-upgrades');
-        list.innerHTML = `<h3 class="font-cyber font-bold text-lg text-slate-100">${t.tab2.title}</h3>`;
+        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">2. Quanten-Forschung</h3>`;
         state.upgrades.forEach((u, idx) => {
-          const locUpg = t.upgrades[idx] || {};
+          const locUpg = t.upgrades && t.upgrades[idx] ? t.upgrades[idx] : { name: `Forschung ${idx+1}`, desc: 'Upgrade' };
+          const imgUrl = upgradeImages[idx % upgradeImages.length];
           list.innerHTML += `
-            <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
-              <div>
-                <div class="font-cyber font-bold text-sm text-slate-100">${locUpg.name}</div>
-                <div class="text-xs text-slate-400">${locUpg.desc}</div>
+            <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
+              <div class="sm:w-28 h-20 sm:h-auto relative overflow-hidden bg-[#070b14]">
+                <img src="${imgUrl}" class="w-full h-full object-cover">
               </div>
-              <button onclick="buyUpgrade(${idx})" ${u.bought ? 'disabled' : ''} class="px-3.5 py-2 ${u.bought ? 'bg-slate-800 text-emerald-400' : (state.money >= u.cost ? 'bg-fuchsia-600 hover:bg-fuchsia-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed')} font-cyber text-xs rounded-xl font-bold transition">
-                ${u.bought ? t.tab2.bought : formatMoney(u.cost)}
-              </button>
+              <div class="p-4 flex-1 flex justify-between items-center">
+                <div>
+                  <div class="font-bold text-xs text-white">${locUpg.name}</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">${locUpg.desc}</div>
+                </div>
+                <button onclick="buyUpgrade(${idx})" ${u.bought ? 'disabled' : ''} class="px-3 py-1.5 ${u.bought ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30' : (state.money >= u.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
+                  ${u.bought ? 'Erforscht' : formatMoney(u.cost)}
+                </button>
+              </div>
             </div>
           `;
         });
       }
 
       if (tabId === 'market') {
-        const marketTab = document.getElementById('tab-market');
-        marketTab.querySelector('h3').innerText = t.tab3.title;
-        marketTab.querySelector('p').innerText = t.tab3.desc;
-
         const list = document.getElementById('list-market');
         list.innerHTML = '';
         state.market.forEach((m, idx) => {
-          const isCrypto = m.type === 'crypto';
-          const totalVal = m.owned * m.price;
-          const changeColor = m.change >= 0 ? 'text-emerald-400' : 'text-rose-400';
-          const changeSign = m.change >= 0 ? '+' : '';
-          const locMarket = t.market[idx] || {};
+          const isPos = m.change >= 0;
+          const badgeBg = isPos ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border-rose-500/30';
+          const locMarket = t.market && t.market[idx] ? t.market[idx] : { name: `Asset ${idx+1}` };
 
-          let miningHTML = '';
-          if (isCrypto) {
-            const currentRigCost = m.rigCost * Math.pow(1.3, m.rigs);
-            miningHTML = `
-              <div class="mt-2 pt-2 border-t border-slate-800 text-xs flex justify-between items-center">
-                <span class="text-purple-300">Rigs: ${m.rigs} (${t.tab3.rigs})</span>
-                <button onclick="buyRig(${idx})" class="px-2.5 py-1 ${state.money >= currentRigCost ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} rounded font-cyber text-[10px]">
-                  Rig (+1) (${formatMoney(currentRigCost)})
-                </button>
+          let miningHtml = '';
+          if (m.type === 'crypto') {
+            const rigCost = m.rigCost || 50;
+            const rigsCount = m.rigs || 0;
+            miningHtml = `
+              <div class="mt-2 pt-2 border-t border-blue-500/10 flex justify-between items-center text-xs">
+                <span class="text-slate-400 font-mono">Mining-Rigs: <strong class="text-purple-400">${rigsCount}</strong></span>
+                <button onclick="buyMiningRig(${idx})" class="px-2.5 py-1 icash-btn text-[11px] rounded-lg font-semibold">Rig kaufen (${formatMoney(rigCost)})</button>
               </div>
             `;
           }
 
           list.innerHTML += `
-            <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 flex flex-col justify-between">
+            <div class="holo-card p-4 flex flex-col justify-between">
               <div class="flex justify-between items-start">
                 <div>
-                  <div class="font-cyber font-bold text-sm text-slate-100">${locMarket.name} <span class="text-[10px] text-slate-500 uppercase">(${m.type})</span></div>
-                  <div class="text-xs font-mono text-cyan-400 mt-0.5">Kurs: ${formatMoney(m.price)} <span class="${changeColor}">(${changeSign}${m.change}%)</span></div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-bold text-xs text-white">${locMarket.name}</span>
+                    <span class="text-[9px] text-blue-400 font-mono uppercase px-1.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">${m.type}</span>
+                  </div>
+                  <div class="text-sm font-mono font-bold text-slate-200 mt-1">${formatMoney(m.price)}</div>
                 </div>
                 <div class="text-right">
-                  <div class="text-xs text-slate-400">Besitz: <span class="text-emerald-400 font-bold">${m.owned.toFixed(2)}</span></div>
-                  <div class="text-[10px] text-slate-500 font-mono">Wert: ${formatMoney(totalVal)}</div>
+                  <div class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${badgeBg}">
+                    ${isPos ? '+' : ''}${m.change}%
+                  </div>
+                  <div class="text-[10px] text-slate-400 font-mono mt-1">Besitz: <span class="text-emerald-400 font-bold">${m.owned.toFixed(2)}</span></div>
                 </div>
               </div>
-              <div class="flex gap-2 mt-3">
-                <button onclick="buyStock(${idx})" class="flex-1 py-1.5 ${state.money >= m.price ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} font-cyber text-xs rounded-lg">${t.tab3.buy}</button>
-                <button onclick="sellStock(${idx})" class="flex-1 py-1.5 ${m.owned >= 1 ? 'bg-rose-600 hover:bg-rose-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} font-cyber text-xs rounded-lg">${t.tab3.sell}</button>
+              <div class="my-3 w-full h-20 bg-[#020408]/90 border border-blue-500/20 rounded-xl overflow-hidden relative shadow-inner">
+                <canvas id="chart-${idx}" width="360" height="80" class="w-full h-full object-fill"></canvas>
               </div>
-              ${miningHTML}
+              <div class="flex gap-2">
+                <button onclick="buyStock(${idx})" class="flex-1 py-1.5 ${state.money >= m.price ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold">Kauf</button>
+                <button onclick="sellStock(${idx})" class="flex-1 py-1.5 ${m.owned >= 1 ? 'bg-rose-950/80 text-rose-300 border border-rose-800' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold">Verkauf</button>
+              </div>
+              ${miningHtml}
             </div>
           `;
         });
+        setTimeout(() => { drawAllCandleCharts(); }, 50);
       }
 
       if (tabId === 'lab') {
         const list = document.getElementById('list-lab');
-        list.innerHTML = `<h3 class="font-cyber font-bold text-lg text-slate-100">${t.tab4.title}</h3>`;
+        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">4. Advanced Engineering Lab</h3>`;
         state.products.forEach((p, idx) => {
-          const locProd = t.products[idx] || {};
+          const locProd = t.products && t.products[idx] ? t.products[idx] : { name: `Produkt ${idx+1}`, desc: 'Tech' };
+          const imgUrl = labImages[idx % labImages.length];
           list.innerHTML += `
-            <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
-              <div>
-                <div class="font-cyber font-bold text-sm text-slate-100">${locProd.name}</div>
-                <div class="text-xs text-slate-400">${locProd.desc}</div>
+            <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
+              <div class="sm:w-28 h-20 sm:h-auto relative overflow-hidden bg-[#070b14]">
+                <img src="${imgUrl}" class="w-full h-full object-cover">
               </div>
-              <button onclick="launchProduct(${idx})" ${p.launched ? 'disabled' : ''} class="px-3.5 py-2 ${p.launched ? 'bg-slate-800 text-emerald-400' : (state.money >= p.cost ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed')} font-cyber text-xs rounded-xl font-bold transition">
-                ${p.launched ? t.tab4.launched : t.tab4.launchBtn + ' (' + formatMoney(p.cost) + ')'}
-              </button>
+              <div class="p-4 flex-1 flex justify-between items-center">
+                <div>
+                  <div class="font-bold text-xs text-white">${locProd.name}</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">${locProd.desc}</div>
+                </div>
+                <button onclick="launchProduct(${idx})" ${p.launched ? 'disabled' : ''} class="px-3 py-1.5 ${p.launched ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30' : (state.money >= p.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
+                  ${p.launched ? 'Online' : 'Entwickeln (' + formatMoney(p.cost) + ')'}
+                </button>
+              </div>
             </div>
           `;
         });
@@ -1176,40 +1270,42 @@
 
       if (tabId === 'staff') {
         const list = document.getElementById('list-staff');
-        list.innerHTML = `<h3 class="font-cyber font-bold text-lg text-slate-100">${t.tab5.title}</h3>`;
+        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">5. Vorstand & Experten</h3>`;
         state.staff.forEach((s, idx) => {
-          const locStaff = t.staff[idx] || {};
+          const locStaff = t.staff && t.staff[idx] ? t.staff[idx] : { name: `Experte ${idx+1}`, bonus: '+Bonus' };
+          const imgUrl = staffImages[idx % staffImages.length];
           list.innerHTML += `
-            <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
-              <div>
-                <div class="font-cyber font-bold text-sm text-slate-100">${locStaff.name}</div>
-                <div class="text-xs text-cyan-400">${locStaff.bonus} (${t.tab5.hired}: ${s.count})</div>
+            <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
+              <div class="sm:w-28 h-20 sm:h-auto relative overflow-hidden bg-[#070b14]">
+                <img src="${imgUrl}" class="w-full h-full object-cover">
               </div>
-              <button onclick="hireStaff(${idx})" class="px-3.5 py-2 ${state.money >= s.cost ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} font-cyber text-xs rounded-xl font-bold transition">
-                ${t.tab5.hireBtn} (${formatMoney(s.cost)})
-              </button>
+              <div class="p-4 flex-1 flex justify-between items-center">
+                <div>
+                  <div class="font-bold text-xs text-white">${locStaff.name}</div>
+                  <div class="text-[11px] text-blue-400 mt-0.5">${locStaff.bonus} (Anzahl: ${s.count})</div>
+                </div>
+                <button onclick="hireStaff(${idx})" class="px-3 py-1.5 ${state.money >= s.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold transition">
+                  Rekrutieren (${formatMoney(s.cost)})
+                </button>
+              </div>
             </div>
           `;
         });
       }
 
       if (tabId === 'hack') {
-        const hackTab = document.getElementById('tab-hack');
-        hackTab.querySelector('h3').innerText = t.tab6.title;
-        hackTab.querySelector('p').innerText = t.tab6.desc;
-
         const list = document.getElementById('list-hack');
-        list.innerHTML = '';
+        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2 mt-4">Klassische Black-Ops</h3>`;
         state.hacks.forEach((h, idx) => {
-          const locHack = t.hacks[idx] || {};
+          const locHack = t.hacks && t.hacks[idx] ? t.hacks[idx] : { name: `Operation ${idx+1}` };
           list.innerHTML += `
-            <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
+            <div class="holo-card p-3.5 flex justify-between items-center">
               <div>
-                <div class="font-cyber font-bold text-sm text-slate-100">${locHack.name}</div>
-                <div class="text-xs text-slate-400">${t.tab6.reward} <span class="text-emerald-400 font-mono">+${formatMoney(h.reward)}</span></div>
+                <div class="font-bold text-xs text-white">${locHack.name}</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Injektion: <span class="text-emerald-400 font-mono font-bold">+${formatMoney(h.reward)}</span></div>
               </div>
-              <button onclick="executeHack(${idx})" ${h.cd > 0 ? 'disabled' : ''} class="px-3.5 py-2 ${h.cd > 0 ? 'bg-slate-800 text-slate-500' : 'bg-rose-600 hover:bg-rose-500 text-white'} font-cyber text-xs rounded-xl font-bold transition">
-                ${h.cd > 0 ? formatTime(h.cd) : t.tab6.hackBtn}
+              <button onclick="executeHack(${idx})" ${h.cd > 0 ? 'disabled' : ''} class="px-3 py-1.5 ${h.cd > 0 ? 'bg-[#0f172a] text-slate-600 border border-blue-500/10' : 'bg-rose-950/80 text-rose-300 border border-rose-800'} text-xs rounded-lg font-semibold transition">
+                ${h.cd > 0 ? h.cd + 's' : 'INFILTRIEREN'}
               </button>
             </div>
           `;
@@ -1218,52 +1314,92 @@
 
       if (tabId === 'hq') {
         const list = document.getElementById('list-hq');
-        list.innerHTML = `<h3 class="font-cyber font-bold text-lg text-slate-100">${t.tab7.title}</h3>`;
+        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">7. Corporate Headquarters</h3>`;
         state.hqs.forEach((hq, idx) => {
-          const locHQ = t.hqs[idx] || {};
+          const locHQ = t.hqs && t.hqs[idx] ? t.hqs[idx] : { name: `HQ ${idx+1}`, desc: 'Zentrale' };
+          const imgUrl = hqImages[idx % hqImages.length];
           list.innerHTML += `
-            <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
-              <div>
-                <div class="font-cyber font-bold text-sm text-slate-100">${locHQ.name}</div>
-                <div class="text-xs text-slate-400">${locHQ.desc}</div>
+            <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
+              <div class="sm:w-28 h-20 sm:h-auto relative overflow-hidden bg-[#070b14]">
+                <img src="${imgUrl}" class="w-full h-full object-cover">
               </div>
-              <button onclick="buyHQ(${idx})" ${hq.bought || state.money < hq.cost ? 'disabled' : ''} class="px-3.5 py-2 ${hq.bought ? 'bg-slate-800 text-cyan-400' : (state.money >= hq.cost ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed')} font-cyber text-xs rounded-xl font-bold transition">
-                ${hq.bought ? t.tab7.current : formatMoney(hq.cost)}
-              </button>
+              <div class="p-4 flex-1 flex justify-between items-center">
+                <div>
+                  <div class="font-bold text-xs text-white">${locHQ.name}</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">${locHQ.desc}</div>
+                </div>
+                <button onclick="buyHQ(${idx})" ${hq.bought || state.money < hq.cost ? 'disabled' : ''} class="px-3 py-1.5 ${hq.bought ? 'bg-[#0f172a] text-blue-400 border border-blue-500/30' : (state.money >= hq.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
+                  ${hq.bought ? 'Zentrale aktiv' : formatMoney(hq.cost)}
+                </button>
+              </div>
             </div>
           `;
         });
       }
 
-      if (tabId === 'fame') {
-        const fameTab = document.getElementById('tab-fame');
-        fameTab.querySelector('h3').innerText = t.tab8.title;
-        document.getElementById('auth-company-name').placeholder = t.tab8.comp;
-        document.getElementById('auth-email').placeholder = t.tab8.email;
-        document.getElementById('auth-password').placeholder = t.tab8.pass;
-        fameTab.querySelector('button[onclick="handleLogin()"]').innerText = t.tab8.login;
-        fameTab.querySelector('button[onclick="handleRegister()"]').innerText = t.tab8.reg;
-        fameTab.querySelector('button[onclick="handleLogout()"]').innerText = t.tab8.logout;
-        fameTab.querySelector('button[onclick="saveGameToCloudManual()"]').innerText = t.tab8.saveBtn;
-        fameTab.querySelectorAll('h3')[1].innerText = t.tab8.top;
-        fameTab.querySelector('span.font-mono').innerText = t.tab8.sync;
-        fetchLeaderboard();
+      if (tabId === 'orbit') {
+        const list = document.getElementById('list-orbit');
+        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">8. Orbital-Drohnen & Satelliten</h3>`;
+        if(!state.orbitals) state.orbitals = [{ id: 'o1', count: 0, baseCost: 50000.00, baseIncome: 1500.00 }, { id: 'o2', count: 0, baseCost: 750000.00, baseIncome: 18000.00 }, { id: 'o3', count: 0, baseCost: 10000000.00, baseIncome: 220000.00 }, { id: 'o4', count: 0, baseCost: 150000000.00, baseIncome: 3000000.00 }];
+        
+        state.orbitals.forEach((o, idx) => {
+          const cost = o.baseCost * Math.pow(1.25, o.count);
+          const locOrb = t.orbitals && t.orbitals[idx] ? t.orbitals[idx] : { name: `Satellit ${idx+1}`, desc: 'Orbital' };
+          const imgUrl = orbitalImages[idx % orbitalImages.length];
+          list.innerHTML += `
+            <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
+              <div class="sm:w-28 h-20 sm:h-auto relative overflow-hidden bg-[#070b14]">
+                <img src="${imgUrl}" class="w-full h-full object-cover">
+              </div>
+              <div class="p-4 flex-1 flex justify-between items-center">
+                <div>
+                  <div class="font-bold text-xs text-white">${locOrb.name}</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">${locOrb.desc}</div>
+                </div>
+                <button onclick="buyOrbital(${idx})" class="px-3 py-1.5 ${state.money >= cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold transition">
+                  Starten (${formatMoney(cost)})
+                </button>
+              </div>
+            </div>
+          `;
+        });
       }
 
-      if (tabId === 'settings') {
-        const settingsTab = document.getElementById('tab-settings');
-        settingsTab.querySelector('h3').innerText = t.tab9.title;
-        renderLanguageTab();
-      }
+      if (tabId === 'fame') { fetchLeaderboard(); }
+      if (tabId === 'settings') { renderLanguageTab(); }
     }
 
     // --- ACTIONS ---
+    function buyPermaUpgrade(idx) {
+      const pu = state.permaUpgrades[idx];
+      if (state.icash >= pu.cost && pu.level < pu.maxLevel) {
+        state.icash -= pu.cost;
+        pu.level++;
+        pu.cost = Math.floor(pu.cost * 1.8);
+        updateUI();
+        renderTabContent('icash');
+        saveGameLocally();
+      }
+    }
+
+    function buyClickUpgrade() {
+      if (state.money >= state.clickUpgCost) {
+        state.money -= state.clickUpgCost;
+        state.clickUpgLevel++;
+        state.clickUpgCost *= 1.45;
+        addExp(15);
+        updateUI();
+        saveGameLocally();
+      }
+    }
+
     function buyDept(idx) {
       const d = state.departments[idx];
       const cost = d.baseCost * Math.pow(1.22, d.count);
       if (state.money >= cost) {
         state.money -= cost;
         d.count++;
+        addExp(25);
         updateUI();
         renderTabContent('depts');
         saveGameLocally();
@@ -1275,6 +1411,7 @@
       if (!u.bought && state.money >= u.cost) {
         state.money -= u.cost;
         u.bought = true;
+        addExp(50);
         updateUI();
         renderTabContent('upgrades');
         saveGameLocally();
@@ -1303,12 +1440,14 @@
       }
     }
 
-    function buyRig(idx) {
+    function buyMiningRig(idx) {
       const item = state.market[idx];
-      const cost = item.rigCost * Math.pow(1.3, item.rigs);
-      if (state.money >= cost) {
-        state.money -= cost;
+      if (!item.rigs) item.rigs = 0;
+      if (!item.rigCost) item.rigCost = 50;
+      if (state.money >= item.rigCost) {
+        state.money -= item.rigCost;
         item.rigs++;
+        item.rigCost = Math.floor(item.rigCost * 1.35);
         updateUI();
         renderTabContent('market');
         saveGameLocally();
@@ -1342,6 +1481,8 @@
       const h = state.hacks[idx];
       if (h.cd === 0) {
         h.cd = h.maxCd;
+        state.money += h.reward;
+        state.totalEarned += h.reward;
         updateUI();
         renderTabContent('hack');
         saveGameLocally();
@@ -1353,28 +1494,36 @@
       if (!hq.bought && state.money >= hq.cost) {
         state.money -= hq.cost;
         hq.bought = true;
+        state.icash += 15;
+        alert(`🏢 HQ FREIGESCHALTET! Du hast 💎 +15 iCash erhalten!`);
         updateUI();
         renderTabContent('hq');
         saveGameLocally();
       }
     }
 
+    function buyOrbital(idx) {
+      if(!state.orbitals) return;
+      const o = state.orbitals[idx];
+      const cost = o.baseCost * Math.pow(1.25, o.count);
+      if (state.money >= cost) {
+        state.money -= cost;
+        o.count++;
+        updateUI();
+        renderTabContent('orbit');
+        saveGameLocally();
+      }
+    }
+
     document.getElementById('click-btn').addEventListener('click', () => {
+      playClickBeep();
       const pwr = getClickPower();
       state.money += pwr;
       state.totalEarned += pwr;
-
-      state.exp += 5;
-      if (state.exp >= state.expNeeded) {
-        state.level++;
-        state.exp = 0;
-        state.expNeeded = Math.floor(state.expNeeded * 1.8);
-      }
-
-      updateUI();
+      addExp(5);
     });
 
-    // --- SPEICHERN & LADEN ---
+    // --- SAVE & LOAD ---
     function showSaveIndicator() {
       const indicator = document.getElementById('save-status');
       if (indicator) {
@@ -1388,136 +1537,80 @@
     }
 
     function saveGameLocally() {
-      localStorage.setItem('cyber_tycoon_save', JSON.stringify(state));
-      localStorage.setItem('cyber_last_save_time', Date.now().toString());
+      localStorage.setItem('empire_tycoon_save', JSON.stringify(state));
+      localStorage.setItem('empire_last_save_time', Date.now().toString());
       showSaveIndicator();
     }
 
     function loadGameLocally() {
-      const saved = localStorage.getItem('cyber_tycoon_save');
+      const saved = localStorage.getItem('empire_tycoon_save');
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          state = { ...state, ...parsed };
+          // Erzwinge Reset bei alter Version damit Timer nicht hängen
+          if(!parsed.version || parsed.version < 3) {
+            console.log("Alte Version erkannt, Timers zurückgesetzt.");
+          } else {
+            state = { ...state, ...parsed };
+          }
+          if(!state.permaUpgrades) state.permaUpgrades = [{ id: 'pi1', name: 'Quantum Click Matrix', desc: 'Verdoppelt dauerhaft die Klick-Leistung.', cost: 5, level: 0, maxLevel: 10, mult: 2.0 }, { id: 'pi2', name: 'Neural Income Booster', desc: 'Erhöht das gesamte passive Einkommen um +50% pro Stufe.', cost: 10, level: 0, maxLevel: 10, mult: 1.5 }, { id: 'pi3', name: 'Auto-Impulse Core', desc: 'Generiert alle 10 Sekunden automatisch 1 Klick-Impuls.', cost: 25, level: 0, maxLevel: 1, mult: 1.0 }, { id: 'pi4', name: 'Syndicate iCash Yield', desc: 'Erhöht iCash-Belohnungen bei Level-ups um +2.', cost: 30, level: 0, maxLevel: 5, mult: 1.0 }];
+          if(state.icash === undefined) state.icash = 0;
+          if(state.miningSecondsLeft === undefined) state.miningSecondsLeft = 3600;
         } catch (e) { console.error(e); }
       }
     }
 
-    // --- OFFLINE FORTSCHRITT ---
-    function processOfflineProgress() {
-      const lastSaveTime = localStorage.getItem('cyber_last_save_time');
-      if (!lastSaveTime) return;
-
-      const now = Date.now();
-      const elapsedSeconds = Math.floor((now - parseInt(lastSaveTime)) / 1000);
-
-      if (elapsedSeconds > 10) {
-        const passivePerSec = getPassiveIncome() / 60;
-        const offlineEarnings = passivePerSec * elapsedSeconds;
-
-        if (offlineEarnings > 0) {
-          state.money += offlineEarnings;
-          state.totalEarned += offlineEarnings;
-        }
-
-        state.hacks.forEach(h => {
-          if (h.cd > 0) {
-            h.cd = Math.max(0, h.cd - elapsedSeconds);
-            if (h.cd === 0) {
-              state.money += h.reward;
-              state.totalEarned += h.reward;
-            }
-          }
-        });
-
-        let remainingElapsed = elapsedSeconds;
-        while (remainingElapsed > 0) {
-          if (remainingElapsed >= state.miningSecondsLeft) {
-            remainingElapsed -= state.miningSecondsLeft;
-            state.miningSecondsLeft = 3600;
-            state.market.forEach(m => {
-              if (m.type === 'crypto' && m.rigs > 0) {
-                m.owned += m.rigs * 0.1;
-              }
-            });
-          } else {
-            state.miningSecondsLeft -= remainingElapsed;
-            remainingElapsed = 0;
-          }
-        }
-
-        saveGameLocally();
-
-        if (offlineEarnings > 1) {
-          setTimeout(() => {
-            const welcomeText = translations[state.language || 'de'].welcome;
-            alert(`${welcomeText} ${formatMoney(offlineEarnings)}.`);
-          }, 500);
-        }
-      }
-    }
-
-    // --- INITIALISIERUNG ---
+    // --- GAME LOOP ---
     checkSeasonReset();
     updateSeasonCountdown();
 
     loadGameLocally();
-    processOfflineProgress();
     updateDynamicTexts();
-    saveGameLocally();
     updateUI();
+
+    setInterval(() => { updateSeasonCountdown(); }, 1000);
+
+    setInterval(() => {
+      const pi3 = state.permaUpgrades.find(u => u.id === 'pi3');
+      if (pi3 && pi3.level > 0) {
+        const pwr = getClickPower();
+        state.money += pwr;
+        state.totalEarned += pwr;
+        updateUI();
+      }
+    }, 10000);
 
     setInterval(() => {
       saveGameLocally();
       if (window.FB && window.FB.auth.currentUser) {
-        saveGameToCloudManualSilent();
+        window.FB.setDoc(window.FB.doc(window.FB.db, "saves", window.FB.auth.currentUser.uid), state);
       }
     }, 30000);
 
-    async function saveGameToCloudManualSilent() {
-      try {
-        const user = window.FB.auth.currentUser;
-        if (!user) return;
-        await window.FB.setDoc(window.FB.doc(window.FB.db, "saves", user.uid), state);
-        if (state.companyName) {
-          await window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", user.uid), {
-            companyName: state.companyName,
-            totalValue: state.totalEarned,
-            updatedAt: Date.now()
-          }, { merge: true });
-        }
-      } catch (e) { console.error(e); }
-    }
-
-    setInterval(() => { autoSyncLeaderboard(); }, 6 * 3600 * 1000);
-
     setInterval(() => {
       state.hacks.forEach(h => {
-        if (h.cd > 0) {
-          h.cd--;
-          if (h.cd === 0) {
-            state.money += h.reward;
-            state.totalEarned += h.reward;
-          }
-        }
+        if (h.cd > 0) h.cd--;
       });
 
-      state.miningSecondsLeft--;
-      if (state.miningSecondsLeft <= 0) {
+      if (state.miningSecondsLeft > 0) {
+        state.miningSecondsLeft--;
+      } else {
         state.miningSecondsLeft = 3600;
-        state.market.forEach(m => {
-          if (m.type === 'crypto' && m.rigs > 0) {
-            m.owned += m.rigs * 0.1;
-          }
-        });
+        state.money += 50.00;
       }
+      updateMiningTimerDisplay();
 
       if (Math.random() < 0.05) {
         state.market.forEach(m => {
           const delta = (Math.random() - 0.48) * 4;
           m.change = parseFloat(delta.toFixed(1));
+          const oldPrice = m.price;
           m.price = Math.max(2, m.price * (1 + delta / 100));
+          if(!m.candles) m.candles = [];
+          m.candles.push({ o: oldPrice, h: Math.max(oldPrice, m.price)*1.01, l: Math.min(oldPrice, m.price)*0.99, c: m.price });
+          if(m.candles.length > 12) m.candles.shift();
         });
+        if(activeCurrentTab === 'market') drawAllCandleCharts();
       }
 
       state.incomeTimerSeconds--;
@@ -1531,37 +1624,11 @@
       }
 
       updateUI();
-      if (activeCurrentTab !== 'clicker' && activeCurrentTab !== 'fame' && activeCurrentTab !== 'settings') {
+      if (activeCurrentTab !== 'clicker' && activeCurrentTab !== 'market' && activeCurrentTab !== 'fame' && activeCurrentTab !== 'settings' && activeCurrentTab !== 'icash' && activeCurrentTab !== 'hack') {
         renderTabContent(activeCurrentTab);
       }
     }, 1000);
 
-    setInterval(() => { updateSeasonCountdown(); }, 1000);
-
-    updateUI();
-
-    // --- MUSIK ---
-    function toggleMusic() {
-      const music = document.getElementById('bg-music');
-      const icon = document.getElementById('music-icon');
-      
-      if (music.paused) {
-        music.volume = 0.3;
-        music.play().then(() => {
-          icon.setAttribute('data-lucide', 'volume-2');
-          icon.classList.remove('text-slate-400');
-          icon.classList.add('text-cyan-400');
-          lucide.createIcons();
-        }).catch(e => { console.log(e); });
-      } else {
-        music.pause();
-        icon.setAttribute('data-lucide', 'volume-X');
-        icon.classList.remove('text-cyan-400');
-        icon.classList.add('text-slate-400');
-        lucide.createIcons();
-      }
-    }
-    
     lucide.createIcons();
   </script>
 </body>
