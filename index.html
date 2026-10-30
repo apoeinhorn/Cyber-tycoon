@@ -202,6 +202,11 @@
         <span>0.5. iCash Cyber-Zentrale</span>
       </button>
 
+      <button onclick="switchTab('daily')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
+        <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i>
+        <span>11. Tägliche Belohnung</span>
+      </button>
+
       <button onclick="switchTab('depts')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="layers" class="w-4 h-4 text-slate-500"></i>
         <span>1. Megastrukturen & Sektoren</span>
@@ -344,6 +349,22 @@
 
       <div class="text-xs font-bold text-white uppercase tracking-wider mt-2">Permanente Boni & Euro-Exchange</div>
       <div id="list-icash-features" class="space-y-3"></div>
+    </div>
+
+    <!-- TAB 11: TÄGLICHE BELOHNUNG -->
+    <div id="tab-daily" class="tab-panel space-y-4 hidden">
+      <div class="holo-card p-4 bg-gradient-to-r from-emerald-950/40 via-[#0b101d] to-[#0b101d] border-emerald-500/30">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i> Tägliche Login-Belohnung
+        </h3>
+        <p class="text-xs text-slate-400 mt-1">Komm jeden Tag online, um exklusive iCash-Diamanten und Euro-Pakete abzuholen! Hol dir Tag für Tag größere Boni.</p>
+      </div>
+
+      <div id="daily-rewards-container" class="grid grid-cols-1 gap-2.5"></div>
+
+      <button onclick="claimDailyReward()" id="btn-claim-daily" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg hover:brightness-110 transition">
+        Tägliche Belohnung abholen!
+      </button>
     </div>
 
     <!-- TAB 1: SEKTOREN -->
@@ -504,7 +525,7 @@
     }
 
     let state = {
-      version: 4,
+      version: 5,
       companyName: '',
       language: 'de',
       money: 0,
@@ -518,7 +539,11 @@
       expNeeded: 200,
       miningSecondsLeft: 3600,
       incomeTimerSeconds: 60,
-      monthlyPassExpire: 0, // Timestamp wenn Pass abläuft
+      monthlyPassExpire: 0,
+      
+      // NEU: Tägliches Belohnungssystem
+      dailyStreak: 0,
+      lastClaimTimestamp: 0,
 
       permaUpgrades: [
         { id: 'pi1', name: 'Quantum Click Matrix', desc: 'Verdoppelt dauerhaft die Klick-Leistung.', cost: 5, level: 0, maxLevel: 10, mult: 2.0 },
@@ -527,7 +552,6 @@
         { id: 'pi4', name: 'Syndicate iCash Yield', desc: 'Erhöht iCash-Belohnungen bei Level-ups um +2.', cost: 30, level: 0, maxLevel: 5, mult: 1.0 }
       ],
 
-      // NEU: iCash-Store Items (Euro Tausch & Megaboosts)
       icashStore: [
         { id: 'is1', name: 'Euro-Injektion (Klein)', desc: 'Tausche 💎 5 iCash gegen +€500 Startkapital.', cost: 5, type: 'cash', value: 500 },
         { id: 'is2', name: 'Euro-Injektion (Groß)', desc: 'Tausche 💎 15 iCash gegen +€5.000 Startkapital.', cost: 15, type: 'cash', value: 5000 },
@@ -689,7 +713,7 @@
         season: "HOLO EDITION 2026",
         passivLabel: "Passiv / Min",
         companyValLabel: "Gesamt-Assets",
-        nav: ["0. Core Terminal", "0.5. iCash Cyber-Zentrale", "1. Megastrukturen", "2. Quanten-Forschung", "3. Börse & Mining Charts", "4. Advanced Lab", "5. Experten", "6. Black-Ops & Mini-Hack", "7. HQ", "8. Satelliten", "9. Cloud & Rangliste", "10. Einstellungen"],
+        nav: ["0. Core Terminal", "0.5. iCash Cyber-Zentrale", "11. Tägliche Belohnung", "1. Megastrukturen", "2. Quanten-Forschung", "3. Börse & Mining Charts", "4. Advanced Lab", "5. Experten", "6. Black-Ops & Mini-Hack", "7. HQ", "8. Satelliten", "9. Cloud & Rangliste", "10. Einstellungen"],
         departments: [
           { name: "Alpha Cyber-Grid" }, { name: "Nano-Assembler Plant" }, { name: "Quantum Node Array" },
           { name: "Synthetic Bio-Lab" }, { name: "Neural Matrix Hub" }, { name: "Holographic Forge" },
@@ -702,7 +726,7 @@
         season: "HOLO EDITION 2026",
         passivLabel: "Passive / Min",
         companyValLabel: "Total Assets",
-        nav: ["0. Core Terminal", "0.5. iCash Cyber-Hub", "1. Megastructures", "2. Quantum Research", "3. Stock & Mining Charts", "4. Advanced Lab", "5. Experts", "6. Black-Ops & Mini-Hack", "7. HQ", "8. Satellites", "9. Cloud & Leaderboard", "10. Settings"],
+        nav: ["0. Core Terminal", "0.5. iCash Cyber-Hub", "11. Daily Reward", "1. Megastructures", "2. Quantum Research", "3. Stock & Mining Charts", "4. Advanced Lab", "5. Experts", "6. Black-Ops & Mini-Hack", "7. HQ", "8. Satellites", "9. Cloud & Leaderboard", "10. Settings"],
         departments: [
           { name: "Alpha Cyber-Grid" }, { name: "Nano-Assembler Plant" }, { name: "Quantum Node Array" },
           { name: "Synthetic Bio-Lab" }, { name: "Neural Matrix Hub" }, { name: "Holographic Forge" },
@@ -906,6 +930,7 @@
       if(tabId === 'market') drawAllCandleCharts();
       if(tabId === 'hack') initHackMiniGame();
       if(tabId === 'fame') fetchLeaderboard();
+      if(tabId === 'daily') renderDailyRewards();
     }
 
     function formatMoney(num) {
@@ -969,7 +994,6 @@
       const currentHQ = state.hqs.filter(h => h.bought).slice(-1)[0];
       if (currentHQ) income *= currentHQ.mult;
 
-      // Monats-Pass Bonus: Verdoppelt das gesamte passive Einkommen!
       if (isPassActive()) {
         income *= 2.0;
       }
@@ -992,7 +1016,6 @@
         base *= u.mult;
       });
 
-      // Monats-Pass Bonus: Verdoppelt auch die Klick-Power!
       if (isPassActive()) {
         base *= 2.0;
       }
@@ -1018,7 +1041,6 @@
         btnUpg.className = "px-3.5 py-2 bg-[#0f172a] text-slate-600 border border-blue-500/10 text-xs rounded-lg font-semibold cursor-not-allowed";
       }
 
-      // Monats-Pass Status Badge aktualisieren
       const passBadge = document.getElementById('pass-status-badge');
       const passBtn = document.getElementById('btn-buy-pass');
       if (passBadge && passBtn) {
@@ -1056,7 +1078,6 @@
       updateUI();
     }
 
-    // Monats-Pass Kauf Logik
     function buyMonthlyPass() {
       const cost = 50;
       if (state.icash >= cost) {
@@ -1075,7 +1096,6 @@
       }
     }
 
-    // iCash Store Kauf Logik (Euros & Boosts)
     function buyIcashStoreItem(idx) {
       const item = state.icashStore[idx];
       if (state.icash >= item.cost) {
@@ -1096,6 +1116,102 @@
       } else {
         alert("Nicht genügend iCash für diesen Kauf vorhanden!");
       }
+    }
+
+    // Tägliches Belohnungs-System Daten & Logik
+    const dailyRewardsList = [
+      { day: 1, type: 'icash', val: 3, label: '💎 +3 iCash' },
+      { day: 2, type: 'cash', val: 250, label: '💶 +€250 Kapital' },
+      { day: 3, type: 'icash', val: 5, label: '💎 +5 iCash' },
+      { day: 4, type: 'cash', val: 1500, label: '💶 +€1.500 Kapital' },
+      { day: 5, type: 'icash', val: 10, label: '💎 +10 iCash' },
+      { day: 6, type: 'cash', val: 10000, label: '💶 +€10.000 Kapital' },
+      { day: 7, type: 'icash', val: 25, label: '💎 +25 iCash & VIP Pass Boost' }
+    ];
+
+    function canClaimDaily() {
+      const now = Date.now();
+      const twentyFourHours = 24 * 60 * 60 * 1000;
+      return (now - (state.lastClaimTimestamp || 0)) >= twentyFourHours;
+    }
+
+    function renderDailyRewards() {
+      const container = document.getElementById('daily-rewards-container');
+      const claimBtn = document.getElementById('btn-claim-daily');
+      if(!container) return;
+
+      container.innerHTML = '';
+      const currentStreakIndex = state.dailyStreak % 7;
+      const ready = canClaimDaily();
+
+      dailyRewardsList.forEach((rew, idx) => {
+        let statusClass = "border-blue-500/20 bg-[#0f172a]";
+        let statusText = `Tag ${rew.day}`;
+        if (idx < currentStreakIndex || (idx === currentStreakIndex && !ready)) {
+          statusClass = "border-emerald-500/40 bg-emerald-950/20 text-emerald-400";
+          statusText = `✓ Abgeholt`;
+        } else if (idx === currentStreakIndex && ready) {
+          statusClass = "border-amber-500/60 bg-amber-950/30 ring-2 ring-amber-500/50 animate-pulse";
+          statusText = `★ Heutiger Bonus!`;
+        }
+
+        container.innerHTML += `
+          <div class="holo-card p-3.5 flex justify-between items-center border ${statusClass}">
+            <div>
+              <div class="font-bold text-xs text-white">Tag ${rew.day} Belohnung</div>
+              <div class="text-xs text-slate-300 font-mono mt-0.5 font-bold">${rew.label}</div>
+            </div>
+            <div class="text-[11px] font-mono px-2.5 py-1 rounded-lg bg-[#020408] border border-blue-500/20">
+              ${statusText}
+            </div>
+          </div>
+        `;
+      });
+
+      if (ready) {
+        claimBtn.disabled = false;
+        claimBtn.className = "w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg hover:brightness-110 transition cursor-pointer";
+        claimBtn.innerText = "Tägliche Belohnung jetzt abholen!";
+      } else {
+        claimBtn.disabled = true;
+        claimBtn.className = "w-full py-3 bg-[#0f172a] text-slate-500 border border-slate-700 font-bold text-xs rounded-xl cursor-not-allowed";
+        const hoursLeft = Math.ceil(((state.lastClaimTimestamp + 24*60*60*1000) - Date.now()) / (1000*60*60));
+        claimBtn.innerText = `Nächste Belohnung in ca. ${hoursLeft} Stunde(n) verfügbar`;
+      }
+    }
+
+    function claimDailyReward() {
+      if (!canClaimDaily()) {
+        alert("Du hast deine Belohnung für heute bereits abgeholt! Komm morgen wieder.");
+        return;
+      }
+
+      const rewardIndex = state.dailyStreak % 7;
+      const rew = dailyRewardsList[rewardIndex];
+
+      if (rew.type === 'icash') {
+        state.icash += rew.val;
+        if(rewardIndex === 6) {
+          // Tag 7 Bonus: Gibt zusätzlich 24h Pass Verlängerung
+          const oneDayMs = 24 * 60 * 60 * 1000;
+          if (isPassActive()) {
+            state.monthlyPassExpire += oneDayMs;
+          } else {
+            state.monthlyPassExpire = Date.now() + oneDayMs;
+          }
+        }
+      } else if (rew.type === 'cash') {
+        state.money += rew.val;
+        state.totalEarned += rew.val;
+      }
+
+      state.dailyStreak++;
+      state.lastClaimTimestamp = Date.now();
+
+      alert(`🎁 Erfolgreich abgeholt: ${rew.label}!`);
+      updateUI();
+      renderDailyRewards();
+      saveGameLocally();
     }
 
     let correctHackNode = 0;
@@ -1229,6 +1345,10 @@
         });
 
         lucide.createIcons();
+      }
+
+      if (tabId === 'daily') {
+        renderDailyRewards();
       }
 
       if (tabId === 'depts') {
@@ -1710,7 +1830,7 @@
       }
 
       updateUI();
-      if (activeCurrentTab !== 'clicker' && activeCurrentTab !== 'market' && activeCurrentTab !== 'fame' && activeCurrentTab !== 'settings' && activeCurrentTab !== 'icash' && activeCurrentTab !== 'hack') {
+      if (activeCurrentTab !== 'clicker' && activeCurrentTab !== 'market' && activeCurrentTab !== 'fame' && activeCurrentTab !== 'settings' && activeCurrentTab !== 'icash' && activeCurrentTab !== 'hack' && activeCurrentTab !== 'daily') {
         renderTabContent(activeCurrentTab);
       }
     }, 1000);
