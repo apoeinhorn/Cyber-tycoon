@@ -42,14 +42,10 @@
           if(authFormsEl) authFormsEl.classList.add('hidden');
           if(logoutBtnEl) logoutBtnEl.classList.remove('hidden');
 
-          // Automatischer Cloud-Download mit Sicherheits-Check (Kein Datenverlust mehr!)
           try {
             const docSnap = await getDoc(doc(db, "saves", user.uid));
-            if (docSnap.exists()) {
-              const cloudData = docSnap.data();
-              if (window.mergeCloudAndLocalState) {
-                window.mergeCloudAndLocalState(cloudData);
-              }
+            if (docSnap.exists() && window.mergeCloudAndLocalState) {
+              window.mergeCloudAndLocalState(docSnap.data());
             }
           } catch(err) {
             console.error("Cloud-Ladefehler:", err);
@@ -442,7 +438,6 @@
   </main>
 
   <script>
-    // --- AUDIO SYNTH & MUSIC CONTROLLER ---
     let audioCtx = null;
     function initAudioContext() {
       if (!audioCtx) {
@@ -493,7 +488,6 @@
       lucide.createIcons();
     }
 
-    // --- GAME STATE ---
     let state = {
       version: 3,
       companyName: '',
@@ -597,18 +591,13 @@
       ]
     };
 
-    // --- INTELLIGENTER SICHERHEITS-MERGE (Verhindert Datenverlust) ---
     window.mergeCloudAndLocalState = function(cloudData) {
       if (!cloudData) return;
-      // Vergleiche Gesamtvermögen / Level: Nimm immer den besseren Stand
       const cloudValue = cloudData.totalEarned || cloudData.money || 0;
       const localValue = state.totalEarned || state.money || 0;
 
       if (cloudValue >= localValue && cloudValue > 0) {
         state = { ...state, ...cloudData };
-        console.log("Cloud-Stand geladen (Fortschritt war höher).");
-      } else if (localValue > cloudValue) {
-        console.log("Lokaler Stand behalten (war weiter als Cloud).");
       } else {
         state = { ...state, ...cloudData };
       }
@@ -692,49 +681,25 @@
           { name: "Orbital Ion Engine" }, { name: "Dark Matter Reactor" }, { name: "Singularity Core" },
           { name: "Autonomous Mech Unit" }, { name: "Deep Neural Link" }, { name: "Interstellar Relay" },
           { name: "Dyson Swarm Node" }, { name: "Asteroid Mining Fleet" }, { name: "Omniscient Hivemind" }
-        ],
-        upgrades: [
-          { name: "Photon Synapse Keyboard", desc: "Verdoppelt Klick-Power." }, { name: "Ergonomischer Exec-Sessel", desc: "+25% Gesamt-Einkommen." },
-          { name: "Quantum-Core Infusion", desc: "Verdoppelt Klick-Power." }, { name: "Tachyon Backbone", desc: "+30% Einkommen." },
-          { name: "Synaptischer Autopilot", desc: "Massiver Klick-Boost." }, { name: "Hyper-Pipeline CI/CD", desc: "+35% Ertrag." },
-          { name: "Compiler V9.9 Quantum", desc: "Erweiterte Klick-Power." }, { name: "Neural Global Link", desc: "+40% Netzwerkeinnahmen." },
-          { name: "Singularitäts Algorithmus", desc: "+50% Imperium-Einkommen." }
-        ],
-        market: [
-          { name: "AeroSpace Vanguard" }, { name: "QuantumSyndicate" }, { name: "BioHelix Global" }, { name: "CyberDrive Systems" },
-          { name: "QuantumCoin (QTC)" }, { name: "DarkMatter Token (DRK)" }, { name: "VoidShard (VOID)" }
-        ],
-        products: [
-          { name: "Quantum Neural Phone X", desc: "+10% weltweiter Hype." }, { name: "Neural Immersion Visor", desc: "+15% Hype-Faktor." },
-          { name: "Holographic AR Lenses", desc: "+20% Marktanteil." }, { name: "Autonomous Defense Drone", desc: "+25% Corporation-Wert." },
-          { name: "Cyber-Sentinel Hound", desc: "+30% Dominanz." }
-        ],
-        staff: [
-          { name: "Elite Netrunner", bonus: "+€0.01 Klick-Power" }, { name: "Lead Code Architect", bonus: "+1% Einkommen" },
-          { name: "AI Prompt Specialist", bonus: "+1.5% Einkommen" }, { name: "Cyber Security Watchdog", bonus: "+2% Einkommen" },
-          { name: "Venture Growth Lead", bonus: "+2.5% Einkommen" }
-        ],
-        hacks: [
-          { name: "Sub-Network Node Breach" }, { name: "Offshore Central Bank" }, { name: "Global Darkpool Raid" },
-          { name: "Rival Mega-Corp Vault" }, { name: "Defense Ministry Terminal" }
-        ],
-        hqs: [
-          { name: "Orbital Research Pod", desc: "Kompakte Raumstation, kostenlos." }, { name: "Silicon Valley Loft", desc: "+20% gesamter Ertrag." },
-          { name: "Autonomous Tech Campus", desc: "1.35x Multiplikator." }, { name: "Skyline Mega-Monolith", desc: "1.5x Multiplikator." },
-          { name: "Quantum Orbital Citadel", desc: "1.8x ultimativer Imperium-Boost." }
-        ],
-        orbitals: [
-          { name: "Comms Sat-Alpha", desc: "Erster Satellit im erdnahen Orbit." },
-          { name: "Solar Relay Node", desc: "Bündelt Sonnenenergie für passive Injektionen." },
-          { name: "Defense Drone Platform", desc: "Autonome Schutzschicht im All." },
-          { name: "Deep Space Array", desc: "Intergalaktischer Daten-Relay." }
         ]
       },
-      en: { season: "HOLO EDITION 2026", passivLabel: "Passive / Min", companyValLabel: "Total Assets", nav: [], departments: [], upgrades: [], market: [], products: [], staff: [], hacks: [], hqs: [], orbitals: [] },
-      fr: { season: "HOLO EDITION 2026", passivLabel: "Revenu", companyValLabel: "Actifs", nav: [], departments: [], upgrades: [], market: [], products: [], staff: [], hacks: [], hqs: [], orbitals: [] },
-      es: { season: "HOLO EDITION 2026", passivLabel: "Ingreso", companyValLabel: "Activos", nav: [], departments: [], upgrades: [], market: [], products: [], staff: [], hacks: [], hqs: [], orbitals: [] },
-      it: { season: "HOLO EDITION 2026", passivLabel: "Reddito", companyValLabel: "Asset", nav: [], departments: [], upgrades: [], market: [], products: [], staff: [], hacks: [], hqs: [], orbitals: [] }
+      en: {
+        season: "HOLO EDITION 2026",
+        passivLabel: "Passive / Min",
+        companyValLabel: "Total Assets",
+        nav: ["0. Core Terminal", "0.5. iCash Cyber-Hub", "1. Megastructures", "2. Quantum Research", "3. Stock & Mining Charts", "4. Advanced Lab", "5. Experts", "6. Black-Ops & Mini-Hack", "7. HQ", "8. Satellites", "9. Cloud & Leaderboard", "10. Settings"],
+        departments: [
+          { name: "Alpha Cyber-Grid" }, { name: "Nano-Assembler Plant" }, { name: "Quantum Node Array" },
+          { name: "Synthetic Bio-Lab" }, { name: "Neural Matrix Hub" }, { name: "Holographic Forge" },
+          { name: "Orbital Ion Engine" }, { name: "Dark Matter Reactor" }, { name: "Singularity Core" },
+          { name: "Autonomous Mech Unit" }, { name: "Deep Neural Link" }, { name: "Interstellar Relay" },
+          { name: "Dyson Swarm Node" }, { name: "Asteroid Mining Fleet" }, { name: "Omniscient Hivemind" }
+        ]
+      }
     };
+    translations.fr = translations.de;
+    translations.es = translations.de;
+    translations.it = translations.de;
 
     function setLanguage(lang) {
       state.language = lang;
@@ -746,8 +711,8 @@
 
     function updateDynamicTexts() {
       const lang = state.language || 'de';
-      const t = translations[lang];
-      if(!t || !t.nav || t.nav.length === 0) return;
+      const t = translations[lang] || translations['de'];
+      if(!t || !t.nav) return;
 
       const seasonTag = document.getElementById('season-tag');
       if(seasonTag) seasonTag.innerText = t.season;
@@ -806,7 +771,7 @@
       const pass = document.getElementById('auth-password').value;
       try {
         await window.FB.signInWithEmailAndPassword(window.FB.auth, email, pass);
-        alert('Eingeloggt & Cloud synchronisiert!');
+        alert('Eingeloggt & synchronisiert!');
       } catch (e) { alert('Login-Fehler: ' + e.message); }
     }
 
@@ -834,12 +799,20 @@
     }
 
     async function fetchLeaderboard() {
-      if (!window.FB) return;
+      const listEl = document.getElementById('leaderboard-list');
+      if (!window.FB || !window.FB.db) {
+        if(listEl) listEl.innerHTML = `<div class="text-xs text-rose-400">Offline-Modus: Rangliste nicht verfügbar.</div>`;
+        return;
+      }
       try {
+        listEl.innerHTML = `<div class="text-xs text-slate-500 italic">Lade Rangliste...</div>`;
         const q = window.FB.query(window.FB.collection(window.FB.db, "leaderboard"), window.FB.orderBy("totalValue", "desc"), window.FB.limit(10));
         const querySnapshot = await window.FB.getDocs(q);
-        const listEl = document.getElementById('leaderboard-list');
         listEl.innerHTML = '';
+        if(querySnapshot.empty) {
+          listEl.innerHTML = `<div class="text-xs text-slate-500 italic">Noch keine Einträge in der Rangliste.</div>`;
+          return;
+        }
         let rank = 1;
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
@@ -847,13 +820,16 @@
             <div class="holo-card p-3 flex justify-between items-center text-xs">
               <div class="flex items-center space-x-2.5">
                 <span class="font-mono font-bold text-blue-400">#${rank++}</span>
-                <span class="font-bold text-white">${data.companyName}</span>
+                <span class="font-bold text-white">${data.companyName || 'Unbekannt'}</span>
               </div>
-              <span class="font-mono text-emerald-400 font-bold">${formatMoney(data.totalValue)}</span>
+              <span class="font-mono text-emerald-400 font-bold">${formatMoney(data.totalValue || 0)}</span>
             </div>
           `;
         });
-      } catch (e) { console.error(e); }
+      } catch (e) {
+        console.error("Ranglisten-Fehler:", e);
+        if(listEl) listEl.innerHTML = `<div class="text-xs text-rose-400">Rangliste konnte nicht geladen werden.</div>`;
+      }
     }
 
     function getMonthKey() {
@@ -1182,7 +1158,6 @@
         const list = document.getElementById('list-upgrades');
         list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">2. Quanten-Forschung</h3>`;
         state.upgrades.forEach((u, idx) => {
-          const locUpg = t.upgrades && t.upgrades[idx] ? t.upgrades[idx] : { name: `Forschung ${idx+1}`, desc: 'Upgrade' };
           const imgUrl = upgradeImages[idx % upgradeImages.length];
           list.innerHTML += `
             <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
@@ -1191,8 +1166,8 @@
               </div>
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
-                  <div class="font-bold text-xs text-white">${locUpg.name}</div>
-                  <div class="text-[11px] text-slate-400 mt-0.5">${locUpg.desc}</div>
+                  <div class="font-bold text-xs text-white">Quanten-Forschung #${idx+1}</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">Imperium-Upgrade</div>
                 </div>
                 <button onclick="buyUpgrade(${idx})" ${u.bought ? 'disabled' : ''} class="px-3 py-1.5 ${u.bought ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30' : (state.money >= u.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
                   ${u.bought ? 'Erforscht' : formatMoney(u.cost)}
@@ -1209,7 +1184,6 @@
         state.market.forEach((m, idx) => {
           const isPos = m.change >= 0;
           const badgeBg = isPos ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border-rose-500/30';
-          const locMarket = t.market && t.market[idx] ? t.market[idx] : { name: `Asset ${idx+1}` };
 
           let miningHtml = '';
           if (m.type === 'crypto') {
@@ -1228,7 +1202,7 @@
               <div class="flex justify-between items-start">
                 <div>
                   <div class="flex items-center gap-2">
-                    <span class="font-bold text-xs text-white">${locMarket.name}</span>
+                    <span class="font-bold text-xs text-white">Asset #${idx+1}</span>
                     <span class="text-[9px] text-blue-400 font-mono uppercase px-1.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">${m.type}</span>
                   </div>
                   <div class="text-sm font-mono font-bold text-slate-200 mt-1">${formatMoney(m.price)}</div>
@@ -1258,7 +1232,6 @@
         const list = document.getElementById('list-lab');
         list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">4. Advanced Engineering Lab</h3>`;
         state.products.forEach((p, idx) => {
-          const locProd = t.products && t.products[idx] ? t.products[idx] : { name: `Produkt ${idx+1}`, desc: 'Tech' };
           const imgUrl = labImages[idx % labImages.length];
           list.innerHTML += `
             <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
@@ -1267,8 +1240,8 @@
               </div>
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
-                  <div class="font-bold text-xs text-white">${locProd.name}</div>
-                  <div class="text-[11px] text-slate-400 mt-0.5">${locProd.desc}</div>
+                  <div class="font-bold text-xs text-white">Technologie #${idx+1}</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">High-Tech Innovation</div>
                 </div>
                 <button onclick="launchProduct(${idx})" ${p.launched ? 'disabled' : ''} class="px-3 py-1.5 ${p.launched ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30' : (state.money >= p.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
                   ${p.launched ? 'Online' : 'Entwickeln (' + formatMoney(p.cost) + ')'}
@@ -1283,7 +1256,6 @@
         const list = document.getElementById('list-staff');
         list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">5. Vorstand & Experten</h3>`;
         state.staff.forEach((s, idx) => {
-          const locStaff = t.staff && t.staff[idx] ? t.staff[idx] : { name: `Experte ${idx+1}`, bonus: '+Bonus' };
           const imgUrl = staffImages[idx % staffImages.length];
           list.innerHTML += `
             <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
@@ -1292,8 +1264,8 @@
               </div>
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
-                  <div class="font-bold text-xs text-white">${locStaff.name}</div>
-                  <div class="text-[11px] text-blue-400 mt-0.5">${locStaff.bonus} (Anzahl: ${s.count})</div>
+                  <div class="font-bold text-xs text-white">Experte #${idx+1}</div>
+                  <div class="text-[11px] text-blue-400 mt-0.5">Anzahl: ${s.count}</div>
                 </div>
                 <button onclick="hireStaff(${idx})" class="px-3 py-1.5 ${state.money >= s.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold transition">
                   Rekrutieren (${formatMoney(s.cost)})
@@ -1308,11 +1280,10 @@
         const list = document.getElementById('list-hack');
         list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2 mt-4">Klassische Black-Ops</h3>`;
         state.hacks.forEach((h, idx) => {
-          const locHack = t.hacks && t.hacks[idx] ? t.hacks[idx] : { name: `Operation ${idx+1}` };
           list.innerHTML += `
             <div class="holo-card p-3.5 flex justify-between items-center">
               <div>
-                <div class="font-bold text-xs text-white">${locHack.name}</div>
+                <div class="font-bold text-xs text-white">Operation #${idx+1}</div>
                 <div class="text-[11px] text-slate-400 mt-0.5">Injektion: <span class="text-emerald-400 font-mono font-bold">+${formatMoney(h.reward)}</span></div>
               </div>
               <button onclick="executeHack(${idx})" ${h.cd > 0 ? 'disabled' : ''} class="px-3 py-1.5 ${h.cd > 0 ? 'bg-[#0f172a] text-slate-600 border border-blue-500/10' : 'bg-rose-950/80 text-rose-300 border border-rose-800'} text-xs rounded-lg font-semibold transition">
@@ -1327,7 +1298,6 @@
         const list = document.getElementById('list-hq');
         list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">7. Corporate Headquarters</h3>`;
         state.hqs.forEach((hq, idx) => {
-          const locHQ = t.hqs && t.hqs[idx] ? t.hqs[idx] : { name: `HQ ${idx+1}`, desc: 'Zentrale' };
           const imgUrl = hqImages[idx % hqImages.length];
           list.innerHTML += `
             <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
@@ -1336,8 +1306,8 @@
               </div>
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
-                  <div class="font-bold text-xs text-white">${locHQ.name}</div>
-                  <div class="text-[11px] text-slate-400 mt-0.5">${locHQ.desc}</div>
+                  <div class="font-bold text-xs text-white">HQ Stufe #${idx+1}</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">Multiplikator: x${hq.mult}</div>
                 </div>
                 <button onclick="buyHQ(${idx})" ${hq.bought || state.money < hq.cost ? 'disabled' : ''} class="px-3 py-1.5 ${hq.bought ? 'bg-[#0f172a] text-blue-400 border border-blue-500/30' : (state.money >= hq.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
                   ${hq.bought ? 'Zentrale aktiv' : formatMoney(hq.cost)}
@@ -1355,7 +1325,6 @@
         
         state.orbitals.forEach((o, idx) => {
           const cost = o.baseCost * Math.pow(1.25, o.count);
-          const locOrb = t.orbitals && t.orbitals[idx] ? t.orbitals[idx] : { name: `Satellit ${idx+1}`, desc: 'Orbital' };
           const imgUrl = orbitalImages[idx % orbitalImages.length];
           list.innerHTML += `
             <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
@@ -1364,8 +1333,8 @@
               </div>
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
-                  <div class="font-bold text-xs text-white">${locOrb.name}</div>
-                  <div class="text-[11px] text-slate-400 mt-0.5">${locOrb.desc}</div>
+                  <div class="font-bold text-xs text-white">Satellit #${idx+1}</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">Anzahl: ${o.count}</div>
                 </div>
                 <button onclick="buyOrbital(${idx})" class="px-3 py-1.5 ${state.money >= cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold transition">
                   Starten (${formatMoney(cost)})
@@ -1582,7 +1551,6 @@
       }
     }, 10000);
 
-    // Automatischer Hintergrund-Sync in die Cloud alle 30 Sekunden
     setInterval(() => {
       saveGameLocally();
       if (window.FB && window.FB.auth.currentUser) {
