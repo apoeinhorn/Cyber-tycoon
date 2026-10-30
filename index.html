@@ -188,6 +188,11 @@
         <span>8. Cloud Save & Bestenliste</span>
       </button>
 
+      <button onclick="switchTab('settings')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-3 rounded-2xl text-xs font-cyber font-bold text-cyan-400 hover:bg-cyan-500/10 transition">
+        <i data-lucide="settings" class="w-4 h-4"></i>
+        <span>9. Einstellungen & Sprache</span>
+      </button>
+
     </div>
 
     <div class="p-4 border-t border-slate-800 bg-slate-950">
@@ -329,12 +334,40 @@
       </div>
     </div>
 
+    <!-- TAB 9: EINSTELLUNGEN & SPRACHE -->
+    <div id="tab-settings" class="tab-panel space-y-4 hidden">
+      <h3 class="font-cyber font-bold text-lg text-cyan-400">9. Einstellungen & Sprache / Settings / Paramètres</h3>
+      
+      <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-3">
+        <div class="font-cyber font-bold text-xs text-slate-200">Sprache / Language / Langue / Idioma / Lingua</div>
+        
+        <div class="grid grid-cols-1 gap-2">
+          <button onclick="setLanguage('de')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center">
+            <span>🇩🇪 Deutsch</span> <span class="text-[10px] text-slate-500">Aktiv</span>
+          </button>
+          <button onclick="setLanguage('en')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center">
+            <span>🇬🇧 English</span>
+          </button>
+          <button onclick="setLanguage('fr')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center">
+            <span>🇫🇷 Français</span>
+          </button>
+          <button onclick="setLanguage('es')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center">
+            <span>🇪🇸 Español</span>
+          </button>
+          <button onclick="setLanguage('it')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-left text-cyan-400 font-cyber font-bold flex justify-between items-center">
+            <span>🇮🇹 Italiano</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <script>
     // --- GAME STATE ---
     let state = {
       companyName: '',
+      language: 'de',
       money: 0,
       totalEarned: 0,
       clickPower: 0.01,
@@ -418,6 +451,33 @@
         { id: 'hq5', name: 'Underground Bunkernet Facility', cost: 20000000.00, mult: 1.8, bought: false, desc: '1.8x Gesamtertrag.' }
       ]
     };
+
+    // --- SPRACH-SYSTEM ---
+    const translations = {
+      de: {
+        welcome: "⚡ Willkommen zurück! Während deiner Abwesenheit hat dein Imperium"
+      },
+      en: {
+        welcome: "⚡ Welcome back! During your absence, your empire generated"
+      },
+      fr: {
+        welcome: "⚡ Bon retour ! Pendant votre absence, votre empire a généré"
+      },
+      es: {
+        welcome: "⚡ ¡Bienvenido de nuevo! Durante tu ausencia, tu imperio generó"
+      },
+      it: {
+        welcome: "⚡ Bentornato! Durante la tua assenza, il tuo impero ha generato"
+      }
+    };
+
+    function setLanguage(lang) {
+      state.language = lang;
+      saveGameLocally();
+      updateUI();
+      if(activeCurrentTab !== 'clicker') renderTabContent(activeCurrentTab);
+      alert(lang === 'de' ? 'Sprache zu Deutsch gewechselt!' : lang === 'en' ? 'Language changed to English!' : lang === 'fr' ? 'Langue changée en Français!' : lang === 'es' ? '¡Idioma cambiado al Español!' : 'Lingua cambiata in Italiano!');
+    }
 
     // --- FIREBASE AUTH & LEADERBOARD FUNKTIONEN ---
     async function handleRegister() {
@@ -1054,7 +1114,8 @@
 
         if (offlineEarnings > 1) {
           setTimeout(() => {
-            alert(`⚡ Willkommen zurück! Während deiner Abwesenheit hat dein Imperium ${formatMoney(offlineEarnings)} erwirtschaftet.`);
+            const welcomeText = translations[state.language || 'de'].welcome;
+            alert(`${welcomeText} ${formatMoney(offlineEarnings)}.`);
           }, 500);
         }
       }
@@ -1170,7 +1231,6 @@
       }
     }
     
-    // Lucide Icons initialisieren
     lucide.createIcons();
   </script>
 </body>
