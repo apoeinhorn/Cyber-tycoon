@@ -42,12 +42,14 @@
           if(authFormsEl) authFormsEl.classList.add('hidden');
           if(logoutBtnEl) logoutBtnEl.classList.remove('hidden');
 
-          // Cloud-Daten sofort automatisch herunterladen und einspielen!
+          // Automatischer Cloud-Download mit Sicherheits-Check (Kein Datenverlust mehr!)
           try {
             const docSnap = await getDoc(doc(db, "saves", user.uid));
             if (docSnap.exists()) {
               const cloudData = docSnap.data();
-              window.loadStateFromCloud(cloudData);
+              if (window.mergeCloudAndLocalState) {
+                window.mergeCloudAndLocalState(cloudData);
+              }
             }
           } catch(err) {
             console.error("Cloud-Ladefehler:", err);
@@ -595,14 +597,26 @@
       ]
     };
 
-    // Globale Funktion zum Einspielen der Cloud-Daten
-    window.loadStateFromCloud = function(cloudData) {
-      state = { ...state, ...cloudData };
+    // --- INTELLIGENTER SICHERHEITS-MERGE (Verhindert Datenverlust) ---
+    window.mergeCloudAndLocalState = function(cloudData) {
+      if (!cloudData) return;
+      // Vergleiche Gesamtvermögen / Level: Nimm immer den besseren Stand
+      const cloudValue = cloudData.totalEarned || cloudData.money || 0;
+      const localValue = state.totalEarned || state.money || 0;
+
+      if (cloudValue >= localValue && cloudValue > 0) {
+        state = { ...state, ...cloudData };
+        console.log("Cloud-Stand geladen (Fortschritt war höher).");
+      } else if (localValue > cloudValue) {
+        console.log("Lokaler Stand behalten (war weiter als Cloud).");
+      } else {
+        state = { ...state, ...cloudData };
+      }
+
       saveGameLocally();
       updateDynamicTexts();
       updateUI();
       renderTabContent(activeCurrentTab);
-      console.log("Cloud-Stand erfolgreich synchronisiert!");
     };
 
     const deptImages = [
@@ -792,7 +806,7 @@
       const pass = document.getElementById('auth-password').value;
       try {
         await window.FB.signInWithEmailAndPassword(window.FB.auth, email, pass);
-        alert('Eingeloggt & Stand geladen!');
+        alert('Eingeloggt & Cloud synchronisiert!');
       } catch (e) { alert('Login-Fehler: ' + e.message); }
     }
 
@@ -1568,6 +1582,7 @@
       }
     }, 10000);
 
+    // Automatischer Hintergrund-Sync in die Cloud alle 30 Sekunden
     setInterval(() => {
       saveGameLocally();
       if (window.FB && window.FB.auth.currentUser) {
