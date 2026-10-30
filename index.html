@@ -1021,7 +1021,7 @@
 
         state.miningSecondsLeft = Math.max(0, state.miningSecondsLeft - elapsedSeconds);
 
-        // WICHTIG: Sofort speichern, damit der Offline-Stand eingefroren wird!
+        // Sofort speichern, BEVOR der Alert blockiert
         saveGameLocally();
 
         if (offlineEarnings > 1) {
@@ -1032,15 +1032,11 @@
       }
     }
 
-      
-      saveGameLocally();
-    }
-
     // --- INITIALISIERUNG & KERN-LOOPS ---
     checkSeasonReset();
     updateSeasonCountdown();
 
-    // Beim Start des Spiels laden
+    // Beim Start des Spiels laden & Offline-Fortschritt berechnen
     loadGameLocally();
     processOfflineProgress();
 
