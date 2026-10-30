@@ -93,11 +93,9 @@
   <!-- TOP APP BAR -->
   <header class="bg-[#0b0f19]/90 border-b border-slate-800 px-4 py-3 sticky top-0 z-30 backdrop-blur-md flex items-center justify-between">
     <div class="flex items-center space-x-2">
-      <!-- Menü Burger Button -->
       <button id="btn-toggle-menu" onclick="toggleMenu()" class="p-2 bg-slate-900 hover:bg-slate-800 text-cyan-400 rounded-xl border border-slate-700 active:scale-95 transition">
         <i data-lucide="menu" class="w-5 h-5"></i>
       </button>
-      <!-- Musik Player Button -->
       <audio id="bg-music" loop>
         <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=cyberpunk-2099-10701.mp3" type="audio/mpeg">
       </audio>
@@ -230,7 +228,6 @@
           <span id="click-power-text" class="text-[11px] font-mono font-semibold text-fuchsia-400 mt-1">+€0.01 / Klick</span>
         </button>
 
-        <!-- DIREKT-UPGRADER FÜR KLICK-POWER -->
         <div class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 mt-3 flex justify-between items-center">
           <div>
             <div class="font-cyber font-bold text-xs text-slate-200">Klick-Booster (Level <span id="click-upgrade-level">0</span>)</div>
@@ -354,79 +351,79 @@
       incomeTimerSeconds: 60,
 
       departments: [
-        { id: 'd1', name: 'Mamas Garage Studio', count: 0, baseCost: 1.50, baseIncome: 0.05 },
-        { id: 'd2', name: 'Freelance Coder Squad', count: 0, baseCost: 15.00, baseIncome: 0.40 },
-        { id: 'd3', name: 'Darknet Server Node', count: 0, baseCost: 120.00, baseIncome: 2.50 },
-        { id: 'd4', name: 'Web3 & Crypto Lab', count: 0, baseCost: 950.00, baseIncome: 15.00 },
-        { id: 'd5', name: 'Indie Game Studio', count: 0, baseCost: 7500.00, baseIncome: 90.00 },
-        { id: 'd6', name: 'AI Chatbot Cluster', count: 0, baseCost: 55000.00, baseIncome: 450.00 },
-        { id: 'd7', name: 'SaaS Enterprise Engine', count: 0, baseCost: 400000.00, baseIncome: 2400.00 },
-        { id: 'd8', name: 'Cybernetic Bio-Augmenter', count: 0, baseCost: 3000000.00, baseIncome: 12000.00 },
-        { id: 'd9', name: 'Quantum Cloud Grid', count: 0, baseCost: 25000000.00, baseIncome: 65000.00 },
-        { id: 'd10', name: 'Autonomous Mech Factory', count: 0, baseCost: 200000000.00, baseIncome: 350000.00 },
-        { id: 'd11', name: 'Neural Link Implant Corp', count: 0, baseCost: 1500000000.00, baseIncome: 1800000.00 },
-        { id: 'd12', name: 'Sub-Orbital Satellite Net', count: 0, baseCost: 12000000000.00, baseIncome: 9000000.00 },
-        { id: 'd13', name: 'Fusion Energy Generator', count: 0, baseCost: 90000000000.00, baseIncome: 45000000.00 },
-        { id: 'd14', name: 'Deep Space Mining Rig', count: 0, baseCost: 750000000000.00, baseIncome: 220000000.00 },
-        { id: 'd15', name: 'Planetary AI Hivemind', count: 0, baseCost: 6000000000000.00, baseIncome: 1100000000.00 }
+        { id: 'd1', count: 0, baseCost: 1.50, baseIncome: 0.05 },
+        { id: 'd2', count: 0, baseCost: 15.00, baseIncome: 0.40 },
+        { id: 'd3', count: 0, baseCost: 120.00, baseIncome: 2.50 },
+        { id: 'd4', count: 0, baseCost: 950.00, baseIncome: 15.00 },
+        { id: 'd5', count: 0, baseCost: 7500.00, baseIncome: 90.00 },
+        { id: 'd6', count: 0, baseCost: 55000.00, baseIncome: 450.00 },
+        { id: 'd7', count: 0, baseCost: 400000.00, baseIncome: 2400.00 },
+        { id: 'd8', count: 0, baseCost: 3000000.00, baseIncome: 12000.00 },
+        { id: 'd9', count: 0, baseCost: 25000000.00, baseIncome: 65000.00 },
+        { id: 'd10', count: 0, baseCost: 200000000.00, baseIncome: 350000.00 },
+        { id: 'd11', count: 0, baseCost: 1500000000.00, baseIncome: 1800000.00 },
+        { id: 'd12', count: 0, baseCost: 12000000000.00, baseIncome: 9000000.00 },
+        { id: 'd13', count: 0, baseCost: 90000000000.00, baseIncome: 45000000.00 },
+        { id: 'd14', count: 0, baseCost: 750000000000.00, baseIncome: 220000000.00 },
+        { id: 'd15', count: 0, baseCost: 6000000000000.00, baseIncome: 1100000000.00 }
       ],
 
       upgrades: [
-        { id: 'u1', name: 'Mechanische RGB-Tastatur', cost: 2.50, bought: false, mult: 2.0, type: 'click', desc: 'Verdoppelt Klick-Power.' },
-        { id: 'u2', name: 'Ergonomischer Titan-Stuhl', cost: 10.00, bought: false, mult: 1.25, type: 'global', desc: '+25% Passiv-Einkommen.' },
-        { id: 'u3', name: 'Giga-Koffein Infusion', cost: 50.00, bought: false, mult: 2.0, type: 'click', desc: 'Verdoppelt Klick-Power.' },
-        { id: 'u4', name: 'Glasfaser Gigabit-Standleitung', cost: 300.00, bought: false, mult: 1.3, type: 'global', desc: '+30% Passiv-Einkommen.' },
-        { id: 'u5', name: 'AI Auto-Code Autopilot', cost: 1500.00, bought: false, mult: 2.0, type: 'click', desc: 'Starke Klick-Steigerung.' },
-        { id: 'u6', name: 'Cloud Cluster CI/CD Pipeline', cost: 8000.00, bought: false, mult: 1.35, type: 'global', desc: '+35% Passiv-Einkommen.' },
-        { id: 'u7', name: 'Quantum Compiler V8', cost: 45000.00, bought: false, mult: 2.0, type: 'click', desc: 'Erweiterte Klick-Power.' },
-        { id: 'u8', name: 'Neural Sync Headset Mod', cost: 250000.00, bought: false, mult: 1.4, type: 'global', desc: '+40% Passiv-Einkommen.' },
-        { id: 'u9', name: 'Darknet Algorithmus Matrix', cost: 1500000.00, bought: false, mult: 1.5, type: 'global', desc: '+50% Passiv-Einkommen.' }
+        { id: 'u1', cost: 2.50, bought: false, mult: 2.0, type: 'click' },
+        { id: 'u2', cost: 10.00, bought: false, mult: 1.25, type: 'global' },
+        { id: 'u3', cost: 50.00, bought: false, mult: 2.0, type: 'click' },
+        { id: 'u4', cost: 300.00, bought: false, mult: 1.3, type: 'global' },
+        { id: 'u5', cost: 1500.00, bought: false, mult: 2.0, type: 'click' },
+        { id: 'u6', cost: 8000.00, bought: false, mult: 1.35, type: 'global' },
+        { id: 'u7', cost: 45000.00, bought: false, mult: 2.0, type: 'click' },
+        { id: 'u8', cost: 250000.00, bought: false, mult: 1.4, type: 'global' },
+        { id: 'u9', cost: 1500000.00, bought: false, mult: 1.5, type: 'global' }
       ],
 
       market: [
-        { id: 'm1', name: 'NVIDIA Cyber-Tech', type: 'stock', price: 15.00, change: 1.2, owned: 0 },
-        { id: 'm2', name: 'CyberCorp Inc.', type: 'stock', price: 5.00, change: -0.4, owned: 0 },
-        { id: 'm3', name: 'BioGenetics Corp', type: 'stock', price: 45.00, change: 0.8, owned: 0 },
-        { id: 'm4', name: 'RoboDynamics Ltd', type: 'stock', price: 180.00, change: 2.1, owned: 0 },
-        { id: 'm5', name: 'CyberCoin (CBC)', type: 'crypto', price: 1200.00, change: 3.5, owned: 0, rigs: 0, rigCost: 500.00 },
-        { id: 'm6', name: 'ByteToken (BYT)', type: 'crypto', price: 150.00, change: -1.1, owned: 0, rigs: 0, rigCost: 80.00 },
-        { id: 'm7', name: 'Void Coin (VOID)', type: 'crypto', price: 12.00, change: 0.2, owned: 0, rigs: 0, rigCost: 20.00 }
+        { id: 'm1', type: 'stock', price: 15.00, change: 1.2, owned: 0 },
+        { id: 'm2', type: 'stock', price: 5.00, change: -0.4, owned: 0 },
+        { id: 'm3', type: 'stock', price: 45.00, change: 0.8, owned: 0 },
+        { id: 'm4', type: 'stock', price: 180.00, change: 2.1, owned: 0 },
+        { id: 'm5', type: 'crypto', price: 1200.00, change: 3.5, owned: 0, rigs: 0, rigCost: 500.00 },
+        { id: 'm6', type: 'crypto', price: 150.00, change: -1.1, owned: 0, rigs: 0, rigCost: 80.00 },
+        { id: 'm7', type: 'crypto', price: 12.00, change: 0.2, owned: 0, rigs: 0, rigCost: 20.00 }
       ],
 
       products: [
-        { id: 'p1', name: 'CyberPhone Alpha', cost: 1000.00, launched: false, desc: '+10% Hype.' },
-        { id: 'p2', name: 'Neural VR Visor', cost: 8500.00, launched: false, desc: '+15% Hype.' },
-        { id: 'p3', name: 'Smart CyberGlasses AR', cost: 65000.00, launched: false, desc: '+20% Hype.' },
-        { id: 'p4', name: 'Autonomous Security Drone', cost: 500000.00, launched: false, desc: '+25% Hype.' },
-        { id: 'p5', name: 'Cyber Mech-Dog Patrol', cost: 4000000.00, launched: false, desc: '+30% Hype.' }
+        { id: 'p1', cost: 1000.00, launched: false },
+        { id: 'p2', cost: 8500.00, launched: false },
+        { id: 'p3', cost: 65000.00, launched: false },
+        { id: 'p4', cost: 500000.00, launched: false },
+        { id: 'p5', cost: 4000000.00, launched: false }
       ],
 
       staff: [
-        { id: 's1', name: 'Junior Coder', cost: 20.00, count: 0, bonus: '+€0.01 Klick-Power' },
-        { id: 's2', name: 'Senior Fullstack Dev', cost: 250.00, count: 0, bonus: '+1% Passiv-Einkommen' },
-        { id: 's3', name: 'AI Prompt Engineer', cost: 1800.00, count: 0, bonus: '+1.5% Passiv-Einkommen' },
-        { id: 's4', name: 'Cyber Security Officer', cost: 15000.00, count: 0, bonus: '+2% Passiv-Einkommen' },
-        { id: 's5', name: 'Growth Hacking Lead', cost: 100000.00, count: 0, bonus: '+2.5% Passiv-Einkommen' }
+        { id: 's1', cost: 20.00, count: 0 },
+        { id: 's2', cost: 250.00, count: 0 },
+        { id: 's3', cost: 1800.00, count: 0 },
+        { id: 's4', cost: 15000.00, count: 0 },
+        { id: 's5', cost: 100000.00, count: 0 }
       ],
 
       hacks: [
-        { id: 'h1', name: 'Kebab-Bistro Wifi', reward: 0.50, cd: 0, maxCd: 86400 },
-        { id: 'h2', name: 'Stadtsparkassen Server', reward: 3.50, cd: 0, maxCd: 86400 },
-        { id: 'h3', name: 'Offshore Crypto Pool', reward: 25.00, cd: 0, maxCd: 86400 },
-        { id: 'h4', name: 'Rivalisierendes Tech-Startup', reward: 150.00, cd: 0, maxCd: 86400 },
-        { id: 'h5', name: 'Polizeipräsidium Mainframe', reward: 1000.00, cd: 0, maxCd: 86400 }
+        { id: 'h1', reward: 0.50, cd: 0, maxCd: 86400 },
+        { id: 'h2', reward: 3.50, cd: 0, maxCd: 86400 },
+        { id: 'h3', reward: 25.00, cd: 0, maxCd: 86400 },
+        { id: 'h4', reward: 150.00, cd: 0, maxCd: 86400 },
+        { id: 'h5', reward: 1000.00, cd: 0, maxCd: 86400 }
       ],
 
       hqs: [
-        { id: 'hq1', name: 'Mamas Garage', cost: 0, mult: 1.0, bought: true, desc: 'Staubiger Raum, kostenlos.' },
-        { id: 'hq2', name: 'Open Space Startup Loft', cost: 5000.00, mult: 1.2, bought: false, desc: '+20% Gesamtertrag.' },
-        { id: 'hq3', name: 'Tech Park Campus Building', cost: 80000.00, mult: 1.35, bought: false, desc: '1.35x Gesamtertrag.' },
-        { id: 'hq4', name: 'Cyber Skyscraper Tower', cost: 1200000.00, mult: 1.5, bought: false, desc: '1.5x Gesamtertrag.' },
-        { id: 'hq5', name: 'Underground Bunkernet Facility', cost: 20000000.00, mult: 1.8, bought: false, desc: '1.8x Gesamtertrag.' }
+        { id: 'hq1', cost: 0, mult: 1.0, bought: true },
+        { id: 'hq2', cost: 5000.00, mult: 1.2, bought: false },
+        { id: 'hq3', cost: 80000.00, mult: 1.35, bought: false },
+        { id: 'hq4', cost: 1200000.00, mult: 1.5, bought: false },
+        { id: 'hq5', cost: 20000000.00, mult: 1.8, bought: false }
       ]
     };
 
-    // --- MEHRSPRACHIGKEITS-WÖRTERBUCH (DE, EN, FR, ES, IT) ---
+    // --- VOLLSTÄNDIGES MEHRSPRACHIGKEITS-WÖRTERBUCH (DE, EN, FR, ES, IT) ---
     const translations = {
       de: {
         season: "Saison Okt 2026",
@@ -444,7 +441,45 @@
         tab6: { title: "6. Cyber Security Operations", desc: "Jeder Hack ist nur 1x pro Tag möglich. Beute wird nach Ablauf des Timers ausgezahlt.", reward: "Beute nach Timer:", hackBtn: "HACKEN (1x/Tag)" },
         tab7: { title: "7. Hauptquartier Expansion", current: "Aktuell" },
         tab8: { title: "8. Cloud Save & Bestenliste", email: "E-Mail Adresse", pass: "Passwort (min. 6 Zeichen)", comp: "Einmaliger Firmenname", login: "Login", reg: "Registrieren", logout: "Abmelden", saveBtn: "Spielstand & Bestenliste speichern", top: "Globale Top-Firmen", sync: "Auto-Sync (alle 6h)", empty: "Noch keine Einträge in der Bestenliste.", loading: "Lade Bestenliste..." },
-        tab9: { title: "9. Einstellungen & Sprache", select: "Sprache wählen / Select Language" }
+        tab9: { title: "9. Einstellungen & Sprache", select: "Sprache wählen / Select Language" },
+        
+        departments: [
+          { name: "Mamas Garage Studio" }, { name: "Freelance Coder Squad" }, { name: "Darknet Server Node" },
+          { name: "Web3 & Crypto Lab" }, { name: "Indie Game Studio" }, { name: "AI Chatbot Cluster" },
+          { name: "SaaS Enterprise Engine" }, { name: "Cybernetic Bio-Augmenter" }, { name: "Quantum Cloud Grid" },
+          { name: "Autonomous Mech Factory" }, { name: "Neural Link Implant Corp" }, { name: "Sub-Orbital Satellite Net" },
+          { name: "Fusion Energy Generator" }, { name: "Deep Space Mining Rig" }, { name: "Planetary AI Hivemind" }
+        ],
+        upgrades: [
+          { name: "Mechanische RGB-Tastatur", desc: "Verdoppelt Klick-Power." }, { name: "Ergonomischer Titan-Stuhl", desc: "+25% Passiv-Einkommen." },
+          { name: "Giga-Koffein Infusion", desc: "Verdoppelt Klick-Power." }, { name: "Glasfaser Gigabit-Standleitung", desc: "+30% Passiv-Einkommen." },
+          { name: "AI Auto-Code Autopilot", desc: "Starke Klick-Steigerung." }, { name: "Cloud Cluster CI/CD Pipeline", desc: "+35% Passiv-Einkommen." },
+          { name: "Quantum Compiler V8", desc: "Erweiterte Klick-Power." }, { name: "Neural Sync Headset Mod", desc: "+40% Passiv-Einkommen." },
+          { name: "Darknet Algorithmus Matrix", desc: "+50% Passiv-Einkommen." }
+        ],
+        market: [
+          { name: "NVIDIA Cyber-Tech" }, { name: "CyberCorp Inc." }, { name: "BioGenetics Corp" }, { name: "RoboDynamics Ltd" },
+          { name: "CyberCoin (CBC)" }, { name: "ByteToken (BYT)" }, { name: "Void Coin (VOID)" }
+        ],
+        products: [
+          { name: "CyberPhone Alpha", desc: "+10% Hype." }, { name: "Neural VR Visor", desc: "+15% Hype." },
+          { name: "Smart CyberGlasses AR", desc: "+20% Hype." }, { name: "Autonomous Security Drone", desc: "+25% Hype." },
+          { name: "Cyber Mech-Dog Patrol", desc: "+30% Hype." }
+        ],
+        staff: [
+          { name: "Junior Coder", bonus: "+€0.01 Klick-Power" }, { name: "Senior Fullstack Dev", bonus: "+1% Passiv-Einkommen" },
+          { name: "AI Prompt Engineer", bonus: "+1.5% Passiv-Einkommen" }, { name: "Cyber Security Officer", bonus: "+2% Passiv-Einkommen" },
+          { name: "Growth Hacking Lead", bonus: "+2.5% Passiv-Einkommen" }
+        ],
+        hacks: [
+          { name: "Kebab-Bistro Wifi" }, { name: "Stadtsparkassen Server" }, { name: "Offshore Crypto Pool" },
+          { name: "Rivalisierendes Tech-Startup" }, { name: "Polizeipräsidium Mainframe" }
+        ],
+        hqs: [
+          { name: "Mamas Garage", desc: "Staubiger Raum, kostenlos." }, { name: "Open Space Startup Loft", desc: "+20% Gesamtertrag." },
+          { name: "Tech Park Campus Building", desc: "1.35x Gesamtertrag." }, { name: "Cyber Skyscraper Tower", desc: "1.5x Gesamtertrag." },
+          { name: "Underground Bunkernet Facility", desc: "1.8x Gesamtertrag." }
+        ]
       },
       en: {
         season: "Season Oct 2026",
@@ -462,7 +497,45 @@
         tab6: { title: "6. Cyber Security Operations", desc: "Each hack is available once per day. Loot is paid out after the timer expires.", reward: "Loot after timer:", hackBtn: "HACK (1x/Day)" },
         tab7: { title: "7. Headquarters Expansion", current: "Current" },
         tab8: { title: "8. Cloud Save & Leaderboard", email: "Email Address", pass: "Password (min. 6 chars)", comp: "Unique Company Name", login: "Login", reg: "Register", logout: "Logout", saveBtn: "Save Game & Leaderboard", top: "Global Top Companies", sync: "Auto-Sync (every 6h)", empty: "No entries in leaderboard yet.", loading: "Loading leaderboard..." },
-        tab9: { title: "9. Settings & Language", select: "Select Language" }
+        tab9: { title: "9. Settings & Language", select: "Select Language" },
+
+        departments: [
+          { name: "Mom's Garage Studio" }, { name: "Freelance Coder Squad" }, { name: "Darknet Server Node" },
+          { name: "Web3 & Crypto Lab" }, { name: "Indie Game Studio" }, { name: "AI Chatbot Cluster" },
+          { name: "SaaS Enterprise Engine" }, { name: "Cybernetic Bio-Augmenter" }, { name: "Quantum Cloud Grid" },
+          { name: "Autonomous Mech Factory" }, { name: "Neural Link Implant Corp" }, { name: "Sub-Orbital Satellite Net" },
+          { name: "Fusion Energy Generator" }, { name: "Deep Space Mining Rig" }, { name: "Planetary AI Hivemind" }
+        ],
+        upgrades: [
+          { name: "Mechanical RGB Keyboard", desc: "Doubles click power." }, { name: "Ergonomic Titanium Chair", desc: "+25% passive income." },
+          { name: "Giga-Caffeine Infusion", desc: "Doubles click power." }, { name: "Fiber Optic Gigabit Line", desc: "+30% passive income." },
+          { name: "AI Auto-Code Autopilot", desc: "Strong click boost." }, { name: "Cloud Cluster CI/CD Pipeline", desc: "+35% passive income." },
+          { name: "Quantum Compiler V8", desc: "Advanced click power." }, { name: "Neural Sync Headset Mod", desc: "+40% passive income." },
+          { name: "Darknet Algorithm Matrix", desc: "+50% passive income." }
+        ],
+        market: [
+          { name: "NVIDIA Cyber-Tech" }, { name: "CyberCorp Inc." }, { name: "BioGenetics Corp" }, { name: "RoboDynamics Ltd" },
+          { name: "CyberCoin (CBC)" }, { name: "ByteToken (BYT)" }, { name: "Void Coin (VOID)" }
+        ],
+        products: [
+          { name: "CyberPhone Alpha", desc: "+10% Hype." }, { name: "Neural VR Visor", desc: "+15% Hype." },
+          { name: "Smart CyberGlasses AR", desc: "+20% Hype." }, { name: "Autonomous Security Drone", desc: "+25% Hype." },
+          { name: "Cyber Mech-Dog Patrol", desc: "+30% Hype." }
+        ],
+        staff: [
+          { name: "Junior Coder", bonus: "+€0.01 Click Power" }, { name: "Senior Fullstack Dev", bonus: "+1% Passive Income" },
+          { name: "AI Prompt Engineer", bonus: "+1.5% Passive Income" }, { name: "Cyber Security Officer", bonus: "+2% Passive Income" },
+          { name: "Growth Hacking Lead", bonus: "+2.5% Passive Income" }
+        ],
+        hacks: [
+          { name: "Kebab Bistro Wifi" }, { name: "City Savings Bank Server" }, { name: "Offshore Crypto Pool" },
+          { name: "Rival Tech Startup" }, { name: "Police HQ Mainframe" }
+        ],
+        hqs: [
+          { name: "Mom's Garage", desc: "Dusty room, free." }, { name: "Open Space Startup Loft", desc: "+20% total earnings." },
+          { name: "Tech Park Campus Building", desc: "1.35x total earnings." }, { name: "Cyber Skyscraper Tower", desc: "1.5x total earnings." },
+          { name: "Underground Bunkernet Facility", desc: "1.8x total earnings." }
+        ]
       },
       fr: {
         season: "Saison Oct 2026",
@@ -480,7 +553,45 @@
         tab6: { title: "6. Cyber Security Operations", desc: "Chaque hack n'est dispo qu'1x par jour. Récompense après le timer.", reward: "Butin après timer :", hackBtn: "PIRATER (1x/Jour)" },
         tab7: { title: "7. Expansion du QG", current: "Actuel" },
         tab8: { title: "8. Sauvegarde Cloud & Classement", email: "Adresse e-mail", pass: "Mot de passe (min. 6 car.)", comp: "Nom d'entreprise unique", login: "Connexion", reg: "S'inscrire", logout: "Déconnexion", saveBtn: "Sauvegarder & Classement", top: "Top Entreprises Globales", sync: "Auto-Sync (toutes les 6h)", empty: "Aucun classement pour l'instant.", loading: "Chargement du classement..." },
-        tab9: { title: "9. Paramètres & Langue", select: "Choisir la langue" }
+        tab9: { title: "9. Paramètres & Langue", select: "Choisir la langue" },
+
+        departments: [
+          { name: "Studio Garage de Maman" }, { name: "Équipe Codeurs Freelance" }, { name: "Nœud Serveur Darknet" },
+          { name: "Labo Web3 & Crypto" }, { name: "Studio de Jeux Indé" }, { name: "Cluster Chatbot IA" },
+          { name: "Moteur SaaS Entreprise" }, { name: "Bio-Augmenteur Cybernétique" }, { name: "Grille Cloud Quantique" },
+          { name: "Usine Mecha Autonome" }, { name: "Corp d'Implants Neural Link" }, { name: "Réseau Satellite Sub-Orbital" },
+          { name: "Générateur d'Énergie Fusion" }, { name: "Plateforme Minage Deep Space" }, { name: "Hivemind IA Planétaire" }
+        ],
+        upgrades: [
+          { name: "Clavier RGB Mécanique", desc: "Double la puissance de clic." }, { name: "Chaise Titane Ergonomique", desc: "+25% revenu passif." },
+          { name: "Perfusion Giga-Caféine", desc: "Double la puissance de clic." }, { name: "Ligne Fibre Optique Gigabit", desc: "+30% revenu passif." },
+          { name: "Autopilot IA Auto-Code", desc: "Gros boost de clic." }, { name: "Pipeline CI/CD Cloud Cluster", desc: "+35% revenu passif." },
+          { name: "Compilateur Quantique V8", desc: "Puissance de clic avancée." }, { name: "Mod Casque Neural Sync", desc: "+40% revenu passif." },
+          { name: "Matrice d'Algorithme Darknet", desc: "+50% revenu passif." }
+        ],
+        market: [
+          { name: "NVIDIA Cyber-Tech" }, { name: "CyberCorp Inc." }, { name: "BioGenetics Corp" }, { name: "RoboDynamics Ltd" },
+          { name: "CyberCoin (CBC)" }, { name: "ByteToken (BYT)" }, { name: "Void Coin (VOID)" }
+        ],
+        products: [
+          { name: "CyberPhone Alpha", desc: "+10% Hype." }, { name: "Neural VR Visor", desc: "+15% Hype." },
+          { name: "Smart CyberGlasses AR", desc: "+20% Hype." }, { name: "Autonomous Security Drone", desc: "+25% Hype." },
+          { name: "Cyber Mech-Dog Patrol", desc: "+30% Hype." }
+        ],
+        staff: [
+          { name: "Codeur Junior", bonus: "+€0.01 Puissance Clic" }, { name: "Dév Fullstack Senior", bonus: "+1% Revenu Passif" },
+          { name: "Ingénieur Prompt IA", bonus: "+1.5% Revenu Passif" }, { name: "Officier Cyber Sécurité", bonus: "+2% Revenu Passif" },
+          { name: "Lead Growth Hacking", bonus: "+2.5% Revenu Passif" }
+        ],
+        hacks: [
+          { name: "Wifi Bistro Kebab" }, { name: "Serveur Caisse d'Épargne" }, { name: "Pool Crypto Offshore" },
+          { name: "Startup Tech Rival" }, { name: "Mainframe Poste de Police" }
+        ],
+        hqs: [
+          { name: "Garage de Maman", desc: "Pièce poussiéreuse, gratuit." }, { name: "Loft Startup Open Space", desc: "+20% gain total." },
+          { name: "Immeuble Campus Tech Park", desc: "1.35x gain total." }, { name: "Tour Gratte-Ciel Cyber", desc: "1.5x gain total." },
+          { name: "Installation Bunkernet Souterraine", desc: "1.8x gain total." }
+        ]
       },
       es: {
         season: "Temporada Oct 2026",
@@ -498,7 +609,45 @@
         tab6: { title: "6. Cyber Security Operations", desc: "Cada hack es 1x al día. La recompensa se entrega al finalizar el temporizador.", reward: "Botín tras temporizador:", hackBtn: "HACKEAR (1x/Día)" },
         tab7: { title: "7. Expansión de la Sede Central", current: "Actual" },
         tab8: { title: "8. Guardar Nube & Ranking", email: "Correo electrónico", pass: "Contraseña (mín. 6 car.)", comp: "Nombre de empresa único", login: "Iniciar sesión", reg: "Registrarse", logout: "Cerrar sesión", saveBtn: "Guardar Partida y Ranking", top: "Top Empresas Globales", sync: "Auto-Sync (cada 6h)", empty: "Aún no hay registros en el ranking.", loading: "Cargando ranking..." },
-        tab9: { title: "9. Ajustes & Idioma", select: "Elige idioma" }
+        tab9: { title: "9. Ajustes & Idioma", select: "Elige idioma" },
+
+        departments: [
+          { name: "Estudio Garage de Mamá" }, { name: "Escuadrón Coder Freelance" }, { name: "Nodo Servidor Darknet" },
+          { name: "Lab Web3 & Crypto" }, { name: "Estudio de Juegos Indie" }, { name: "Clúster Chatbot IA" },
+          { name: "Motor SaaS Enterprise" }, { name: "Bio-Augmenter Cibernético" }, { name: "Red Cloud Cuántica" },
+          { name: "Fábrica Mecha Autónoma" }, { name: "Corp Implantes Neural Link" }, { name: "Red Satelital Suborbital" },
+          { name: "Generador de Energía de Fusión" }, { name: "Plataforma Minería Deep Space" }, { name: "Hivemind IA Planetaria" }
+        ],
+        upgrades: [
+          { name: "Teclado Mecánico RGB", desc: "Duplica el poder de clic." }, { name: "Silla de Titanio Ergónomica", desc: "+25% ingresos pasivos." },
+          { name: "Infusión de Giga-Cafeína", desc: "Duplica el poder de clic." }, { name: "Línea de Fibra Óptica Gigabit", desc: "+30% ingresos pasivos." },
+          { name: "Autopilot IA Auto-Code", desc: "Gran impulso de clic." }, { name: "Pipeline CI/CD Cloud Cluster", desc: "+35% ingresos pasivos." },
+          { name: "Compilador Cuántico V8", desc: "Poder de clic avanzado." }, { name: "Mod Casco Neural Sync", desc: "+40% ingresos pasivos." },
+          { name: "Matriz Algoritmo Darknet", desc: "+50% ingresos pasivos." }
+        ],
+        market: [
+          { name: "NVIDIA Cyber-Tech" }, { name: "CyberCorp Inc." }, { name: "BioGenetics Corp" }, { name: "RoboDynamics Ltd" },
+          { name: "CyberCoin (CBC)" }, { name: "ByteToken (BYT)" }, { name: "Void Coin (VOID)" }
+        ],
+        products: [
+          { name: "CyberPhone Alpha", desc: "+10% Hype." }, { name: "Neural VR Visor", desc: "+15% Hype." },
+          { name: "Smart CyberGlasses AR", desc: "+20% Hype." }, { name: "Autonomous Security Drone", desc: "+25% Hype." },
+          { name: "Cyber Mech-Dog Patrol", desc: "+30% Hype." }
+        ],
+        staff: [
+          { name: "Coder Junior", bonus: "+€0.01 Poder de Clic" }, { name: "Dev Fullstack Senior", bonus: "+1% Ingresos Pasivos" },
+          { name: "Ingeniero Prompt IA", bonus: "+1.5% Ingresos Pasivos" }, { name: "Oficial Ciberseguridad", bonus: "+2% Ingresos Pasivos" },
+          { name: "Líder Growth Hacking", bonus: "+2.5% Ingresos Pasivos" }
+        ],
+        hacks: [
+          { name: "Wifi Kebab Bistro" }, { name: "Servidor Caja de Ahorros" }, { name: "Pool Cripto Offshore" },
+          { name: "Startup Tech Rival" }, { name: "Mainframe Comisaría de Policía" }
+        ],
+        hqs: [
+          { name: "Garage de Mamá", desc: "Habitación polvorienta, gratis." }, { name: "Loft Startup Open Space", desc: "+20% ganancias totales." },
+          { name: "Edificio Campus Tech Park", desc: "1.35x ganancias totales." }, { name: "Torre Rascacielos Cyber", desc: "1.5x ganancias totales." },
+          { name: "Instalación Bunkernet Subterránea", desc: "1.8x ganancias totales." }
+        ]
       },
       it: {
         season: "Stagione Ott 2026",
@@ -516,7 +665,45 @@
         tab6: { title: "6. Cyber Security Operations", desc: "Ogni hack è disponibile 1 volta al giorno. Il bottone eroga i fondi allo scadere.", reward: "Ricompensa dopo timer:", hackBtn: "HACKERKA (1x/Giorno)" },
         tab7: { title: "7. Espansione Quartier Generale", current: "Attuale" },
         tab8: { title: "8. Salvataggio Cloud & Classifica", email: "Indirizzo e-mail", pass: "Password (min. 6 caratteri)", comp: "Nome azienda unico", login: "Login", reg: "Registrati", logout: "Esci", saveBtn: "Salva Gioco & Classifica", top: "Top Aziende Globali", sync: "Auto-Sync (ogni 6h)", empty: "Nessun record nella classifica.", loading: "Caricamento classifica..." },
-        tab9: { title: "9. Impostazioni & Lingua", select: "Scegli lingua" }
+        tab9: { title: "9. Impostazioni & Lingua", select: "Scegli lingua" },
+
+        departments: [
+          { name: "Studio Garage di Mamma" }, { name: "Squadra Coder Freelance" }, { name: "Nodo Server Darknet" },
+          { name: "Lab Web3 & Crypto" }, { name: "Studio di Videogiochi Indie" }, { name: "Cluster Chatbot IA" },
+          { name: "Motore SaaS Enterprise" }, { name: "Bio-Augmenter Cibernetico" }, { name: "Griglia Cloud Quantica" },
+          { name: "Fabbrica Mecha Autonoma" }, { name: "Corp Impianti Neural Link" }, { name: "Rete Satellitare Suborbitale" },
+          { name: "Generatore di Energia a Fusione" }, { name: "Piattaforma Mining Deep Space" }, { name: "Hivemind IA Planetaria" }
+        ],
+        upgrades: [
+          { name: "Tastiera Meccanica RGB", desc: "Raddoppia il potere del clic." }, { name: "Sedia in Titanio Ergonomica", desc: "+25% reddito passivo." },
+          { name: "Infusione Giga-Caffeina", desc: "Raddoppia il potere del clic." }, { name: "Linea in Fibra Ottica Gigabit", desc: "+30% reddito passivo." },
+          { name: "Autopilot IA Auto-Code", desc: "Forte aumento clic." }, { name: "Pipeline CI/CD Cloud Cluster", desc: "+35% reddito passivo." },
+          { name: "Compilatore Quantico V8", desc: "Potere di clic avanzato." }, { name: "Mod Cuffie Neural Sync", desc: "+40% reddito passivo." },
+          { name: "Matrice Algoritmo Darknet", desc: "+50% reddito passivo." }
+        ],
+        market: [
+          { name: "NVIDIA Cyber-Tech" }, { name: "CyberCorp Inc." }, { name: "BioGenetics Corp" }, { name: "RoboDynamics Ltd" },
+          { name: "CyberCoin (CBC)" }, { name: "ByteToken (BYT)" }, { name: "Void Coin (VOID)" }
+        ],
+        products: [
+          { name: "CyberPhone Alpha", desc: "+10% Hype." }, { name: "Neural VR Visor", desc: "+15% Hype." },
+          { name: "Smart CyberGlasses AR", desc: "+20% Hype." }, { name: "Autonomous Security Drone", desc: "+25% Hype." },
+          { name: "Cyber Mech-Dog Patrol", desc: "+30% Hype." }
+        ],
+        staff: [
+          { name: "Junior Coder", bonus: "+€0.01 Potere Clic" }, { name: "Senior Fullstack Dev", bonus: "+1% Reddito Passivo" },
+          { name: "AI Prompt Engineer", bonus: "+1.5% Reddito Passivo" }, { name: "Cyber Security Officer", bonus: "+2% Reddito Passivo" },
+          { name: "Growth Hacking Lead", bonus: "+2.5% Reddito Passivo" }
+        ],
+        hacks: [
+          { name: "Wifi Kebab Bistro" }, { name: "Server Cassa di Risparmio" }, { name: "Pool Crypto Offshore" },
+          { name: "Startup Tech Rivale" }, { name: "Mainframe Questura di Polizia" }
+        ],
+        hqs: [
+          { name: "Garage di Mamma", desc: "Stanza polverosa, gratis." }, { name: "Loft Startup Open Space", desc: "+20% guadagni totali." },
+          { name: "Edificio Campus Tech Park", desc: "1.35x guadagni totali." }, { name: "Torre Grattacielo Cyber", desc: "1.5x guadagni totali." },
+          { name: "Impianto Bunkernet Sotterraneo", desc: "1.8x guadagni totali." }
+        ]
       }
     };
 
@@ -789,16 +976,41 @@
       return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     }
 
+    function getBaseIncomeForDept(idx) {
+      const baseIncomes = [0.05, 0.40, 2.50, 15.00, 90.00, 450.00, 2400.00, 12000.00, 65000.00, 350000.00, 1800000.00, 9000000.00, 45000000.00, 220000000.00, 1100000000.00];
+      return baseIncomes[idx] || 0.05;
+    }
+
     function getPassiveIncome() {
       let income = 0;
-      state.departments.forEach(d => { income += d.count * d.baseIncome; });
+      state.departments.forEach((d, idx) => { income += d.count * getBaseIncomeForDept(idx); });
       state.staff.forEach(s => {
-        if (s.bonus.includes('Passiv') || s.bonus.includes('Passive') || s.bonus.includes('Passif')) {
-          const pct = parseFloat(s.bonus) / 100;
-          if (!isNaN(pct)) income *= (1 + s.count * pct);
+        const pct = parseFloat(s.bonus) / 100;
+        if (!isNaN(pct)) {
+          // Fallback wenn Prozentwert im String steht
         }
       });
-      state.upgrades.filter(u => u.bought && u.type === 'global').forEach(u => { income *= u.mult; });
+      // Berücksichtige prozentuale Personalboni robust
+      let staffMultiplier = 1;
+      state.staff.forEach(s => {
+        if(s.count > 0) {
+          // Wir addieren einfach prozentual je nach Personal-Typ
+          if(s.id === 's2') staffMultiplier += s.count * 0.01;
+          if(s.id === 's3') staffMultiplier += s.count * 0.015;
+          if(s.id === 's4') staffMultiplier += s.count * 0.02;
+          if(s.id === 's5') staffMultiplier += s.count * 0.025;
+        }
+      });
+      income *= staffMultiplier;
+
+      state.upgrades.filter(u => u.bought && u.type === 'global').forEach(u => {
+        if(u.id === 'u2') income *= 1.25;
+        if(u.id === 'u4') income *= 1.3;
+        if(u.id === 'u6') income *= 1.35;
+        if(u.id === 'u8') income *= 1.4;
+        if(u.id === 'u9') income *= 1.5;
+      });
+
       const currentHQ = state.hqs.filter(h => h.bought).slice(-1)[0];
       if (currentHQ) income *= currentHQ.mult;
       return income;
@@ -807,9 +1019,11 @@
     function getClickPower() {
       let base = state.clickPower + (state.clickUpgLevel * 0.01);
       state.staff.forEach(s => {
-        if (s.bonus.includes('Klick') || s.bonus.includes('Click') || s.bonus.includes('clic')) base += s.count * 0.01;
+        if (s.id === 's1') base += s.count * 0.01;
       });
-      state.upgrades.filter(u => u.bought && u.type === 'click').forEach(u => { base *= u.mult; });
+      state.upgrades.filter(u => u.bought && u.type === 'click').forEach(u => {
+        base *= u.mult;
+      });
       return base;
     }
 
@@ -842,12 +1056,11 @@
       if (mTimerEl) mTimerEl.innerText = `${t.tab3.timer} ${String(mMin).padStart(2,'0')}:${String(mSec).padStart(2,'0')}`;
     }
 
-    // --- RENDER KATEGORIEN MIT VOLLSTÄNDIGER SPRACH-ANPASSUNG ---
+    // --- RENDER KATEGORIEN MIT KOMPLETTEN SPRACH-ÜBERSETZUNGEN ---
     function renderTabContent(tabId) {
       const lang = state.language || 'de';
       const t = translations[lang];
 
-      // Tab 0: Dev-Konsole Textupdate
       if (tabId === 'clicker') {
         const cTab = document.querySelector('#tab-clicker');
         if(cTab) {
@@ -858,17 +1071,18 @@
         }
       }
 
-      // Tab 1: Abteilungen
       if (tabId === 'depts') {
         const list = document.getElementById('list-depts');
         list.innerHTML = `<h3 class="font-cyber font-bold text-lg text-slate-100">${t.tab1.title}</h3>`;
         state.departments.forEach((d, idx) => {
           const cost = d.baseCost * Math.pow(1.22, d.count);
+          const baseInc = getBaseIncomeForDept(idx);
+          const localizedName = t.departments[idx] ? t.departments[idx].name : `Department ${idx+1}`;
           list.innerHTML += `
             <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
               <div>
-                <div class="font-cyber font-bold text-sm text-slate-100">${d.name}</div>
-                <div class="text-xs text-cyan-400">${t.tab1.lvl}: ${d.count} (+${formatMoney(d.baseIncome * d.count)}/min)</div>
+                <div class="font-cyber font-bold text-sm text-slate-100">${localizedName}</div>
+                <div class="text-xs text-cyan-400">${t.tab1.lvl}: ${d.count} (+${formatMoney(baseInc * d.count)}/min)</div>
               </div>
               <button onclick="buyDept(${idx})" class="px-3.5 py-2 ${state.money >= cost ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} font-cyber text-xs rounded-xl font-bold transition">
                 ${t.tab1.buy} (${formatMoney(cost)})
@@ -878,16 +1092,16 @@
         });
       }
 
-      // Tab 2: Forschungen
       if (tabId === 'upgrades') {
         const list = document.getElementById('list-upgrades');
         list.innerHTML = `<h3 class="font-cyber font-bold text-lg text-slate-100">${t.tab2.title}</h3>`;
         state.upgrades.forEach((u, idx) => {
+          const locUpg = t.upgrades[idx] || {};
           list.innerHTML += `
             <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
               <div>
-                <div class="font-cyber font-bold text-sm text-slate-100">${u.name}</div>
-                <div class="text-xs text-slate-400">${u.desc}</div>
+                <div class="font-cyber font-bold text-sm text-slate-100">${locUpg.name}</div>
+                <div class="text-xs text-slate-400">${locUpg.desc}</div>
               </div>
               <button onclick="buyUpgrade(${idx})" ${u.bought ? 'disabled' : ''} class="px-3.5 py-2 ${u.bought ? 'bg-slate-800 text-emerald-400' : (state.money >= u.cost ? 'bg-fuchsia-600 hover:bg-fuchsia-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed')} font-cyber text-xs rounded-xl font-bold transition">
                 ${u.bought ? t.tab2.bought : formatMoney(u.cost)}
@@ -897,7 +1111,6 @@
         });
       }
 
-      // Tab 3: Börse & Krypto
       if (tabId === 'market') {
         const marketTab = document.getElementById('tab-market');
         marketTab.querySelector('h3').innerText = t.tab3.title;
@@ -910,6 +1123,7 @@
           const totalVal = m.owned * m.price;
           const changeColor = m.change >= 0 ? 'text-emerald-400' : 'text-rose-400';
           const changeSign = m.change >= 0 ? '+' : '';
+          const locMarket = t.market[idx] || {};
 
           let miningHTML = '';
           if (isCrypto) {
@@ -928,7 +1142,7 @@
             <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 flex flex-col justify-between">
               <div class="flex justify-between items-start">
                 <div>
-                  <div class="font-cyber font-bold text-sm text-slate-100">${m.name} <span class="text-[10px] text-slate-500 uppercase">(${m.type})</span></div>
+                  <div class="font-cyber font-bold text-sm text-slate-100">${locMarket.name} <span class="text-[10px] text-slate-500 uppercase">(${m.type})</span></div>
                   <div class="text-xs font-mono text-cyan-400 mt-0.5">Kurs: ${formatMoney(m.price)} <span class="${changeColor}">(${changeSign}${m.change}%)</span></div>
                 </div>
                 <div class="text-right">
@@ -946,16 +1160,16 @@
         });
       }
 
-      // Tab 4: Hardware Lab
       if (tabId === 'lab') {
         const list = document.getElementById('list-lab');
         list.innerHTML = `<h3 class="font-cyber font-bold text-lg text-slate-100">${t.tab4.title}</h3>`;
         state.products.forEach((p, idx) => {
+          const locProd = t.products[idx] || {};
           list.innerHTML += `
             <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
               <div>
-                <div class="font-cyber font-bold text-sm text-slate-100">${p.name}</div>
-                <div class="text-xs text-slate-400">${p.desc}</div>
+                <div class="font-cyber font-bold text-sm text-slate-100">${locProd.name}</div>
+                <div class="text-xs text-slate-400">${locProd.desc}</div>
               </div>
               <button onclick="launchProduct(${idx})" ${p.launched ? 'disabled' : ''} class="px-3.5 py-2 ${p.launched ? 'bg-slate-800 text-emerald-400' : (state.money >= p.cost ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed')} font-cyber text-xs rounded-xl font-bold transition">
                 ${p.launched ? t.tab4.launched : t.tab4.launchBtn + ' (' + formatMoney(p.cost) + ')'}
@@ -965,16 +1179,16 @@
         });
       }
 
-      // Tab 5: Personal
       if (tabId === 'staff') {
         const list = document.getElementById('list-staff');
         list.innerHTML = `<h3 class="font-cyber font-bold text-lg text-slate-100">${t.tab5.title}</h3>`;
         state.staff.forEach((s, idx) => {
+          const locStaff = t.staff[idx] || {};
           list.innerHTML += `
             <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
               <div>
-                <div class="font-cyber font-bold text-sm text-slate-100">${s.name}</div>
-                <div class="text-xs text-cyan-400">${s.bonus} (${t.tab5.hired}: ${s.count})</div>
+                <div class="font-cyber font-bold text-sm text-slate-100">${locStaff.name}</div>
+                <div class="text-xs text-cyan-400">${locStaff.bonus} (${t.tab5.hired}: ${s.count})</div>
               </div>
               <button onclick="hireStaff(${idx})" class="px-3.5 py-2 ${state.money >= s.cost ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed'} font-cyber text-xs rounded-xl font-bold transition">
                 ${t.tab5.hireBtn} (${formatMoney(s.cost)})
@@ -984,7 +1198,6 @@
         });
       }
 
-      // Tab 6: Cyber Hack
       if (tabId === 'hack') {
         const hackTab = document.getElementById('tab-hack');
         hackTab.querySelector('h3').innerText = t.tab6.title;
@@ -993,10 +1206,11 @@
         const list = document.getElementById('list-hack');
         list.innerHTML = '';
         state.hacks.forEach((h, idx) => {
+          const locHack = t.hacks[idx] || {};
           list.innerHTML += `
             <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
               <div>
-                <div class="font-cyber font-bold text-sm text-slate-100">${h.name}</div>
+                <div class="font-cyber font-bold text-sm text-slate-100">${locHack.name}</div>
                 <div class="text-xs text-slate-400">${t.tab6.reward} <span class="text-emerald-400 font-mono">+${formatMoney(h.reward)}</span></div>
               </div>
               <button onclick="executeHack(${idx})" ${h.cd > 0 ? 'disabled' : ''} class="px-3.5 py-2 ${h.cd > 0 ? 'bg-slate-800 text-slate-500' : 'bg-rose-600 hover:bg-rose-500 text-white'} font-cyber text-xs rounded-xl font-bold transition">
@@ -1007,16 +1221,16 @@
         });
       }
 
-      // Tab 7: Hauptquartier
       if (tabId === 'hq') {
         const list = document.getElementById('list-hq');
         list.innerHTML = `<h3 class="font-cyber font-bold text-lg text-slate-100">${t.tab7.title}</h3>`;
         state.hqs.forEach((hq, idx) => {
+          const locHQ = t.hqs[idx] || {};
           list.innerHTML += `
             <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
               <div>
-                <div class="font-cyber font-bold text-sm text-slate-100">${hq.name}</div>
-                <div class="text-xs text-slate-400">${hq.desc}</div>
+                <div class="font-cyber font-bold text-sm text-slate-100">${locHQ.name}</div>
+                <div class="text-xs text-slate-400">${locHQ.desc}</div>
               </div>
               <button onclick="buyHQ(${idx})" ${hq.bought || state.money < hq.cost ? 'disabled' : ''} class="px-3.5 py-2 ${hq.bought ? 'bg-slate-800 text-cyan-400' : (state.money >= hq.cost ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed')} font-cyber text-xs rounded-xl font-bold transition">
                 ${hq.bought ? t.tab7.current : formatMoney(hq.cost)}
@@ -1026,7 +1240,6 @@
         });
       }
 
-      // Tab 8: Cloud Save & Bestenliste
       if (tabId === 'fame') {
         const fameTab = document.getElementById('tab-fame');
         fameTab.querySelector('h3').innerText = t.tab8.title;
@@ -1042,7 +1255,6 @@
         fetchLeaderboard();
       }
 
-      // Tab 9: Einstellungen
       if (tabId === 'settings') {
         const settingsTab = document.getElementById('tab-settings');
         settingsTab.querySelector('h3').innerText = t.tab9.title;
