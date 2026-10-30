@@ -135,6 +135,26 @@
 </head>
 <body class="bg-[#020408] text-slate-300 min-h-screen flex flex-col relative overflow-x-hidden">
 
+  <!-- OFFLINE EARNINGS MODAL -->
+  <div id="offline-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="holo-card p-6 max-w-sm w-full border-blue-500/50 bg-[#070b14] text-center space-y-4 shadow-2xl">
+      <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mx-auto text-blue-400">
+        <i data-lucide="zap" class="w-6 h-6 animate-pulse"></i>
+      </div>
+      <div>
+        <h3 class="font-extrabold text-sm text-white uppercase tracking-wider">Willkommen zurück, Boss!</h3>
+        <p class="text-xs text-slate-400 mt-1">Dein Imperium lief im autonomen Holo-Modus weiter, während du offline warst.</p>
+      </div>
+      <div class="p-3 bg-[#0f172a] border border-blue-500/20 rounded-xl space-y-1">
+        <div class="text-[10px] text-slate-400 font-mono">Abwesenheits-Zeit: <span id="offline-time-text" class="text-white font-bold">0m</span></div>
+        <div class="text-xs text-emerald-400 font-mono font-bold" id="offline-earnings-text">+€0.00</div>
+      </div>
+      <button onclick="closeOfflineModal()" class="w-full py-2.5 holo-btn text-xs font-bold rounded-xl shadow-lg">
+        Einnahmen einsammeln
+      </button>
+    </div>
+  </div>
+
   <!-- TOP APP BAR -->
   <header class="bg-[#070b14]/90 backdrop-blur-2xl border-b border-blue-500/10 px-4 py-3.5 sticky top-0 z-30 flex items-center justify-between">
     <div class="flex items-center space-x-2.5">
@@ -377,14 +397,17 @@
       <div id="list-upgrades" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 3: BÖRSE & MINING -->
-    <div id="tab-market" class="tab-panel space-y-3 hidden">
-      <div class="flex justify-between items-center mb-1">
+    <!-- TAB 3: BÖRSE & MINING (EPIC UPDATE) -->
+    <div id="tab-market" class="tab-panel space-y-4 hidden">
+      <div class="holo-card p-4 bg-gradient-to-r from-blue-950/40 via-[#0b101d] to-[#0b101d] border-blue-500/30 flex justify-between items-center">
         <div>
-          <h3 class="font-bold text-sm text-white">3. Börse & Mining Charts</h3>
-          <p class="text-xs text-slate-400">Echtzeit-Kerzencharts, Krypto-Mining & Cluster.</p>
+          <h3 class="font-bold text-sm text-white flex items-center gap-1.5"><i data-lucide="bar-chart-3" class="w-4 h-4 text-blue-400"></i> Wall Street & Holo-Mining</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Handle Aktien, baue Krypto-Farmen und nutze Insider-Pumps!</p>
         </div>
-        <div class="text-xs text-blue-400 font-mono bg-[#0f172a] px-2.5 py-1 rounded-lg border border-blue-500/20 shadow-lg" id="mining-timer-display">Drop: 60:00</div>
+        <div class="text-xs text-blue-400 font-mono bg-[#0f172a] px-3 py-1.5 rounded-xl border border-blue-500/20 shadow-lg text-right">
+          <div class="text-[9px] text-slate-400 uppercase">Automatischer Drop</div>
+          <span id="mining-timer-display" class="font-bold text-white">60:00</span>
+        </div>
       </div>
       <div id="list-market" class="space-y-3"></div>
     </div>
@@ -568,7 +591,7 @@
     ];
 
     let state = {
-      version: 10,
+      version: 12,
       companyName: '',
       language: 'de',
       money: 0,
@@ -585,6 +608,7 @@
       monthlyPassExpire: 0,
       dailyStreak: 0,
       lastClaimTimestamp: 0,
+      lastSaveTimestamp: Date.now(),
       selectedAvatar: '🤖 Standard Klon',
       unlockedAvatars: ['🤖 Standard Klon', '💻 Cyber Hacker'],
 
@@ -632,10 +656,10 @@
       ],
 
       market: [
-        { id: 'm1', type: 'stock', name: 'CyberCorp Aktien', price: 15.00, change: 1.2, owned: 0, candles: [{o:14, h:15, l:13.8, c:15}, {o:15, h:15.5, l:14.5, c:14.8}, {o:14.8, h:15.2, l:14.6, c:15}] },
-        { id: 'm2', type: 'stock', name: 'NanoTech Dynamics', price: 5.00, change: -0.4, owned: 0, candles: [{o:5.2, h:5.4, l:5.1, c:5.2}, {o:5.2, h:5.3, l:4.9, c:5.0}, {o:5.0, h:5.1, l:4.8, c:5.0}] },
-        { id: 'm3', type: 'stock', name: 'NeuralNet Systems', price: 45.00, change: 0.8, owned: 0, candles: [{o:43, h:44, l:42.5, c:43.5}, {o:43.5, h:44.2, l:43.1, c:44}, {o:44, h:45.2, l:43.9, c:45}] },
-        { id: 'm4', type: 'stock', name: 'OmniDrive Inc.', price: 180.00, change: 2.1, owned: 0, candles: [{o:170, h:173, l:169, c:172}, {o:172, h:176, l:171, c:175}, {o:175, h:181, l:174, c:180}] },
+        { id: 'm1', type: 'stock', name: 'CyberCorp Aktien', price: 15.00, change: 1.2, owned: 0, leverage: 1, candles: [{o:14, h:15, l:13.8, c:15}, {o:15, h:15.5, l:14.5, c:14.8}, {o:14.8, h:15.2, l:14.6, c:15}] },
+        { id: 'm2', type: 'stock', name: 'NanoTech Dynamics', price: 5.00, change: -0.4, owned: 0, leverage: 1, candles: [{o:5.2, h:5.4, l:5.1, c:5.2}, {o:5.2, h:5.3, l:4.9, c:5.0}, {o:5.0, h:5.1, l:4.8, c:5.0}] },
+        { id: 'm3', type: 'stock', name: 'NeuralNet Systems', price: 45.00, change: 0.8, owned: 0, leverage: 1, candles: [{o:43, h:44, l:42.5, c:43.5}, {o:43.5, h:44.2, l:43.1, c:44}, {o:44, h:45.2, l:43.9, c:45}] },
+        { id: 'm4', type: 'stock', name: 'OmniDrive Inc.', price: 180.00, change: 2.1, owned: 0, leverage: 1, candles: [{o:170, h:173, l:169, c:172}, {o:172, h:176, l:171, c:175}, {o:175, h:181, l:174, c:180}] },
         { id: 'm5', type: 'crypto', name: 'NeoCoin (Krypto)', price: 1200.00, change: 3.5, owned: 0, rigs: 0, rigCost: 500.00, candles: [{o:1150, h:1170, l:1140, c:1160}, {o:1160, h:1190, l:1155, c:1180}, {o:1180, h:1210, l:1175, c:1200}] },
         { id: 'm6', type: 'crypto', name: 'HoloToken', price: 150.00, change: -1.1, owned: 0, rigs: 0, rigCost: 80.00, candles: [{o:155, h:157, l:153, c:154}, {o:154, h:155, l:151, c:152}, {o:152, h:153, l:149, c:150}] },
         { id: 'm7', type: 'crypto', name: 'DarkByte Cash', price: 12.00, change: 0.2, owned: 0, rigs: 0, rigCost: 20.00, candles: [{o:11.8, h:12.1, l:11.7, c:11.9}, {o:11.9, h:12.2, l:11.8, c:12.1}, {o:12.1, h:12.3, l:11.9, c:12.0}] }
@@ -658,8 +682,10 @@
 
     window.mergeCloudAndLocalState = function(cloudData) {
       if (!cloudData) return;
+      const oldTime = state.lastSaveTimestamp || Date.now();
       state = { ...state, ...cloudData };
       fixMissingNames();
+      checkOfflineEarnings(oldTime);
       saveGameLocally();
       updateDynamicTexts();
       updateUI();
@@ -874,6 +900,7 @@
     async function saveGameToCloudManual() {
       if (!window.FB || !window.FB.auth.currentUser) { alert('Zuerst einloggen!'); return; }
       try {
+        state.lastSaveTimestamp = Date.now();
         const user = window.FB.auth.currentUser;
         await window.FB.setDoc(window.FB.doc(window.FB.db, "saves", user.uid), state);
         if (state.companyName) {
@@ -1071,11 +1098,10 @@
 
       state.market.forEach(m => {
         if(m.type === 'crypto' && m.rigs > 0) {
-          income += m.rigs * (m.price * 0.05);
+          income += m.rigs * (m.price * 0.08);
         }
       });
 
-      // Lab Products (+15% Multiplikator pro entwickeltes Produkt)
       let labMultiplier = 1;
       if (state.products) {
         state.products.forEach(p => {
@@ -1193,6 +1219,33 @@
         alert(`🎉 LEVEL UP! Du hast Level ${state.level} erreicht und 💎 +${reward} iCash erhalten!`);
       }
       updateUI();
+    }
+
+    function checkOfflineEarnings(oldTimestamp) {
+      const now = Date.now();
+      const diffSeconds = Math.floor((now - (oldTimestamp || now)) / 1000);
+      
+      if (diffSeconds > 10) {
+        const passivePerSec = getPassiveIncome() / 60;
+        const earned = diffSeconds * passivePerSec;
+        
+        if (earned > 0.01) {
+          state.money += earned;
+          state.totalEarned += earned;
+
+          const timeFormatted = diffSeconds > 60 ? `${Math.floor(diffSeconds / 60)} Minute(n)` : `${diffSeconds} Sekunde(n)`;
+          
+          document.getElementById('offline-time-text').innerText = timeFormatted;
+          document.getElementById('offline-earnings-text').innerText = "+" + formatMoney(earned);
+          document.getElementById('offline-modal').classList.remove('hidden');
+        }
+      }
+    }
+
+    function closeOfflineModal() {
+      document.getElementById('offline-modal').classList.add('hidden');
+      updateUI();
+      saveGameLocally();
     }
 
     function buyMonthlyPass() {
@@ -1526,21 +1579,36 @@
           const isPos = m.change >= 0;
           const badgeBg = isPos ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border-rose-500/30';
 
-          let miningHtml = '';
-          let marketDesc = m.type === 'stock' ? 'Börsen-Aktie (Wertsteigerung & Dividende)' : 'Krypto-Token & passives Mining';
+          let extraActionHtml = '';
+          let marketDesc = m.type === 'stock' ? 'Börsen-Aktie (Aktiv handelbar mit Hebel)' : 'Krypto-Token & automatisches Rig-Mining';
+          
           if (m.type === 'crypto') {
             const rigCost = m.rigCost || 50;
             const rigsCount = m.rigs || 0;
-            miningHtml = `
-              <div class="mt-2 pt-2 border-t border-blue-500/10 flex justify-between items-center text-xs">
-                <span class="text-slate-400 font-mono">Mining-Rigs: <strong class="text-purple-400">${rigsCount}</strong> (+${formatMoney(rigsCount * (m.price * 0.05))}/min)</span>
-                <button onclick="buyMiningRig(${idx})" class="px-2.5 py-1 icash-btn text-[11px] rounded-lg font-semibold">Rig kaufen (${formatMoney(rigCost)})</button>
+            extraActionHtml = `
+              <div class="mt-2.5 pt-2.5 border-t border-blue-500/10 flex justify-between items-center text-xs bg-[#070b14]/60 p-2 rounded-xl">
+                <div>
+                  <span class="text-slate-300 font-mono text-[11px]">Rig-Farm: <strong class="text-purple-400">${rigsCount} Rigs</strong></span>
+                  <div class="text-[10px] text-emerald-400 font-mono">+${formatMoney(rigsCount * (m.price * 0.08))}/min</div>
+                </div>
+                <button onclick="buyMiningRig(${idx})" class="px-3 py-1.5 icash-btn text-[11px] rounded-lg font-semibold">Rig kaufen (${formatMoney(rigCost)})</button>
+              </div>
+            `;
+          } else {
+            const currentLev = m.leverage || 1;
+            extraActionHtml = `
+              <div class="mt-2.5 pt-2.5 border-t border-blue-500/10 flex justify-between items-center text-xs bg-[#070b14]/60 p-2 rounded-xl">
+                <span class="text-slate-400 font-mono text-[11px]">Trading-Hebel:</span>
+                <div class="flex gap-1">
+                  <button onclick="setLeverage(${idx}, 1)" class="px-2.5 py-1 rounded text-[10px] font-mono font-bold ${currentLev === 1 ? 'bg-blue-600 text-white' : 'bg-[#0f172a] text-slate-400 border border-blue-500/20'}">1x</button>
+                  <button onclick="setLeverage(${idx}, 5)" class="px-2.5 py-1 rounded text-[10px] font-mono font-bold ${currentLev === 5 ? 'bg-purple-600 text-white' : 'bg-[#0f172a] text-slate-400 border border-purple-500/20'}">5x 🔥</button>
+                </div>
               </div>
             `;
           }
 
           list.innerHTML += `
-            <div class="holo-card p-4 flex flex-col justify-between">
+            <div class="holo-card p-4 flex flex-col justify-between space-y-3">
               <div class="flex justify-between items-start">
                 <div>
                   <div class="flex items-center gap-2">
@@ -1550,25 +1618,32 @@
                   <div class="text-[11px] text-slate-400 mt-0.5">${marketDesc}</div>
                   <div class="text-sm font-mono font-bold text-slate-200 mt-1">${formatMoney(m.price)}</div>
                 </div>
-                <div class="text-right">
+                <div class="text-right flex flex-col items-end gap-1">
                   <div class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${badgeBg}">
                     ${isPos ? '+' : ''}${m.change}%
                   </div>
-                  <div class="text-[10px] text-slate-400 font-mono mt-1">Besitz: <span class="text-emerald-400 font-bold">${m.owned.toFixed(2)}</span></div>
+                  <div class="text-[10px] text-slate-400 font-mono">Besitz: <span class="text-emerald-400 font-bold">${m.owned.toFixed(2)}</span></div>
                 </div>
               </div>
-              <div class="my-3 w-full h-20 bg-[#020408]/90 border border-blue-500/20 rounded-xl overflow-hidden relative shadow-inner">
+
+              <div class="w-full h-20 bg-[#020408]/90 border border-blue-500/20 rounded-xl overflow-hidden relative shadow-inner">
                 <canvas id="chart-${idx}" width="360" height="80" class="w-full h-full object-fill"></canvas>
               </div>
+
               <div class="flex gap-2">
-                <button onclick="buyStock(${idx})" class="flex-1 py-1.5 ${state.money >= m.price ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold">Kauf</button>
-                <button onclick="sellStock(${idx})" class="flex-1 py-1.5 ${m.owned >= 1 ? 'bg-rose-950/80 text-rose-300 border border-rose-800' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold">Verkauf</button>
+                <button onclick="buyStock(${idx})" class="flex-1 py-2 holo-btn text-xs rounded-xl font-semibold">Kauf (1 Stk)</button>
+                <button onclick="sellStock(${idx})" class="flex-1 py-2 bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-800 text-xs rounded-xl font-semibold transition">Verkauf</button>
+                <button onclick="triggerHoloPump(${idx})" class="px-3 py-2 icash-btn text-xs rounded-xl font-semibold flex items-center gap-1" title="Künstlicher Holo-Pump (+5-15% Kursboost)">
+                  <i data-lucide="zap" class="w-3.5 h-3.5"></i> 💎 2
+                </button>
               </div>
-              ${miningHtml}
+
+              ${extraActionHtml}
             </div>
           `;
         });
         setTimeout(() => { drawAllCandleCharts(); }, 50);
+        lucide.createIcons();
       }
 
       if (tabId === 'lab') {
@@ -1706,6 +1781,34 @@
       if (tabId === 'settings') { renderLanguageTab(); }
     }
 
+    function setLeverage(idx, lev) {
+      state.market[idx].leverage = lev;
+      renderTabContent('market');
+      saveGameLocally();
+    }
+
+    function triggerHoloPump(idx) {
+      const cost = 2;
+      if (state.icash >= cost) {
+        state.icash -= cost;
+        const item = state.market[idx];
+        const boost = 1.05 + Math.random() * 0.12; // +5% bis +17% Boost
+        item.price *= boost;
+        item.change = parseFloat((item.change + (boost * 10)).toFixed(1));
+        
+        if(!item.candles) item.candles = [];
+        item.candles.push({ o: item.price/boost, h: item.price*1.02, l: item.price*0.98, c: item.price });
+        if(item.candles.length > 12) item.candles.shift();
+
+        alert(`🚀 HOLO-PUMP ERFOLGREICH! ${item.name} wurde künstlich gepumpt!`);
+        updateUI();
+        renderTabContent('market');
+        saveGameLocally();
+      } else {
+        alert("Nicht genügend iCash (💎 2 erforderlich) für einen Holo-Pump!");
+      }
+    }
+
     function buyPermaUpgrade(idx) {
       const pu = state.permaUpgrades[idx];
       if (state.icash >= pu.cost && pu.level < pu.maxLevel) {
@@ -1756,20 +1859,28 @@
 
     function buyStock(idx) {
       const item = state.market[idx];
-      if (state.money >= item.price) {
-        state.money -= item.price;
-        item.owned++;
+      const lev = item.leverage || 1;
+      const actualCost = item.price * lev;
+
+      if (state.money >= actualCost) {
+        state.money -= actualCost;
+        item.owned += lev;
         updateUI();
         renderTabContent('market');
         saveGameLocally();
+      } else {
+        alert("Nicht genug Kapital für diesen Kauf (inkl. Hebel)!");
       }
     }
 
     function sellStock(idx) {
       const item = state.market[idx];
       if (item.owned >= 1) {
-        state.money += item.price;
-        item.owned--;
+        const sellAmount = item.owned >= 5 ? 5 : item.owned;
+        const revenue = sellAmount * item.price;
+        state.money += revenue;
+        state.totalEarned += revenue;
+        item.owned -= sellAmount;
         updateUI();
         renderTabContent('market');
         saveGameLocally();
@@ -1783,7 +1894,7 @@
       if (state.money >= item.rigCost) {
         state.money -= item.rigCost;
         item.rigs++;
-        item.rigCost = Math.floor(item.rigCost * 1.35);
+        item.rigCost = Math.floor(item.rigCost * 1.4);
         updateUI();
         renderTabContent('market');
         saveGameLocally();
@@ -1874,6 +1985,7 @@
     }
 
     function saveGameLocally() {
+      state.lastSaveTimestamp = Date.now();
       localStorage.setItem('empire_tycoon_save', JSON.stringify(state));
       localStorage.setItem('empire_last_save_time', Date.now().toString());
       showSaveIndicator();
@@ -1885,11 +1997,13 @@
         try {
           const parsed = JSON.parse(saved);
           if(parsed.version && parsed.version >= 3) {
+            const oldTime = parsed.lastSaveTimestamp || parseInt(localStorage.getItem('empire_last_save_time') || Date.now());
             state = { ...state, ...parsed };
+            fixMissingNames();
+            checkOfflineEarnings(oldTime);
           }
         } catch (e) { console.error(e); }
       }
-      fixMissingNames();
     }
 
     checkSeasonReset();
