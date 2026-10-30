@@ -537,18 +537,18 @@
     }
 
     const defaultProducts = [
-      { id: 'p1', name: 'KI-Assistent v1', cost: 1000.00, launched: false, bonus: 'Schaltet fortgeschrittene Datenströme frei' },
-      { id: 'p2', name: 'Quanten-Firewall', cost: 8500.00, launched: false, bonus: 'Erhöht globale Sicherheit & Ertrag' },
-      { id: 'p3', name: 'Holo-Projektor Linse', cost: 65000.00, launched: false, bonus: 'Steigert Sektor-Effizienz um +15%' },
-      { id: 'p4', name: 'Autonomer Android', cost: 500000.00, launched: false, bonus: 'Automatisiert manuelle Datenprozesse' },
-      { id: 'p5', name: 'Dyson-Kompaktkern', cost: 4000000.00, launched: false, bonus: 'Ultimativer Energie-Multiplikator' }
+      { id: 'p1', name: 'KI-Assistent v1', cost: 1000.00, launched: false, bonus: 'Gibt +15% Boost auf gesamtes passives Einkommen' },
+      { id: 'p2', name: 'Quanten-Firewall', cost: 8500.00, launched: false, bonus: 'Gibt +15% Boost auf gesamtes passives Einkommen' },
+      { id: 'p3', name: 'Holo-Projektor Linse', cost: 65000.00, launched: false, bonus: 'Gibt +15% Boost auf gesamtes passives Einkommen' },
+      { id: 'p4', name: 'Autonomer Android', cost: 500000.00, launched: false, bonus: 'Gibt +15% Boost auf gesamtes passives Einkommen' },
+      { id: 'p5', name: 'Dyson-Kompaktkern', cost: 4000000.00, launched: false, bonus: 'Gibt +15% Boost auf gesamtes passives Einkommen' }
     ];
 
     const defaultStaff = [
       { id: 's1', name: 'Junior Hacker', cost: 20.00, count: 0, desc: '+€0.01 Klick-Leistung pro Kopf' },
-      { id: 's2', name: 'Cyber-Analyst', cost: 250.00, count: 0, desc: '+1% passives Einkommen pro Kopf' },
+      { id: 's2', name: 'Cyber-Analyst', cost: 250.00, count: 0, desc: '+1.0% passives Einkommen pro Kopf' },
       { id: 's3', name: 'AI-Architekt', cost: 1800.00, count: 0, desc: '+1.5% passives Einkommen pro Kopf' },
-      { id: 's4', name: 'Syndikat-Direktor', cost: 15000.00, count: 0, desc: '+2% passives Einkommen pro Kopf' },
+      { id: 's4', name: 'Syndikat-Direktor', cost: 15000.00, count: 0, desc: '+2.0% passives Einkommen pro Kopf' },
       { id: 's5', name: 'Overlord Berater', cost: 100000.00, count: 0, desc: '+2.5% passives Einkommen pro Kopf' }
     ];
 
@@ -568,7 +568,7 @@
     ];
 
     let state = {
-      version: 9,
+      version: 10,
       companyName: '',
       language: 'de',
       money: 0,
@@ -1075,6 +1075,15 @@
         }
       });
 
+      // Lab Products (+15% Multiplikator pro entwickeltes Produkt)
+      let labMultiplier = 1;
+      if (state.products) {
+        state.products.forEach(p => {
+          if (p.launched) labMultiplier += 0.15;
+        });
+      }
+      income *= labMultiplier;
+
       const pi2 = state.permaUpgrades.find(u => u.id === 'pi2');
       if (pi2 && pi2.level > 0) {
         income *= Math.pow(1.5, pi2.level);
@@ -1565,6 +1574,10 @@
       if (tabId === 'lab') {
         const list = document.getElementById('list-lab');
         list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">4. Advanced Engineering Lab</h3>`;
+        
+        const currentBaseInc = getPassiveIncome();
+        const boostPerProduct = currentBaseInc * 0.15;
+
         state.products.forEach((p, idx) => {
           const imgUrl = labImages[idx % labImages.length];
           list.innerHTML += `
@@ -1575,10 +1588,10 @@
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
                   <div class="font-bold text-xs text-white">${p.name}</div>
-                  <div class="text-[11px] text-emerald-400 mt-0.5">Effekt: ${p.bonus}</div>
+                  <div class="text-[11px] text-emerald-400 font-mono mt-0.5">+15% Boost auf Passiv-Einkommen (+${formatMoney(boostPerProduct)}/min)</div>
                 </div>
-                <button onclick="launchProduct(${idx})" ${p.launched ? 'disabled' : ''} class="px-3 py-1.5 ${p.launched ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30' : (state.money >= p.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
-                  ${p.launched ? 'Online' : 'Entwickeln (' + formatMoney(p.cost) + ')'}
+                <button onclick="launchProduct(${idx})" ${p.launched ? 'disabled' : ''} class="px-3 py-1.5 ${p.launched ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30 font-bold' : (state.money >= p.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
+                  ${p.launched ? 'Online (Aktiv)' : 'Entwickeln (' + formatMoney(p.cost) + ')'}
                 </button>
               </div>
             </div>
@@ -1591,6 +1604,15 @@
         list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">5. Vorstand & Experten</h3>`;
         state.staff.forEach((s, idx) => {
           const imgUrl = staffImages[idx % staffImages.length];
+          
+          let impactText = "";
+          if (s.id === 's1') {
+            impactText = `+${formatMoney(s.count * 0.01)} / Klick`;
+          } else {
+            const pct = (s.id === 's2' ? 1.0 : (s.id === 's3' ? 1.5 : (s.id === 's4' ? 2.0 : 2.5)));
+            impactText = `+${(s.count * pct).toFixed(1)}% Passiv-Boost`;
+          }
+
           list.innerHTML += `
             <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
               <div class="sm:w-28 h-20 sm:h-auto relative overflow-hidden bg-[#070b14]">
@@ -1599,7 +1621,8 @@
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
                   <div class="font-bold text-xs text-white">${s.name}</div>
-                  <div class="text-[11px] text-emerald-400 mt-0.5">Bonus: ${s.desc} | Rekrutiert: ${s.count}</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">${s.desc}</div>
+                  <div class="text-[11px] text-emerald-400 font-mono mt-0.5">Rekrutiert: ${s.count} (${impactText})</div>
                 </div>
                 <button onclick="hireStaff(${idx})" class="px-3 py-1.5 ${state.money >= s.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold transition">
                   Rekrutieren (${formatMoney(s.cost)})
@@ -1643,7 +1666,7 @@
                   <div class="font-bold text-xs text-white">${hq.name}</div>
                   <div class="text-[11px] text-emerald-400 mt-0.5">Multiplikator: x${hq.mult} auf gesamtes passives Einkommen</div>
                 </div>
-                <button onclick="buyHQ(${idx})" ${hq.bought || state.money < hq.cost ? 'disabled' : ''} class="px-3 py-1.5 ${hq.bought ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30' : (state.money >= hq.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
+                <button onclick="buyHQ(${idx})" ${hq.bought || state.money < hq.cost ? 'disabled' : ''} class="px-3 py-1.5 ${hq.bought ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30 font-bold' : (state.money >= hq.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
                   ${hq.bought ? 'Zentrale aktiv' : formatMoney(hq.cost)}
                 </button>
               </div>
@@ -1772,6 +1795,7 @@
       if (!p.launched && state.money >= p.cost) {
         state.money -= p.cost;
         p.launched = true;
+        addExp(100);
         updateUI();
         renderTabContent('lab');
         saveGameLocally();
@@ -1784,6 +1808,7 @@
         state.money -= s.cost;
         s.count++;
         s.cost *= 1.35;
+        addExp(35);
         updateUI();
         renderTabContent('staff');
         saveGameLocally();
