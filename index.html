@@ -135,7 +135,7 @@
 </head>
 <body class="bg-[#020408] text-slate-300 min-h-screen flex flex-col relative overflow-x-hidden">
 
-  <!-- ERWEITERTES ADMIN MODAL (GOD-MODE & SPIELER SCHENKEN & SAISON RESET) -->
+  <!-- ADMIN MODAL -->
   <div id="admin-modal" class="fixed inset-0 bg-black/90 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
     <div class="holo-card p-6 max-w-md w-full border-rose-500/50 bg-[#070b14] space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-rose-500/20 pb-3">
@@ -149,16 +149,16 @@
       <div class="space-y-3">
         <div class="text-[11px] font-bold text-white uppercase tracking-wider">Eigene Admin-Power</div>
         <div class="grid grid-cols-2 gap-2">
-          <button onclick="adminAddMoney()" class="py-2 px-3 bg-emerald-600/20 hover:bg-emerald-600/40 border border-emerald-500/40 text-emerald-300 text-xs font-bold rounded-xl transition">
+          <button onclick="adminAddMoney()" class="py-2 px-3 bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-500/40 text-emerald-300 text-xs font-bold rounded-xl transition">
             +€1.000.000 Kapital
           </button>
-          <button onclick="adminAddIcash()" class="py-2 px-3 bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/40 text-purple-300 text-xs font-bold rounded-xl transition">
+          <button onclick="adminAddIcash()" class="py-2 px-3 bg-purple-600/25 hover:bg-purple-600/40 border border-purple-500/40 text-purple-300 text-xs font-bold rounded-xl transition">
             +💎 50 iCash
           </button>
-          <button onclick="adminTimeJump()" class="py-2 px-3 bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/40 text-blue-300 text-xs font-bold rounded-xl transition">
+          <button onclick="adminTimeJump()" class="py-2 px-3 bg-blue-600/25 hover:bg-blue-600/40 border border-blue-500/40 text-blue-300 text-xs font-bold rounded-xl transition">
             ⚡ +24h Zeitraffer
           </button>
-          <button onclick="adminUnlockAll()" class="py-2 px-3 bg-amber-600/20 hover:bg-amber-600/40 border border-amber-500/40 text-amber-300 text-xs font-bold rounded-xl transition">
+          <button onclick="adminUnlockAll()" class="py-2 px-3 bg-amber-600/25 hover:bg-amber-600/40 border border-amber-500/40 text-amber-300 text-xs font-bold rounded-xl transition">
             🔓 Alles Freikaufen
           </button>
         </div>
@@ -219,7 +219,6 @@
         <i data-lucide="menu" class="w-5 h-5"></i>
       </button>
       
-      <!-- AUDIO STREAM -->
       <audio id="bg-music" loop>
         <source src="https://n11a-eu.rcs.revma.com/1z19ak79n98uv" type="audio/mpeg">
       </audio>
@@ -230,7 +229,7 @@
       </button>
     </div>
 
-    <!-- GEHEIMER ADMIN-TRIGGER (3x Klick auf den Titel) -->
+    <!-- GEHEIMER ADMIN-TRIGGER -->
     <div class="text-center cursor-pointer select-none" onclick="handleSecretAdminClick()" title="Admin Shortcut">
       <h1 class="font-extrabold text-xs tracking-widest uppercase text-white flex items-center justify-center gap-1.5">
         <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> CYBER TYCOON
@@ -253,13 +252,11 @@
     [ HOLO-SYNC GESPEICHERT ]
   </div>
 
-  <!-- OVERLAY BACKDROP -->
   <div id="menu-backdrop" onclick="toggleMenu()" class="fixed inset-0 bg-black/80 backdrop-blur-md z-40 hidden transition-opacity"></div>
 
   <!-- SIDEBAR -->
   <aside id="menu-drawer" class="menu-drawer fixed top-0 left-0 bottom-0 w-72 bg-[#050810] border-r border-blue-500/20 z-50 transform -translate-x-full flex flex-col justify-between">
     <div class="overflow-y-auto p-4 space-y-1.5">
-      
       <div class="flex justify-between items-center pb-3 border-b border-blue-500/15 mb-3">
         <div class="flex items-center space-x-2 text-white font-bold text-xs tracking-wide">
           <i data-lucide="command" class="w-4 h-4 text-blue-500"></i>
@@ -274,67 +271,54 @@
         <i data-lucide="cpu" class="w-4 h-4 text-blue-400"></i>
         <span>0. Core Terminal</span>
       </button>
-
       <button onclick="switchTab('icash')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="gem" class="w-4 h-4 text-purple-400"></i>
         <span>0.5. iCash Cyber-Zentrale</span>
       </button>
-
       <button onclick="switchTab('daily')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i>
         <span>11. Tägliche Belohnung</span>
       </button>
-
       <button onclick="switchTab('depts')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="layers" class="w-4 h-4 text-slate-500"></i>
         <span>1. Megastrukturen & Sektoren</span>
       </button>
-
       <button onclick="switchTab('upgrades')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="zap" class="w-4 h-4 text-slate-500"></i>
         <span>2. Quanten-Forschung</span>
       </button>
-
       <button onclick="switchTab('market')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="bar-chart-3" class="w-4 h-4 text-slate-500"></i>
         <span>3. Börse & Mining Charts</span>
       </button>
-
       <button onclick="switchTab('lab')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="flask-conical" class="w-4 h-4 text-slate-500"></i>
         <span>4. Advanced Lab</span>
       </button>
-
       <button onclick="switchTab('staff')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="users-round" class="w-4 h-4 text-slate-500"></i>
         <span>5. Vorstand & Experten</span>
       </button>
-
       <button onclick="switchTab('hack')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="shield-alert" class="w-4 h-4 text-slate-500"></i>
         <span>6. Black-Ops Infiltration & Mini-Hack</span>
       </button>
-
       <button onclick="switchTab('hq')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="building-2" class="w-4 h-4 text-slate-500"></i>
         <span>7. Corporate Headquarters</span>
       </button>
-
       <button onclick="switchTab('orbit')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="orbit" class="w-4 h-4 text-indigo-400"></i>
         <span>8. Orbital-Drohnen & Satelliten</span>
       </button>
-
       <button onclick="switchTab('fame')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="globe" class="w-4 h-4 text-slate-500"></i>
         <span>9. Cloud-Sync & Weltrangliste</span>
       </button>
-
       <button onclick="switchTab('settings')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="sliders" class="w-4 h-4 text-slate-500"></i>
         <span>10. System-Einstellungen</span>
       </button>
-
     </div>
 
     <div class="p-4 border-t border-blue-500/15 bg-[#020408]">
@@ -411,7 +395,6 @@
         <p class="text-xs text-slate-400 mt-1">Investiere iCash in permanente Boni, tausche sie gegen Startkapital (Euros) oder aktiviere den exklusiven Monats-Pass!</p>
       </div>
 
-      <!-- CYBER MONATS-PASS CARD -->
       <div class="holo-card p-4 border-amber-500/40 bg-gradient-to-r from-amber-950/30 via-[#0b101d] to-[#0b101d]">
         <div class="flex justify-between items-center mb-2">
           <div class="font-bold text-xs text-white flex items-center gap-1.5">
@@ -439,7 +422,6 @@
       </div>
 
       <div id="daily-rewards-container" class="grid grid-cols-1 gap-2.5"></div>
-
       <button onclick="claimDailyReward()" id="btn-claim-daily" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg hover:brightness-110 transition">
         Tägliche Belohnung abholen!
       </button>
@@ -457,10 +439,22 @@
 
     <!-- TAB 3: BÖRSE & MINING -->
     <div id="tab-market" class="tab-panel space-y-4 hidden">
+      
+      <!-- PORTFOLIO WERTANZEIGE GANZ OBEN -->
+      <div class="holo-card p-4 bg-gradient-to-r from-indigo-950/50 via-[#0b101d] to-[#0b101d] border-indigo-500/40 shadow-xl flex justify-between items-center">
+        <div>
+          <div class="text-[10px] text-slate-400 font-mono uppercase tracking-wider">Krypto & Aktien Portfolio-Gesamtwert</div>
+          <div id="portfolio-total-val" class="text-base font-mono font-bold text-white mt-0.5">€0.00</div>
+        </div>
+        <div id="portfolio-perf-badge" class="px-3 py-1.5 rounded-xl border font-mono text-xs font-bold bg-[#0f172a] border-slate-700 text-slate-400">
+          ±0.00%
+        </div>
+      </div>
+
       <div class="holo-card p-4 bg-gradient-to-r from-blue-950/40 via-[#0b101d] to-[#0b101d] border-blue-500/30 flex justify-between items-center">
         <div>
           <h3 class="font-bold text-sm text-white flex items-center gap-1.5"><i data-lucide="bar-chart-3" class="w-4 h-4 text-blue-400"></i> Wall Street & Holo-Mining</h3>
-          <p class="text-xs text-slate-400 mt-0.5">Handle Aktien, baue Krypto-Farmen und nutze Insider-Pumps!</p>
+          <p class="text-xs text-slate-400 mt-0.5">Rigs produzieren reine Coins (keine Euros). Verkaufe sie mit Gewinn an der Börse!</p>
         </div>
         <div class="text-xs text-blue-400 font-mono bg-[#0f172a] px-3 py-1.5 rounded-xl border border-blue-500/20 shadow-lg text-right">
           <div class="text-[9px] text-slate-400 uppercase">Automatischer Drop</div>
@@ -520,7 +514,6 @@
     <div id="tab-fame" class="tab-panel space-y-4 hidden">
       <h3 class="font-bold text-sm text-white">9. Cloud-Sync & Weltrangliste</h3>
       
-      <!-- AVATAR AUSWAHL BEREICH -->
       <div class="holo-card p-4 space-y-3 border-purple-500/30">
         <div class="flex justify-between items-center">
           <span class="font-bold text-xs text-white flex items-center gap-1.5">
@@ -617,7 +610,7 @@
       lucide.createIcons();
     }
 
-    // --- ERWEITERTES ADMIN MODUS SYSTEM ---
+    // --- ADMIN SYSTEM ---
     let secretClickCount = 0;
     let secretClickTimer = null;
 
@@ -661,13 +654,12 @@
     }
 
     function adminTimeJump() {
-      const earned = getPassiveIncome() * 60; // 1 Stunde in Minuten-Einkommen * 24
-      const totalJump = earned * 24;
-      state.money += totalJump;
-      state.totalEarned += totalJump;
+      const earned = getPassiveIncome() * 60 * 24;
+      state.money += earned;
+      state.totalEarned += earned;
       updateUI();
       saveGameLocally();
-      alert(`⚡ 24 Stunden Zeitraffer ausgeführt! +${formatMoney(totalJump)} gutgeschrieben.`);
+      alert(`⚡ 24 Stunden Zeitraffer ausgeführt! +${formatMoney(earned)} gutgeschrieben.`);
     }
 
     function adminUnlockAll() {
@@ -679,9 +671,9 @@
     }
 
     function adminForceSeasonReset() {
-      if(confirm("⚠️ WARNUNG: Möchtest du wirklich eine NEUE Saison starten und das gesamte Spielfortschritt-Vermögen zurücksetzen? (iCash & Avatare bleiben erhalten!)")) {
+      if(confirm("⚠️ WARNUNG: Möchtest du wirklich eine NEUE Saison starten und das gesamte Spielfortschritt-Vermögen zurücksetzen?")) {
         executeSeasonReset();
-        alert("🎉 SAISON REST ERFOLGREICH DURCHGEFÜHRT!");
+        alert("🎉 SAISON RESET ERFOLGREICH DURCHGEFÜHRT!");
       }
     }
 
@@ -698,7 +690,7 @@
           await window.FB.setDoc(docRef, data);
           alert(`💶 Erfolgreich +€100.000 an Spieler ${target} gesendet!`);
         } else {
-          alert("Spieler mit dieser ID nicht gefunden!");
+          alert("Spieler nicht gefunden!");
         }
       } catch(e) { alert("Fehler beim Senden: " + e.message); }
     }
@@ -716,11 +708,10 @@
           await window.FB.setDoc(docRef, data);
           alert(`💎 Erfolgreich +25 iCash an Spieler ${target} gesendet!`);
         } else {
-          alert("Spieler mit dieser ID nicht gefunden!");
+          alert("Spieler nicht gefunden!");
         }
       } catch(e) { alert("Fehler beim Senden: " + e.message); }
     }
-    // ------------------------------------
 
     const defaultProducts = [
       { id: 'p1', name: 'KI-Assistent v1', cost: 1000.00, launched: false, bonus: 'Gibt +15% Boost auf gesamtes passives Einkommen' },
@@ -754,7 +745,7 @@
     ];
 
     let state = {
-      version: 12,
+      version: 13,
       companyName: '',
       language: 'de',
       money: 0,
@@ -830,7 +821,6 @@
 
       products: JSON.parse(JSON.stringify(defaultProducts)),
       staff: JSON.parse(JSON.stringify(defaultStaff)),
-
       hacks: [
         { id: 'h1', reward: 0.50, cd: 0, maxCd: 5 },
         { id: 'h2', reward: 3.50, cd: 0, maxCd: 12 },
@@ -838,7 +828,6 @@
         { id: 'h4', reward: 150.00, cd: 0, maxCd: 30 },
         { id: 'h5', reward: 1000.00, cd: 0, maxCd: 45 }
       ],
-
       hqs: JSON.parse(JSON.stringify(defaultHqs)),
       orbitals: JSON.parse(JSON.stringify(defaultOrbitals))
     };
@@ -857,26 +846,9 @@
 
     function fixMissingNames() {
       if(!state.products) state.products = JSON.parse(JSON.stringify(defaultProducts));
-      state.products.forEach((p, i) => {
-        if(!p.name && defaultProducts[i]) p.name = defaultProducts[i].name;
-        if(!p.bonus && defaultProducts[i]) p.bonus = defaultProducts[i].bonus;
-      });
-
       if(!state.staff) state.staff = JSON.parse(JSON.stringify(defaultStaff));
-      state.staff.forEach((s, i) => {
-        if(!s.name && defaultStaff[i]) s.name = defaultStaff[i].name;
-        if(!s.desc && defaultStaff[i]) s.desc = defaultStaff[i].desc;
-      });
-
       if(!state.hqs) state.hqs = JSON.parse(JSON.stringify(defaultHqs));
-      state.hqs.forEach((h, i) => {
-        if(!h.name && defaultHqs[i]) h.name = defaultHqs[i].name;
-      });
-
       if(!state.orbitals) state.orbitals = JSON.parse(JSON.stringify(defaultOrbitals));
-      state.orbitals.forEach((o, i) => {
-        if(!o.name && defaultOrbitals[i]) o.name = defaultOrbitals[i].name;
-      });
     }
 
     const availableAvatars = [
@@ -961,21 +933,9 @@
           { name: "Autonomous Mech Unit" }, { name: "Deep Neural Link" }, { name: "Interstellar Relay" },
           { name: "Dyson Swarm Node" }, { name: "Asteroid Mining Fleet" }, { name: "Omniscient Hivemind" }
         ]
-      },
-      en: {
-        season: "HOLO EDITION 2026",
-        passivLabel: "Passive / Min",
-        companyValLabel: "Total Assets",
-        nav: ["0. Core Terminal", "0.5. iCash Cyber-Hub", "11. Daily Reward", "1. Megastructures", "2. Quantum Research", "3. Stock & Mining Charts", "4. Advanced Lab", "5. Experts", "6. Black-Ops & Mini-Hack", "7. HQ", "8. Satellites", "9. Cloud & Leaderboard", "10. Settings"],
-        departments: [
-          { name: "Alpha Cyber-Grid" }, { name: "Nano-Assembler Plant" }, { name: "Quantum Node Array" },
-          { name: "Synthetic Bio-Lab" }, { name: "Neural Matrix Hub" }, { name: "Holographic Forge" },
-          { name: "Orbital Ion Engine" }, { name: "Dark Matter Reactor" }, { name: "Singularity Core" },
-          { name: "Autonomous Mech Unit" }, { name: "Deep Neural Link" }, { name: "Interstellar Relay" },
-          { name: "Dyson Swarm Node" }, { name: "Asteroid Mining Fleet" }, { name: "Omniscient Hivemind" }
-        ]
       }
     };
+    translations.en = translations.de;
     translations.fr = translations.de;
     translations.es = translations.de;
     translations.it = translations.de;
@@ -1000,13 +960,6 @@
       navButtons.forEach((span, idx) => {
         if(t.nav[idx]) span.innerText = t.nav[idx];
       });
-
-      const headerLabels = document.querySelectorAll('main > div.grid > div > div:first-child');
-      if(headerLabels.length >= 3) {
-        headerLabels[0].innerText = t.passivLabel;
-        headerLabels[1].innerText = "iCash Guthaben";
-        headerLabels[2].innerText = t.companyValLabel;
-      }
     }
 
     function renderLanguageTab() {
@@ -1173,7 +1126,6 @@
     }
 
     function executeSeasonReset() {
-      // Setzt das Vermögen für die neue Saison zurück
       state.money = 0;
       state.totalEarned = 0;
       state.clickPower = 0.01;
@@ -1183,7 +1135,6 @@
       state.exp = 0;
       state.expNeeded = 200;
 
-      // Resette Abteilungen & Upgrades
       state.departments.forEach(d => { d.count = 0; });
       state.upgrades.forEach(u => { u.bought = false; });
       state.products.forEach(p => { p.launched = false; });
@@ -1191,9 +1142,19 @@
       state.hqs.forEach((h, idx) => { h.bought = (idx === 0); });
       state.orbitals.forEach(o => { o.count = 0; });
 
+      // Auch Markt/Mining-Bestände restlos zurücksetzen!
+      state.market.forEach(m => {
+        m.owned = 0;
+        if(m.type === 'crypto') {
+          m.rigs = 0;
+          m.rigCost = 50;
+        }
+      });
+
       localStorage.setItem('empire_season_key', getMonthKey());
       saveGameLocally();
       updateUI();
+      if(activeCurrentTab === 'market') renderTabContent('market');
     }
 
     function checkSeasonReset() {
@@ -1201,7 +1162,7 @@
       const savedKey = localStorage.getItem('empire_season_key');
       if (savedKey && savedKey !== currentKey) {
         executeSeasonReset();
-        alert("🗓️ EINE NEUE MONATS-SAISON HAT BEGONNEN! Dein Imperium-Fortschritt wurde zurückgesetzt. Zeige allen deine Führungsqualitäten in der neuen Rangliste!");
+        alert("🗓️ EINE NEUE MONATS-SAISON HAT BEGONNEN! Dein Imperium-Fortschritt und alle Börsen-/Mining-Assets wurden zurückgesetzt.");
       }
       localStorage.setItem('empire_season_key', currentKey);
     }
@@ -1250,7 +1211,7 @@
       toggleMenu();
       
       renderTabContent(tabId);
-      if(tabId === 'market') drawAllCandleCharts();
+      if(tabId === 'market') { drawAllCandleCharts(); updatePortfolioHeader(); }
       if(tabId === 'hack') initHackMiniGame();
       if(tabId === 'fame') { fetchLeaderboard(); renderAvatarSelector(); }
       if(tabId === 'daily') renderDailyRewards();
@@ -1284,11 +1245,7 @@
         state.orbitals.forEach(o => { income += o.count * o.baseIncome; });
       }
 
-      state.market.forEach(m => {
-        if(m.type === 'crypto' && m.rigs > 0) {
-          income += m.rigs * (m.price * 0.08);
-        }
-      });
+      // HINWEIS: Krypto-Rigs erzeugen KEINE passiven Euros mehr, sondern nur noch Coins!
 
       let labMultiplier = 1;
       if (state.products) {
@@ -1390,6 +1347,7 @@
       document.getElementById('exp-text').innerText = `${Math.floor(state.exp)} / ${state.expNeeded} EXP`;
       document.getElementById('exp-bar').style.width = Math.min(100, (state.exp / state.expNeeded) * 100) + '%';
       updateMiningTimerDisplay();
+      if(activeCurrentTab === 'market') updatePortfolioHeader();
     }
 
     function addExp(amount) {
@@ -1446,11 +1404,11 @@
         } else {
           state.monthlyPassExpire = Date.now() + thirtyDaysMs;
         }
-        alert("👑 Cyber Monats-Pass erfolgreich aktiviert! Alle Boni sind verdoppelt und der 'Cyber Emperor' Avatar ist freigeschaltet!");
+        alert("👑 Cyber Monats-Pass erfolgreich aktiviert!");
         updateUI();
         saveGameLocally();
       } else {
-        alert("Nicht genug iCash! Spiele weiter, steige im Level auf oder hacke Terminals.");
+        alert("Nicht genug iCash!");
       }
     }
 
@@ -1461,18 +1419,18 @@
         if (item.type === 'cash') {
           state.money += item.value;
           state.totalEarned += item.value;
-          alert(`💶 Erfolgreich getauscht! +${formatMoney(item.value)} wurden deinem Guthaben gutgeschrieben.`);
+          alert(`💶 Erfolgreich getauscht! +${formatMoney(item.value)}`);
         } else if (item.type === 'boost') {
           const boostAmount = getPassiveIncome() * item.value;
           state.money += boostAmount;
           state.totalEarned += boostAmount;
-          alert(`⚡ Mega-Boost aktiviert! Sofortige Injektion von +${formatMoney(boostAmount)} Euros!`);
+          alert(`⚡ Mega-Boost aktiviert! +${formatMoney(boostAmount)}`);
         }
         updateUI();
         renderTabContent('icash');
         saveGameLocally();
       } else {
-        alert("Nicht genügend iCash für diesen Kauf vorhanden!");
+        alert("Nicht genügend iCash!");
       }
     }
 
@@ -1539,23 +1497,14 @@
 
     function claimDailyReward() {
       if (!canClaimDaily()) {
-        alert("Du hast deine Belohnung für heute bereits abgeholt! Komm morgen wieder.");
+        alert("Du hast deine Belohnung für heute bereits abgeholt!");
         return;
       }
-
       const rewardIndex = state.dailyStreak % 7;
       const rew = dailyRewardsList[rewardIndex];
 
       if (rew.type === 'icash') {
         state.icash += rew.val;
-        if(rewardIndex === 6) {
-          const oneDayMs = 24 * 60 * 60 * 1000;
-          if (isPassActive()) {
-            state.monthlyPassExpire += oneDayMs;
-          } else {
-            state.monthlyPassExpire = Date.now() + oneDayMs;
-          }
-        }
       } else if (rew.type === 'cash') {
         state.money += rew.val;
         state.totalEarned += rew.val;
@@ -1563,7 +1512,6 @@
 
       state.dailyStreak++;
       state.lastClaimTimestamp = Date.now();
-
       alert(`🎁 Erfolgreich abgeholt: ${rew.label}!`);
       updateUI();
       renderDailyRewards();
@@ -1601,12 +1549,12 @@
         state.totalEarned += rewardCash;
         state.icash += rewardIcash;
         statusEl.className = "text-xs font-mono text-emerald-400 text-center h-5 mt-2 font-bold";
-        statusEl.innerText = `[SUCCESS] Firewall umgangen! +💎 ${rewardIcash} iCash & +${formatMoney(rewardCash)}`;
+        statusEl.innerText = `[SUCCESS] +💎 ${rewardIcash} iCash & +${formatMoney(rewardCash)}`;
         addExp(30);
         setTimeout(initHackMiniGame, 1800);
       } else {
         statusEl.className = "text-xs font-mono text-rose-400 text-center h-5 mt-2 font-bold";
-        statusEl.innerText = `[ACCESS DENIED] Falscher Node! Trace gestartet. Neuer Code...`;
+        statusEl.innerText = `[ACCESS DENIED] Falscher Node!`;
         setTimeout(initHackMiniGame, 1500);
       }
       updateUI();
@@ -1659,6 +1607,43 @@
       state.market.forEach((m, idx) => { drawCandleChart(`chart-${idx}`, m.candles); });
     }
 
+    // --- PORTFOLIO GANZ OBEN BERECHNEN ---
+    function updatePortfolioHeader() {
+      let totalPortfolioValue = 0;
+      let totalInvestedCost = 0;
+
+      state.market.forEach(m => {
+        if (m.owned > 0) {
+          totalPortfolioValue += m.owned * m.price;
+          // Annahme Anschaffungswert basiert auf erstem Kerzen-Open oder aktuellem Kurs als Basis
+          let baseCostPrice = m.candles && m.candles[0] ? m.candles[0].o : m.price;
+          totalInvestedCost += m.owned * baseCostPrice;
+        }
+      });
+
+      const valEl = document.getElementById('portfolio-total-val');
+      const badgeEl = document.getElementById('portfolio-perf-badge');
+      if(!valEl || !badgeEl) return;
+
+      valEl.innerText = formatMoney(totalPortfolioValue);
+
+      if (totalInvestedCost <= 0) {
+        badgeEl.innerText = "±0.00%";
+        badgeEl.className = "px-3 py-1.5 rounded-xl border font-mono text-xs font-bold bg-[#0f172a] border-slate-700 text-slate-400";
+        return;
+      }
+
+      const diffPct = ((totalPortfolioValue - totalInvestedCost) / totalInvestedCost) * 100;
+      const isPlus = diffPct >= 0;
+
+      badgeEl.innerText = (isPlus ? "+" : "") + diffPct.toFixed(2) + "%";
+      if (isPlus) {
+        badgeEl.className = "px-3 py-1.5 rounded-xl border font-mono text-xs font-bold bg-emerald-950/40 border-emerald-500/40 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]";
+      } else {
+        badgeEl.className = "px-3 py-1.5 rounded-xl border font-mono text-xs font-bold bg-rose-950/40 border-rose-500/40 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.2)]";
+      }
+    }
+
     function renderTabContent(tabId) {
       fixMissingNames();
       const lang = state.language || 'de';
@@ -1667,7 +1652,6 @@
       if (tabId === 'icash') {
         const list = document.getElementById('list-icash-features');
         list.innerHTML = `<div class="text-[11px] text-slate-400 mb-2">Permanente Boni (Upgrade-Zentrale):</div>`;
-        
         state.permaUpgrades.forEach((pu, idx) => {
           const canBuy = state.icash >= pu.cost && pu.level < pu.maxLevel;
           list.innerHTML += `
@@ -1700,7 +1684,6 @@
             </div>
           `;
         });
-
         lucide.createIcons();
       }
 
@@ -1749,7 +1732,7 @@
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
                   <div class="font-bold text-xs text-white">Quanten-Forschung #${idx+1}</div>
-                  <div class="text-[11px] text-emerald-400 mt-0.5">Imperium-Boost: ${u.type === 'click' ? 'Verdoppelt Klick-Leistung' : 'Erhöht Gesamteinkommen'}</div>
+                  <div class="text-[11px] text-emerald-400 mt-0.5">Imperium-Boost</div>
                 </div>
                 <button onclick="buyUpgrade(${idx})" ${u.bought ? 'disabled' : ''} class="px-3 py-1.5 ${u.bought ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30' : (state.money >= u.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
                   ${u.bought ? 'Erforscht' : formatMoney(u.cost)}
@@ -1761,6 +1744,7 @@
       }
 
       if (tabId === 'market') {
+        updatePortfolioHeader();
         const list = document.getElementById('list-market');
         list.innerHTML = '';
         state.market.forEach((m, idx) => {
@@ -1768,7 +1752,7 @@
           const badgeBg = isPos ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border-rose-500/30';
 
           let extraActionHtml = '';
-          let marketDesc = m.type === 'stock' ? 'Börsen-Aktie (Aktiv handelbar mit Hebel)' : 'Krypto-Token & automatisches Rig-Mining';
+          let marketDesc = m.type === 'stock' ? 'Börsen-Aktie (Aktiv handelbar mit Hebel)' : 'Krypto-Token & automatisches Rig-Mining (Erzeugt REINE COINS)';
           
           if (m.type === 'crypto') {
             const rigCost = m.rigCost || 50;
@@ -1777,7 +1761,7 @@
               <div class="mt-2.5 pt-2.5 border-t border-blue-500/10 flex justify-between items-center text-xs bg-[#070b14]/60 p-2 rounded-xl">
                 <div>
                   <span class="text-slate-300 font-mono text-[11px]">Rig-Farm: <strong class="text-purple-400">${rigsCount} Rigs</strong></span>
-                  <div class="text-[10px] text-emerald-400 font-mono">+${formatMoney(rigsCount * (m.price * 0.08))}/min</div>
+                  <div class="text-[10px] text-purple-300 font-mono">+${(rigsCount * 0.1).toFixed(1)} ${m.name.split(' ')[0]} / min</div>
                 </div>
                 <button onclick="buyMiningRig(${idx})" class="px-3 py-1.5 icash-btn text-[11px] rounded-lg font-semibold">Rig kaufen (${formatMoney(rigCost)})</button>
               </div>
@@ -1821,7 +1805,7 @@
               <div class="flex gap-2">
                 <button onclick="buyStock(${idx})" class="flex-1 py-2 holo-btn text-xs rounded-xl font-semibold">Kauf (1 Stk)</button>
                 <button onclick="sellStock(${idx})" class="flex-1 py-2 bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-800 text-xs rounded-xl font-semibold transition">Verkauf</button>
-                <button onclick="triggerHoloPump(${idx})" class="px-3 py-2 icash-btn text-xs rounded-xl font-semibold flex items-center gap-1" title="Künstlicher Holo-Pump (+5-15% Kursboost)">
+                <button onclick="triggerHoloPump(${idx})" class="px-3 py-2 icash-btn text-xs rounded-xl font-semibold flex items-center gap-1" title="Künstlicher Holo-Pump">
                   <i data-lucide="zap" class="w-3.5 h-3.5"></i> 💎 2
                 </button>
               </div>
@@ -1837,10 +1821,6 @@
       if (tabId === 'lab') {
         const list = document.getElementById('list-lab');
         list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">4. Advanced Engineering Lab</h3>`;
-        
-        const currentBaseInc = getPassiveIncome();
-        const boostPerProduct = currentBaseInc * 0.15;
-
         state.products.forEach((p, idx) => {
           const imgUrl = labImages[idx % labImages.length];
           list.innerHTML += `
@@ -1851,10 +1831,10 @@
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
                   <div class="font-bold text-xs text-white">${p.name}</div>
-                  <div class="text-[11px] text-emerald-400 font-mono mt-0.5">+15% Boost auf Passiv-Einkommen (+${formatMoney(boostPerProduct)}/min)</div>
+                  <div class="text-[11px] text-emerald-400 font-mono mt-0.5">+15% Boost auf Passiv-Einkommen</div>
                 </div>
                 <button onclick="launchProduct(${idx})" ${p.launched ? 'disabled' : ''} class="px-3 py-1.5 ${p.launched ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30 font-bold' : (state.money >= p.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
-                  ${p.launched ? 'Online (Aktiv)' : 'Entwickeln (' + formatMoney(p.cost) + ')'}
+                  ${p.launched ? 'Online' : formatMoney(p.cost)}
                 </button>
               </div>
             </div>
@@ -1867,15 +1847,6 @@
         list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">5. Vorstand & Experten</h3>`;
         state.staff.forEach((s, idx) => {
           const imgUrl = staffImages[idx % staffImages.length];
-          
-          let impactText = "";
-          if (s.id === 's1') {
-            impactText = `+${formatMoney(s.count * 0.01)} / Klick`;
-          } else {
-            const pct = (s.id === 's2' ? 1.0 : (s.id === 's3' ? 1.5 : (s.id === 's4' ? 2.0 : 2.5)));
-            impactText = `+${(s.count * pct).toFixed(1)}% Passiv-Boost`;
-          }
-
           list.innerHTML += `
             <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
               <div class="sm:w-28 h-20 sm:h-auto relative overflow-hidden bg-[#070b14]">
@@ -1885,7 +1856,6 @@
                 <div>
                   <div class="font-bold text-xs text-white">${s.name}</div>
                   <div class="text-[11px] text-slate-400 mt-0.5">${s.desc}</div>
-                  <div class="text-[11px] text-emerald-400 font-mono mt-0.5">Rekrutiert: ${s.count} (${impactText})</div>
                 </div>
                 <button onclick="hireStaff(${idx})" class="px-3 py-1.5 ${state.money >= s.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold transition">
                   Rekrutieren (${formatMoney(s.cost)})
@@ -1904,7 +1874,7 @@
             <div class="holo-card p-3.5 flex justify-between items-center">
               <div>
                 <div class="font-bold text-xs text-white">Operation #${idx+1}</div>
-                <div class="text-[11px] text-slate-400 mt-0.5">Injektions-Ertrag: <span class="text-emerald-400 font-mono font-bold">+${formatMoney(h.reward)}</span></div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Ertrag: <span class="text-emerald-400 font-mono font-bold">+${formatMoney(h.reward)}</span></div>
               </div>
               <button onclick="executeHack(${idx})" ${h.cd > 0 ? 'disabled' : ''} class="px-3 py-1.5 ${h.cd > 0 ? 'bg-[#0f172a] text-slate-600 border border-blue-500/10' : 'bg-rose-950/80 text-rose-300 border border-rose-800'} text-xs rounded-lg font-semibold transition">
                 ${h.cd > 0 ? h.cd + 's' : 'INFILTRIEREN'}
@@ -1927,7 +1897,7 @@
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
                   <div class="font-bold text-xs text-white">${hq.name}</div>
-                  <div class="text-[11px] text-emerald-400 mt-0.5">Multiplikator: x${hq.mult} auf gesamtes passives Einkommen</div>
+                  <div class="text-[11px] text-emerald-400 mt-0.5">Multiplikator: x${hq.mult}</div>
                 </div>
                 <button onclick="buyHQ(${idx})" ${hq.bought || state.money < hq.cost ? 'disabled' : ''} class="px-3 py-1.5 ${hq.bought ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30 font-bold' : (state.money >= hq.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
                   ${hq.bought ? 'Zentrale aktiv' : formatMoney(hq.cost)}
@@ -1941,8 +1911,6 @@
       if (tabId === 'orbit') {
         const list = document.getElementById('list-orbit');
         list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">8. Orbital-Drohnen & Satelliten</h3>`;
-        if(!state.orbitals) state.orbitals = JSON.parse(JSON.stringify(defaultOrbitals));
-        
         state.orbitals.forEach((o, idx) => {
           const cost = o.baseCost * Math.pow(1.25, o.count);
           const imgUrl = orbitalImages[idx % orbitalImages.length];
@@ -1954,7 +1922,7 @@
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
                   <div class="font-bold text-xs text-white">${o.name}</div>
-                  <div class="text-[11px] text-emerald-400 mt-0.5">Ertrag: +${formatMoney(o.baseIncome)}/min pro Satellit (Aktiv: ${o.count})</div>
+                  <div class="text-[11px] text-emerald-400 mt-0.5">Ertrag: +${formatMoney(o.baseIncome)}/min</div>
                 </div>
                 <button onclick="buyOrbital(${idx})" class="px-3 py-1.5 ${state.money >= cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold transition">
                   Starten (${formatMoney(cost)})
@@ -1988,12 +1956,12 @@
         item.candles.push({ o: item.price/boost, h: item.price*1.02, l: item.price*0.98, c: item.price });
         if(item.candles.length > 12) item.candles.shift();
 
-        alert(`🚀 HOLO-PUMP ERFOLGREICH! ${item.name} wurde künstlich gepumpt!`);
+        alert(`🚀 HOLO-PUMP ERFOLGREICH! ${item.name}`);
         updateUI();
         renderTabContent('market');
         saveGameLocally();
       } else {
-        alert("Nicht genügend iCash (💎 2 erforderlich) für einen Holo-Pump!");
+        alert("Nicht genügend iCash (💎 2 erforderlich)!");
       }
     }
 
@@ -2057,7 +2025,7 @@
         renderTabContent('market');
         saveGameLocally();
       } else {
-        alert("Nicht genug Kapital für diesen Kauf (inkl. Hebel)!");
+        alert("Nicht genug Kapital!");
       }
     }
 
@@ -2132,7 +2100,7 @@
         state.money -= hq.cost;
         hq.bought = true;
         state.icash += 15;
-        alert(`🏢 HQ FREIGESCHALTET! Du hast 💎 +15 iCash erhalten!`);
+        alert(`🏢 HQ FREIGESCHALTET! +💎 15 iCash!`);
         updateUI();
         renderTabContent('hq');
         saveGameLocally();
@@ -2140,7 +2108,6 @@
     }
 
     function buyOrbital(idx) {
-      if(!state.orbitals) state.orbitals = JSON.parse(JSON.stringify(defaultOrbitals));
       const o = state.orbitals[idx];
       const cost = o.baseCost * Math.pow(1.25, o.count);
       if (state.money >= cost) {
@@ -2197,7 +2164,6 @@
 
     checkSeasonReset();
     updateSeasonCountdown();
-
     loadGameLocally();
     updateDynamicTexts();
     updateUI();
@@ -2227,15 +2193,11 @@
           });
         }
       }
-      if (activeCurrentTab === 'fame') {
-        fetchLeaderboard();
-      }
+      if (activeCurrentTab === 'fame') fetchLeaderboard();
     }, 30000);
 
     setInterval(() => {
-      state.hacks.forEach(h => {
-        if (h.cd > 0) h.cd--;
-      });
+      state.hacks.forEach(h => { if (h.cd > 0) h.cd--; });
 
       if (state.miningSecondsLeft > 0) {
         state.miningSecondsLeft--;
@@ -2244,6 +2206,13 @@
         state.money += 50.00;
       }
       updateMiningTimerDisplay();
+
+      // Rigs erzeugen jetzt REINE COINS statt passive Euros!
+      state.market.forEach(m => {
+        if(m.type === 'crypto' && m.rigs > 0) {
+          m.owned += m.rigs * 0.1; // Produziert 0.1 Coins pro Rig pro Minute
+        }
+      });
 
       if (Math.random() < 0.05) {
         state.market.forEach(m => {
@@ -2255,7 +2224,7 @@
           m.candles.push({ o: oldPrice, h: Math.max(oldPrice, m.price)*1.01, l: Math.min(oldPrice, m.price)*0.99, c: m.price });
           if(m.candles.length > 12) m.candles.shift();
         });
-        if(activeCurrentTab === 'market') drawAllCandleCharts();
+        if(activeCurrentTab === 'market') { drawAllCandleCharts(); updatePortfolioHeader(); }
       }
 
       state.incomeTimerSeconds--;
