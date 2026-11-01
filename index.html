@@ -12,7 +12,7 @@
   <!-- Firebase SDKs & Config -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -30,15 +30,18 @@
       const auth = getAuth(app);
       const db = getFirestore(app);
 
-      window.FB = { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, doc, setDoc, getDoc, collection, getDocs, query, orderBy, limit };
+      window.FB = { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, doc, setDoc, getDoc, collection, getDocs, query, orderBy, limit };
 
       onAuthStateChanged(auth, async (user) => {
+        const authOverlay = document.getElementById('auth-overlay');
         const userStatusEl = document.getElementById('firebase-user-status');
         const authFormsEl = document.getElementById('firebase-auth-forms');
         const logoutBtnEl = document.getElementById('firebase-logout-btn');
 
         if (user) {
-          if(userStatusEl) userStatusEl.innerText = `CYBER SECURE: ${user.email}`;
+          const displayName = user.displayName || user.email.split('@')[0];
+          if(authOverlay) authOverlay.classList.add('hidden');
+          if(userStatusEl) userStatusEl.innerText = `CYBER SECURE: ${displayName} (${user.email})`;
           if(authFormsEl) authFormsEl.classList.add('hidden');
           if(logoutBtnEl) logoutBtnEl.classList.remove('hidden');
 
@@ -46,12 +49,16 @@
             const docSnap = await getDoc(doc(db, "saves", user.uid));
             if (docSnap.exists() && window.mergeCloudAndLocalState) {
               window.mergeCloudAndLocalState(docSnap.data());
+            } else {
+              window.state.companyName = displayName;
+              saveGameLocally();
             }
           } catch(err) {
             console.error("Cloud-Ladefehler:", err);
           }
         } else {
-          if(userStatusEl) userStatusEl.innerText = 'OFFLINE HOLO MODE';
+          if(authOverlay) authOverlay.classList.remove('hidden');
+          if(userStatusEl) userStatusEl.innerText = 'OFFLINE - SYSTEM GESPERRT';
           if(authFormsEl) authFormsEl.classList.remove('hidden');
           if(logoutBtnEl) logoutBtnEl.classList.add('hidden');
         }
@@ -134,6 +141,61 @@
   </style>
 </head>
 <body class="bg-[#020408] text-slate-300 min-h-screen flex flex-col relative overflow-x-hidden">
+
+  <!-- ZWINGENDES LOGIN / REGISTRIERUNGS OVERLAY ALLES VERRIEGELT -->
+  <div id="auth-overlay" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] flex items-center justify-center p-4">
+    <div class="holo-card p-6 max-w-md w-full border-blue-500/50 bg-[#070b14] space-y-5 shadow-2xl relative">
+      <div class="text-center space-y-1.5">
+        <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mx-auto text-blue-400">
+          <i data-lucide="shield-lock" class="w-6 h-6"></i>
+        </div>
+        <h2 class="font-extrabold text-base text-white tracking-widest uppercase">CYBER TYCOON // ACCESS CORE</h2>
+        <p class="text-xs text-slate-400">Bitte erstelle einen Account mit Benutzernamen oder melde dich an, um Zugriff zu erhalten.</p>
+      </div>
+
+      <!-- TABS LOGIN / REGISTRIEREN IN OVERLAY -->
+      <div class="flex border-b border-blue-500/20 text-xs font-semibold">
+        <button id="tab-btn-login" onclick="switchAuthMode('login')" class="flex-1 py-2 text-center text-blue-400 border-b-2 border-blue-500">Anmelden</button>
+        <button id="tab-btn-reg" onclick="switchAuthMode('register')" class="flex-1 py-2 text-center text-slate-400 hover:text-white">Registrieren</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="form-overlay-login" onsubmit="event.preventDefault(); handleLoginOverlay();" class="space-y-3">
+        <div>
+          <label class="text-[10px] text-slate-400 font-mono uppercase">E-Mail</label>
+          <input type="email" id="overlay-login-email" required placeholder="boss@cyber.de" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 mt-1">
+        </div>
+        <div>
+          <label class="text-[10px] text-slate-400 font-mono uppercase">Passwort</label>
+          <input type="password" id="overlay-login-pass" required placeholder="••••••••" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 mt-1">
+        </div>
+        <button type="submit" class="w-full py-3 holo-btn text-xs font-bold rounded-xl shadow-lg mt-2">
+          Anmelden & Terminal Freischalten
+        </button>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form id="form-overlay-reg" onsubmit="event.preventDefault(); handleRegisterOverlay();" class="space-y-3 hidden">
+        <div>
+          <label class="text-[10px] text-slate-400 font-mono uppercase">Benutzername (Spielername)</label>
+          <input type="text" id="overlay-reg-username" required placeholder="z.B. CyberKing99" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 mt-1">
+        </div>
+        <div>
+          <label class="text-[10px] text-slate-400 font-mono uppercase">E-Mail</label>
+          <input type="email" id="overlay-reg-email" required placeholder="boss@cyber.de" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 mt-1">
+        </div>
+        <div>
+          <label class="text-[10px] text-slate-400 font-mono uppercase">Passwort (min. 6 Zeichen)</label>
+          <input type="password" id="overlay-reg-pass" required minlength="6" placeholder="••••••••" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 mt-1">
+        </div>
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg hover:brightness-110 transition mt-2">
+          Account Erstellen & Starten
+        </button>
+      </form>
+
+      <div id="overlay-auth-error" class="text-xs font-mono text-rose-400 text-center hidden"></div>
+    </div>
+  </div>
 
   <!-- ADMIN MODAL -->
   <div id="admin-modal" class="fixed inset-0 bg-black/90 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
@@ -412,7 +474,7 @@
       <div id="list-icash-features" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 11: TÄGLICHE BELOHNUNG -->
+    <!-- TAB 11: TÄGLICHE BELOH NUNG -->
     <div id="tab-daily" class="tab-panel space-y-4 hidden">
       <div class="holo-card p-4 bg-gradient-to-r from-emerald-950/40 via-[#0b101d] to-[#0b101d] border-emerald-500/30">
         <h3 class="font-bold text-sm text-white flex items-center gap-2">
@@ -529,7 +591,7 @@
         <div id="firebase-user-status" class="text-xs text-blue-400 font-mono font-medium">Verbinde mit Empire Core...</div>
         
         <div id="firebase-auth-forms" class="space-y-2">
-          <input type="text" id="auth-company-name" placeholder="Unternehmensname" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
+          <input type="text" id="auth-company-name" placeholder="Unternehmensname / Spielername" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
           <input type="email" id="auth-email" placeholder="E-Mail" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
           <input type="password" id="auth-password" placeholder="Passwort (min. 6 Zeichen)" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
           <div class="flex gap-2 pt-1">
@@ -608,6 +670,74 @@
         });
       }
       lucide.createIcons();
+    }
+
+    // --- OVERLAY AUTH HELPER ---
+    function switchAuthMode(mode) {
+      const formLogin = document.getElementById('form-overlay-login');
+      const formReg = document.getElementById('form-overlay-reg');
+      const btnLogin = document.getElementById('tab-btn-login');
+      const btnReg = document.getElementById('tab-btn-reg');
+      const errEl = document.getElementById('overlay-auth-error');
+
+      if(errEl) errEl.classList.add('hidden');
+
+      if (mode === 'register') {
+        formLogin.classList.add('hidden');
+        formReg.classList.remove('hidden');
+        btnReg.className = "flex-1 py-2 text-center text-blue-400 border-b-2 border-blue-500 font-bold";
+        btnLogin.className = "flex-1 py-2 text-center text-slate-400 hover:text-white";
+      } else {
+        formReg.classList.add('hidden');
+        formLogin.classList.remove('hidden');
+        btnLogin.className = "flex-1 py-2 text-center text-blue-400 border-b-2 border-blue-500 font-bold";
+        btnReg.className = "flex-1 py-2 text-center text-slate-400 hover:text-white";
+      }
+    }
+
+    async function handleLoginOverlay() {
+      if (!window.FB) { alert('Firebase nicht bereit.'); return; }
+      const email = document.getElementById('overlay-login-email').value.trim();
+      const pass = document.getElementById('overlay-login-pass').value;
+      const errEl = document.getElementById('overlay-auth-error');
+
+      try {
+        if(errEl) errEl.classList.add('hidden');
+        await window.FB.signInWithEmailAndPassword(window.FB.auth, email, pass);
+      } catch(e) {
+        if(errEl) {
+          errEl.innerText = "Anmelde-Fehler: " + e.message;
+          errEl.classList.remove('hidden');
+        }
+      }
+    }
+
+    async function handleRegisterOverlay() {
+      if (!window.FB) { alert('Firebase nicht bereit.'); return; }
+      const username = document.getElementById('overlay-reg-username').value.trim();
+      const email = document.getElementById('overlay-reg-email').value.trim();
+      const pass = document.getElementById('overlay-reg-pass').value;
+      const errEl = document.getElementById('overlay-auth-error');
+
+      if(!username) {
+        if(errEl) { errEl.innerText = "Bitte gib einen Benutzernamen ein!"; errEl.classList.remove('hidden'); }
+        return;
+      }
+
+      try {
+        if(errEl) errEl.classList.add('hidden');
+        const userCred = await window.FB.createUserWithEmailAndPassword(window.FB.auth, email, pass);
+        if(userCred && userCred.user) {
+          await window.FB.updateProfile(userCred.user, { displayName: username });
+          state.companyName = username;
+          await saveGameToCloudManual();
+        }
+      } catch(e) {
+        if(errEl) {
+          errEl.innerText = "Registrierungs-Fehler: " + e.message;
+          errEl.classList.remove('hidden');
+        }
+      }
     }
 
     // --- ADMIN SYSTEM ---
@@ -832,10 +962,13 @@
       orbitals: JSON.parse(JSON.stringify(defaultOrbitals))
     };
 
+    window.state = state;
+
     window.mergeCloudAndLocalState = function(cloudData) {
       if (!cloudData) return;
       const oldTime = state.lastSaveTimestamp || Date.now();
       state = { ...state, ...cloudData };
+      window.state = state;
       fixMissingNames();
       checkOfflineEarnings(oldTime);
       saveGameLocally();
@@ -986,12 +1119,15 @@
       const email = document.getElementById('auth-email').value;
       const pass = document.getElementById('auth-password').value;
 
-      if (!companyInput) { alert('Bitte Unternehmensnamen eingeben!'); return; }
+      if (!companyInput) { alert('Bitte Unternehmensnamen / Benutzernamen eingeben!'); return; }
       if (!email || !pass) { alert('E-Mail und Passwort eingeben!'); return; }
 
       try {
         state.companyName = companyInput;
-        await window.FB.createUserWithEmailAndPassword(window.FB.auth, email, pass);
+        const userCred = await window.FB.createUserWithEmailAndPassword(window.FB.auth, email, pass);
+        if(userCred && userCred.user) {
+          await window.FB.updateProfile(userCred.user, { displayName: companyInput });
+        }
         await saveGameToCloudManual();
         alert('Erfolgreich registriert!');
       } catch (e) { alert('Fehler: ' + e.message); }
@@ -1018,15 +1154,17 @@
       try {
         state.lastSaveTimestamp = Date.now();
         const user = window.FB.auth.currentUser;
+        const nameToSave = user.displayName || state.companyName || user.email.split('@')[0];
+        state.companyName = nameToSave;
+        
         await window.FB.setDoc(window.FB.doc(window.FB.db, "saves", user.uid), state);
-        if (state.companyName) {
-          await window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", user.uid), {
-            companyName: state.companyName,
-            totalValue: state.totalEarned,
-            avatar: state.selectedAvatar || '🤖 Standard Klon',
-            updatedAt: Date.now()
-          });
-        }
+        await window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", user.uid), {
+          companyName: nameToSave,
+          totalValue: state.totalEarned,
+          avatar: state.selectedAvatar || '🤖 Standard Klon',
+          updatedAt: Date.now()
+        });
+        
         alert('Cloud-Sync erfolgreich!');
         fetchLeaderboard();
       } catch (e) { alert('Fehler: ' + e.message); }
@@ -1142,7 +1280,6 @@
       state.hqs.forEach((h, idx) => { h.bought = (idx === 0); });
       state.orbitals.forEach(o => { o.count = 0; });
 
-      // Auch Markt/Mining-Bestände restlos zurücksetzen!
       state.market.forEach(m => {
         m.owned = 0;
         if(m.type === 'crypto') {
@@ -1244,8 +1381,6 @@
       if(state.orbitals) {
         state.orbitals.forEach(o => { income += o.count * o.baseIncome; });
       }
-
-      // HINWEIS: Krypto-Rigs erzeugen KEINE passiven Euros mehr, sondern nur noch Coins!
 
       let labMultiplier = 1;
       if (state.products) {
@@ -1607,7 +1742,6 @@
       state.market.forEach((m, idx) => { drawCandleChart(`chart-${idx}`, m.candles); });
     }
 
-    // --- PORTFOLIO GANZ OBEN BERECHNEN ---
     function updatePortfolioHeader() {
       let totalPortfolioValue = 0;
       let totalInvestedCost = 0;
@@ -1615,7 +1749,6 @@
       state.market.forEach(m => {
         if (m.owned > 0) {
           totalPortfolioValue += m.owned * m.price;
-          // Annahme Anschaffungswert basiert auf erstem Kerzen-Open oder aktuellem Kurs als Basis
           let baseCostPrice = m.candles && m.candles[0] ? m.candles[0].o : m.price;
           totalInvestedCost += m.owned * baseCostPrice;
         }
@@ -2154,6 +2287,7 @@
           if(parsed.version && parsed.version >= 3) {
             const oldTime = parsed.lastSaveTimestamp || parseInt(localStorage.getItem('empire_last_save_time') || Date.now());
             state = { ...state, ...parsed };
+            window.state = state;
             fixMissingNames();
             checkSeasonReset();
             checkOfflineEarnings(oldTime);
@@ -2183,15 +2317,15 @@
     setInterval(() => {
       saveGameLocally();
       if (window.FB && window.FB.auth.currentUser) {
-        window.FB.setDoc(window.FB.doc(window.FB.db, "saves", window.FB.auth.currentUser.uid), state);
-        if (state.companyName) {
-          window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", window.FB.auth.currentUser.uid), {
-            companyName: state.companyName,
-            totalValue: state.totalEarned,
-            avatar: state.selectedAvatar || '🤖 Standard Klon',
-            updatedAt: Date.now()
-          });
-        }
+        const user = window.FB.auth.currentUser;
+        const nameToSave = user.displayName || state.companyName || user.email.split('@')[0];
+        window.FB.setDoc(window.FB.doc(window.FB.db, "saves", user.uid), state);
+        window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", user.uid), {
+          companyName: nameToSave,
+          totalValue: state.totalEarned,
+          avatar: state.selectedAvatar || '🤖 Standard Klon',
+          updatedAt: Date.now()
+        });
       }
       if (activeCurrentTab === 'fame') fetchLeaderboard();
     }, 30000);
@@ -2207,10 +2341,9 @@
       }
       updateMiningTimerDisplay();
 
-      // Rigs erzeugen jetzt REINE COINS statt passive Euros!
       state.market.forEach(m => {
         if(m.type === 'crypto' && m.rigs > 0) {
-          m.owned += m.rigs * 0.1; // Produziert 0.1 Coins pro Rig pro Minute
+          m.owned += m.rigs * 0.1;
         }
       });
 
@@ -2247,4 +2380,3 @@
   </script>
 </body>
 </html>
-  
