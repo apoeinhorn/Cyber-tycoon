@@ -150,12 +150,35 @@
       50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.8); }
     }
     .overheat-active { animation: pulse-glow 1s infinite; }
+
+    @keyframes float-companion {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(3deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
+    }
+    .floating-companion { animation: float-companion 4s ease-in-out infinite; }
   </style>
 </head>
 <body class="bg-[#020408] text-slate-300 min-h-screen flex flex-col relative overflow-x-hidden">
 
-  <!-- SPATIAL METEORITE FLOATING EVENT -->
+  <!-- SPATIAL METEORITE & COMPANION FLOATING CONTAINERS -->
   <div id="space-event-container" class="fixed inset-0 pointer-events-none z-50"></div>
+  <div id="companion-drone-container" class="fixed bottom-6 right-6 z-40 cursor-pointer pointer-events-auto"></div>
+
+  <!-- DYNAMIC STORY EVENT MODAL -->
+  <div id="story-event-modal" class="fixed inset-0 bg-black/90 backdrop-blur-xl z-[110] flex items-center justify-center p-4 hidden">
+    <div class="holo-card p-6 max-w-md w-full border-blue-500/50 bg-[#070b14] space-y-4 shadow-2xl text-center">
+      <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mx-auto text-blue-400">
+        <i data-lucide="radio" class="w-6 h-6 animate-pulse"></i>
+      </div>
+      <h3 id="story-event-title" class="font-extrabold text-sm text-white uppercase tracking-wider">CYBER-INTERN EVENT</h3>
+      <p id="story-event-desc" class="text-xs text-slate-300 leading-relaxed">Hier steht die Beschreibung der Cyber-Ereignis-Mission...</p>
+      <div class="grid grid-cols-2 gap-2 pt-2">
+        <button id="story-btn-opt1" onclick="resolveStoryEvent(1)" class="py-2.5 holo-btn text-xs font-bold rounded-xl shadow-lg">Option A</button>
+        <button id="story-btn-opt2" onclick="resolveStoryEvent(2)" class="py-2.5 bg-[#0f172a] hover:bg-[#1e293b] text-slate-200 border border-blue-500/30 text-xs font-bold rounded-xl transition">Option B</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ZWINGENDES LOGIN / REGISTRIERUNGS OVERLAY -->
   <div id="auth-overlay" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] flex items-center justify-center p-4">
@@ -336,6 +359,10 @@
         <i data-lucide="gem" class="w-4 h-4 text-purple-400"></i>
         <span>0.5. iCash Cyber-Zentrale</span>
       </button>
+      <button onclick="switchTab('singularity')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
+        <i data-lucide="atom" class="w-4 h-4 text-cyan-400"></i>
+        <span>0.8. Singularitäts-Protokoll (Prestige)</span>
+      </button>
       <button onclick="switchTab('daily')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i>
         <span>11. Quests & Glücksrad</span>
@@ -350,7 +377,7 @@
       </button>
       <button onclick="switchTab('market')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="bar-chart-3" class="w-4 h-4 text-slate-500"></i>
-        <span>3. Börse, Shorting & News</span>
+        <span>3. Börse, Shorting & Wetter</span>
       </button>
       <button onclick="switchTab('lab')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="flask-conical" class="w-4 h-4 text-slate-500"></i>
@@ -362,7 +389,7 @@
       </button>
       <button onclick="switchTab('hack')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="shield-alert" class="w-4 h-4 text-slate-500"></i>
-        <span>6. Memory-Hack & Rival-Hacks</span>
+        <span>6. Memory & Netrunner PvP</span>
       </button>
       <button onclick="switchTab('hq')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="building-2" class="w-4 h-4 text-slate-500"></i>
@@ -476,14 +503,14 @@
           </div>
           <span class="text-[10px] font-mono text-purple-300 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded">Preis: 💎 10 iCash</span>
         </div>
-        <p class="text-[11px] text-slate-300">Öffne einen Holo-Cube für zufällige Belohnungen: Euros, iCash-Guthaben, seltene Avatare oder 24h-Multiplikatoren!</p>
+        <p class="text-[11px] text-slate-300">Öffne einen Holo-Cube für zufällige Belohnungen: Euros, iCash, Avatare oder Multiplikatoren!</p>
         <button onclick="openHoloCube()" class="w-full py-2.5 icash-btn text-xs font-bold rounded-xl shadow-lg">
           📦 Holo-Cube Öffnen (💎 10 iCash)
         </button>
         <div id="lootbox-result" class="text-xs font-mono text-emerald-400 text-center font-bold h-4"></div>
       </div>
 
-      <!-- SYNDICATE FUND / GILDE -->
+      <!-- SYNDICATE FUND -->
       <div class="holo-card p-4 border-indigo-500/40 bg-gradient-to-r from-indigo-950/30 via-[#0b101d] to-[#0b101d] space-y-3">
         <div class="flex justify-between items-center">
           <div class="font-bold text-xs text-white flex items-center gap-1.5">
@@ -510,7 +537,7 @@
           </div>
           <span id="pass-status-badge" class="text-[10px] font-mono text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">Inaktiv</span>
         </div>
-        <p class="text-[11px] text-slate-300 mb-3">Verdoppelt dein passives Einkommen, verdoppelt Klick-Power und schaltet den exklusiven <strong class="text-amber-300">Cyber-Emperor Avatar</strong> frei!</p>
+        <p class="text-[11px] text-slate-300 mb-3">Verdoppelt passives Einkommen, Klick-Power & schaltet den <strong class="text-amber-300">Cyber-Emperor Avatar</strong> frei!</p>
         <button onclick="buyMonthlyPass()" id="btn-buy-pass" class="w-full py-2 bg-gradient-to-r from-amber-600 to-amber-500 text-white text-xs font-bold rounded-xl shadow-lg hover:brightness-110 transition">
           Pass aktivieren (💎 50 iCash / 30 Tage)
         </button>
@@ -518,6 +545,28 @@
 
       <div class="text-xs font-bold text-white uppercase tracking-wider mt-2">Permanente Boni & Euro-Exchange</div>
       <div id="list-icash-features" class="space-y-3"></div>
+    </div>
+
+    <!-- TAB 0.8: SINGULARITÄTS-PROTOKOLL (PRESTIGE) -->
+    <div id="tab-singularity" class="tab-panel space-y-4 hidden">
+      <div class="holo-card p-4 bg-gradient-to-r from-cyan-950/40 via-[#0b101d] to-[#0b101d] border-cyan-500/30">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <i data-lucide="atom" class="w-4 h-4 text-cyan-400"></i> Das Singularitäts-Protokoll (Prestige)
+        </h3>
+        <p class="text-xs text-slate-400 mt-1">Zünde die Quanten-Singularität, setze das Imperium zurück und erhalte seltene 🌀 Matrix-Splitter für mächtige Dauer-Buffs!</p>
+      </div>
+
+      <div class="holo-card p-4 border-cyan-500/40 bg-gradient-to-b from-cyan-950/20 to-[#0b101d] text-center space-y-3">
+        <div class="text-xs font-mono text-cyan-400 font-bold uppercase">Verfügbare Matrix-Splitter bei Reset:</div>
+        <div id="potential-shards-display" class="text-2xl font-mono font-extrabold text-white">0 🌀</div>
+        <div class="text-[11px] text-slate-400">Aktueller Besitz: <span id="current-shards-display" class="text-cyan-300 font-bold font-mono">0 🌀</span></div>
+        <button onclick="triggerSingularityProtocol()" class="w-full py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold text-xs rounded-xl shadow-lg hover:brightness-110 transition">
+          🌌 Quanten-Singularität Jetzt Zünden!
+        </button>
+      </div>
+
+      <div class="text-xs font-bold text-white uppercase tracking-wider mt-2">Singularitäts-Upgrades (Splitter-Shop)</div>
+      <div id="singularity-upgrades-list" class="space-y-3"></div>
     </div>
 
     <!-- TAB 11: TÄGLICHE BELOHNUNG, QUESTS & GLÜCKSRAD -->
@@ -583,9 +632,18 @@
       <div id="list-upgrades" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 3: BÖRSE, SHORTING & NEWS -->
+    <!-- TAB 3: BÖRSE, SHORTING & WETTER -->
     <div id="tab-market" class="tab-panel space-y-4 hidden">
       
+      <!-- CYBER WEATHER BANNER -->
+      <div id="weather-banner" class="holo-card p-3 border-cyan-500/40 bg-cyan-950/20 flex items-center gap-2.5">
+        <i data-lucide="cloud-lightning" class="w-5 h-5 text-cyan-400 animate-pulse"></i>
+        <div class="text-xs">
+          <div class="text-[9px] font-mono text-cyan-400 uppercase font-bold" id="weather-title">SERVER WETTER: STABIL</div>
+          <div id="weather-desc" class="text-white font-semibold">Keine extremen Anomalien im Holo-Grid.</div>
+        </div>
+      </div>
+
       <!-- NEWSFEED BANNER -->
       <div class="holo-card p-3 border-rose-500/40 bg-rose-950/20 flex items-center gap-2.5">
         <i data-lucide="newspaper" class="w-5 h-5 text-rose-400 animate-pulse"></i>
@@ -629,11 +687,30 @@
       <div id="list-staff" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 6: HACK & BLACK OPS -->
+    <!-- TAB 6: HACK & NETRUNNER PVP -->
     <div id="tab-hack" class="tab-panel space-y-4 hidden">
       <div>
-        <h3 class="font-bold text-sm text-white">6. Black-Ops Infiltration & Rival-Hacks</h3>
-        <p class="text-xs text-slate-400">Memory-Hacks und Angriffe auf Cyber-Rivalen!</p>
+        <h3 class="font-bold text-sm text-white">6. Memory-Hack & Netrunner PvP Sabotage</h3>
+        <p class="text-xs text-slate-400">Memory-Infiltration und Angriffe auf Cyber-Rivalen mit Firewall-Schutz!</p>
+      </div>
+
+      <!-- NETRUNNER PVP SABOTAGE -->
+      <div class="holo-card p-4 border-rose-500/40 bg-gradient-to-b from-rose-950/20 to-[#0b101d] space-y-3">
+        <div class="flex justify-between items-center">
+          <div class="font-bold text-xs text-white flex items-center gap-1.5">
+            <i data-lucide="shield" class="w-4 h-4 text-rose-400"></i> NETRUNNER PVP SCHILD & SABOTAGE
+          </div>
+          <span id="shield-status-badge" class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">Firewall Aktiv</span>
+        </div>
+        <p class="text-[11px] text-slate-300">Kaufe eine Quantum-Firewall, um dich vor gegnerischen Sabotage-Akteuren zu schützen, oder infiltriere echte Rivalen!</p>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="buyNetrunnerShield()" class="py-2.5 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700 text-emerald-200 text-xs font-bold rounded-xl transition">
+            🛡️ Schild Aktivieren (💎 5 iCash)
+          </button>
+          <button onclick="executeNetrunnerSabotage()" class="py-2.5 bg-rose-950/80 hover:bg-rose-900 border border-rose-700 text-rose-200 text-xs font-bold rounded-xl transition">
+            🎯 Rivalen Sabotieren
+          </button>
+        </div>
       </div>
 
       <!-- MEMORY SEQUENCE MINI HACK -->
@@ -650,17 +727,6 @@
         </div>
         <div id="memory-pad-buttons" class="grid grid-cols-4 gap-2 mb-2"></div>
         <div id="memory-hack-status" class="text-xs font-mono text-blue-400 text-center h-5 mt-1"></div>
-      </div>
-
-      <!-- RIVAL BOUNTY HACKING -->
-      <div class="holo-card p-4 border-rose-500/30 bg-gradient-to-b from-rose-950/20 to-[#0b101d] space-y-2">
-        <div class="font-bold text-xs text-white flex items-center gap-1.5">
-          <i data-lucide="crosshair" class="w-4 h-4 text-rose-400"></i> RIVALEN KOPFGELD-INFILTRATION
-        </div>
-        <p class="text-[11px] text-slate-400">Infiltriere gegnerische Konsortien für riesige Euro-Beute!</p>
-        <button onclick="executeRivalHack()" class="w-full py-2.5 bg-rose-950/80 hover:bg-rose-900 border border-rose-700 text-rose-200 text-xs font-bold rounded-xl shadow-lg transition">
-          🎯 Rivalen Hacken (Chance auf +€50.000)
-        </button>
       </div>
 
       <div id="list-hack" class="space-y-3"></div>
@@ -767,6 +833,20 @@
       } catch(e) {}
     }
 
+    // --- SYNTHETIC VOICE ASSISTANCE (WEB SPEECH API) ---
+    function speakAI(text) {
+      if ('speechSynthesis' in window) {
+        try {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = 'de-DE';
+          utterance.pitch = 0.85; // Roboter-Pitch
+          utterance.rate = 1.1;
+          window.speechSynthesis.speak(utterance);
+        } catch(e) {}
+      }
+    }
+
     let isMusicPlaying = false;
     function toggleMusic() {
       const music = document.getElementById('bg-music');
@@ -785,6 +865,7 @@
           isMusicPlaying = true;
           icon.setAttribute('data-lucide', 'volume-2');
           if(label) label.innerText = "LIVE STREAM";
+          speakAI("Live Stream verbunden. Neuralnetz aktiv.");
         }).catch(err => {
           alert("Browser blockiert Autoplay. Bitte erneut klicken.");
         });
@@ -824,6 +905,7 @@
       try {
         if(errEl) errEl.classList.add('hidden');
         await window.FB.signInWithEmailAndPassword(window.FB.auth, email, pass);
+        speakAI("Willkommen zurück, Boss.");
       } catch(e) {
         if(errEl) {
           errEl.innerText = "Anmelde-Fehler: " + e.message;
@@ -851,6 +933,7 @@
           await window.FB.updateProfile(userCred.user, { displayName: username });
           state.companyName = username;
           await saveGameToCloudManual();
+          speakAI("Neues Imperium initialisiert. Viel Erfolg, Boss.");
         }
       } catch(e) {
         if(errEl) {
@@ -917,7 +1000,7 @@
       state.hqs.forEach(h => { h.bought = true; });
       updateUI();
       saveGameLocally();
-      alert("🔓 Alle Sektoren & HQs freigeschaltet!");
+      alert("🔓 Alles Freigeschaltet!");
     }
 
     function adminForceSeasonReset() {
@@ -959,7 +1042,7 @@
     ];
 
     let state = {
-      version: 14,
+      version: 15,
       companyName: '',
       language: 'de',
       money: 0,
@@ -988,12 +1071,21 @@
       lastClickTime: 0,
       syndicateFundLevel: 0,
       syndicateDonations: 0,
-      techBranch: 'corp', // 'krypto' oder 'corp'
+      techBranch: 'corp',
       spaceStations: 0,
+      matrixShards: 0, // Singularitäts Prestige Splitter
+      netrunnerShieldActive: false, // PvP Schutz
+      serverWeather: 'STABIL', // Wetter: STABIL, SOLAR_STORM, CRYO_FROST, DATA_RAIN
+
       dailyQuests: [
         { id: 'q1', text: 'Führe 5 Klick-Impulse aus', goal: 5, current: 0, reward: 2, claimed: false },
         { id: 'q2', text: 'Absolviere 1 Mini-Hack', goal: 1, current: 0, reward: 3, claimed: false },
         { id: 'q3', text: 'Kaufe 1 Sektor oder Rig', goal: 1, current: 0, reward: 4, claimed: false }
+      ],
+
+      singularityUpgrades: [
+        { id: 'sq1', name: 'Singularity Core Multiplier', desc: 'Erhöht passives Einkommen pro Matrix-Splitter um +20%.', cost: 2, level: 0, maxLevel: 10 },
+        { id: 'sq2', name: 'Matrix Overdrive', desc: 'Erhöht Klick-Power dauerhaft um +100% pro Stufe.', cost: 5, level: 0, maxLevel: 5 }
       ],
 
       permaUpgrades: [
@@ -1083,10 +1175,9 @@
       if(!state.staff) state.staff = JSON.parse(JSON.stringify(defaultStaff));
       if(!state.hqs) state.hqs = JSON.parse(JSON.stringify(defaultHqs));
       if(!state.orbitals) state.orbitals = JSON.parse(JSON.stringify(defaultOrbitals));
-      if(!state.dailyQuests) state.dailyQuests = [
-        { id: 'q1', text: 'Führe 5 Klick-Impulse aus', goal: 5, current: 0, reward: 2, claimed: false },
-        { id: 'q2', text: 'Absolviere 1 Mini-Hack', goal: 1, current: 0, reward: 3, claimed: false },
-        { id: 'q3', text: 'Kaufe 1 Sektor oder Rig', goal: 1, current: 0, reward: 4, claimed: false }
+      if(!state.singularityUpgrades) state.singularityUpgrades = [
+        { id: 'sq1', name: 'Singularity Core Multiplier', desc: 'Erhöht passives Einkommen pro Matrix-Splitter um +20%.', cost: 2, level: 0, maxLevel: 10 },
+        { id: 'sq2', name: 'Matrix Overdrive', desc: 'Erhöht Klick-Power dauerhaft um +100% pro Stufe.', cost: 5, level: 0, maxLevel: 5 }
       ];
     }
 
@@ -1164,7 +1255,7 @@
         season: "HOLO EDITION 2026",
         passivLabel: "Passiv / Min",
         companyValLabel: "Gesamt-Assets",
-        nav: ["0. Core Terminal", "0.5. iCash Cyber-Zentrale", "11. Quests & Glücksrad", "1. Megastrukturen", "2. Quanten-Tech Tree", "3. Börse & Shorting", "4. Advanced Lab", "5. Experten", "6. Memory & Rival Hacks", "7. HQ & Raumausbau", "8. Satelliten", "9. Cloud & Rangliste", "10. Einstellungen"],
+        nav: ["0. Core Terminal", "0.5. iCash Cyber-Zentrale", "0.8. Singularität", "11. Quests & Glücksrad", "1. Megastrukturen", "2. Quanten-Tech Tree", "3. Börse & Wetter", "4. Advanced Lab", "5. Experten", "6. Memory & Netrunner PvP", "7. HQ & Raumausbau", "8. Satelliten", "9. Cloud & Rangliste", "10. Einstellungen"],
         departments: [
           { name: "Alpha Cyber-Grid" }, { name: "Nano-Assembler Plant" }, { name: "Quantum Node Array" },
           { name: "Synthetic Bio-Lab" }, { name: "Neural Matrix Hub" }, { name: "Holographic Forge" },
@@ -1240,7 +1331,7 @@
           await window.FB.updateProfile(userCred.user, { displayName: companyInput });
         }
         await saveGameToCloudManual();
-        alert('Erfolgreich registriert!');
+        speakAI("Erfolgreich registriert.");
       } catch (e) { alert('Fehler: ' + e.message); }
     }
 
@@ -1250,14 +1341,14 @@
       const pass = document.getElementById('auth-password').value;
       try {
         await window.FB.signInWithEmailAndPassword(window.FB.auth, email, pass);
-        alert('Eingeloggt & synchronisiert!');
+        speakAI("Login erfolgreich.");
       } catch (e) { alert('Login-Fehler: ' + e.message); }
     }
 
     async function handleLogout() {
       if (!window.FB) return;
       await window.FB.signOut(window.FB.auth);
-      alert('Abgemeldet');
+      speakAI("Abgemeldet.");
     }
 
     async function saveGameToCloudManual() {
@@ -1369,6 +1460,202 @@
       }
     }
 
+    // --- SINGULARITY PROTOCOL (PRESTIGE) ---
+    function getPotentialShards() {
+      let totalCount = 0;
+      state.departments.forEach(d => totalCount += d.count);
+      return Math.floor(totalCount / 15);
+    }
+
+    function triggerSingularityProtocol() {
+      const potential = getPotentialShards();
+      if (potential <= 0) {
+        alert("Du benötigst mehr ausgebaute Sektoren, um die Singularität zu zünden!");
+        return;
+      }
+      if(confirm(`⚠️ WARNUNG: Möchtest du das Singularitäts-Protokoll zünden? Dein Imperium wird zurückgesetzt, aber du erhältst +${potential} 🌀 Matrix-Splitter!`)) {
+        state.matrixShards = (state.matrixShards || 0) + potential;
+
+        // Reset Empire Progress
+        state.money = 0;
+        state.totalEarned = 0;
+        state.clickPower = 0.01;
+        state.clickUpgLevel = 0;
+        state.clickUpgCost = 0.50;
+        state.level = 1;
+        state.exp = 0;
+        state.expNeeded = 200;
+        state.departments.forEach(d => { d.count = 0; });
+        state.upgrades.forEach(u => { u.bought = false; });
+        state.products.forEach(p => { p.launched = false; p.broken = false; });
+        state.staff.forEach(s => { s.count = 0; s.level = 1; });
+        state.hqs.forEach((h, idx) => { h.bought = (idx === 0); h.roomBuilt = false; });
+        state.orbitals.forEach(o => { o.count = 0; });
+        state.spaceStations = 0;
+
+        speakAI("Quanten Singularität gezündet. Matrix Splitter gesichert.");
+        updateUI();
+        renderSingularityTab();
+        saveGameLocally();
+        alert(`🌌 SINGULARITÄT ERFOLGREICH! Du hast +${potential} 🌀 Matrix-Splitter erhalten.`);
+      }
+    }
+
+    function buySingularityUpgrade(idx) {
+      const sq = state.singularityUpgrades[idx];
+      const cost = sq.cost * (sq.level + 1);
+      if (state.matrixShards >= cost && sq.level < sq.maxLevel) {
+        state.matrixShards -= cost;
+        sq.level++;
+        updateUI();
+        renderSingularityTab();
+        saveGameLocally();
+      }
+    }
+
+    function renderSingularityTab() {
+      const container = document.getElementById('singularity-upgrades-list');
+      const potEl = document.getElementById('potential-shards-display');
+      const curEl = document.getElementById('current-shards-display');
+      if(!container) return;
+
+      const pot = getPotentialShards();
+      if(potEl) potEl.innerText = `${pot} 🌀`;
+      if(curEl) curEl.innerText = `${state.matrixShards || 0} 🌀`;
+
+      container.innerHTML = '';
+      state.singularityUpgrades.forEach((sq, idx) => {
+        const cost = sq.cost * (sq.level + 1);
+        const canBuy = state.matrixShards >= cost && sq.level < sq.maxLevel;
+        container.innerHTML += `
+          <div class="holo-card p-3.5 flex justify-between items-center">
+            <div>
+              <div class="font-bold text-xs text-white">${sq.name} (Stufe ${sq.level}/${sq.maxLevel})</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">${sq.desc}</div>
+            </div>
+            <button onclick="buySingularityUpgrade(${idx})" ${sq.level >= sq.maxLevel ? 'disabled' : ''} class="px-3.5 py-1.5 ${sq.level >= sq.maxLevel ? 'bg-[#0f172a] text-cyan-400 border border-cyan-500/30' : (canBuy ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white' : 'bg-[#0f172a] text-slate-600 border border-cyan-500/10 cursor-not-allowed')} text-xs rounded-xl font-semibold transition">
+              ${sq.level >= sq.maxLevel ? 'Max' : `${cost} 🌀`}
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    // --- HOLOGRAPHIC COMPANION DRONE ---
+    function spawnCompanionDrone() {
+      const container = document.getElementById('companion-drone-container');
+      if(!container) return;
+
+      container.innerHTML = `
+        <div onclick="clickCompanionDrone()" class="w-14 h-14 rounded-full bg-blue-600/30 border-2 border-blue-400 flex items-center justify-center text-xl shadow-[0_0_20px_#3b82f6] floating-companion">
+          🤖
+        </div>
+      `;
+    }
+
+    function clickCompanionDrone() {
+      const container = document.getElementById('companion-drone-container');
+      if(container) container.innerHTML = '';
+
+      const roll = Math.random();
+      if (roll < 0.5) {
+        const bonusCash = getPassiveIncome() * 10;
+        state.money += bonusCash;
+        state.totalEarned += bonusCash;
+        alert(`🤖 Holo-Begleiter Bonus: +${formatMoney(bonusCash)} Sofort-Einnahme!`);
+        speakAI("Datenstrom gesichert.");
+      } else {
+        state.icash += 3;
+        alert("🤖 Holo-Begleiter Bonus: +💎 3 iCash gefunden!");
+        speakAI("Diamant erfasst.");
+      }
+      updateUI();
+      saveGameLocally();
+    }
+
+    // --- DYNAMIC CYBER STORY EVENTS ---
+    const storyEventsList = [
+      {
+        title: "Kryptografischer Notruf",
+        desc: "Ein anonymer Netrunner bietet dir an, einen korrupten Server-Cluster für 5.000€ freizuschalten. Es besteht jedoch das Risiko eines Firewalls-Rückschlags.",
+        opt1Text: "Server Hacken (-€5.000, Chance auf +€25k)", opt2Text: "Ignorieren",
+        action1: () => {
+          if (state.money >= 5000) {
+            state.money -= 5000;
+            if (Math.random() > 0.4) {
+              state.money += 25000;
+              alert("🎯 Hack erfolgreich! +€25.000 erbeutet.");
+            } else {
+              alert("❌ Firewall-Rückschlag! Keine Beute.");
+            }
+          } else { alert("Nicht genug Geld!"); }
+        },
+        action2: () => { alert("Sicherer Weg gewählt."); }
+      },
+      {
+        title: "Krypto-Spende an das Syndikat",
+        desc: "Eine lokale Untergrund-KI bittet um finanzielle Unterstützung. Unterstützt du sie, revanchieren sie sich vielleicht mit wertvollen Insider-Infos.",
+        opt1Text: "€10.000 Spenden (Bringt iCash)", opt2Text: "Ablehnen",
+        action1: () => {
+          if (state.money >= 10000) {
+            state.money -= 10000;
+            state.icash += 12;
+            alert("🤝 Syndikat bedankt sich: +💎 12 iCash erhalten!");
+          } else { alert("Nicht genug Kapital!"); }
+        },
+        action2: () => { alert("Spende abgelehnt."); }
+      }
+    ];
+
+    function triggerRandomStoryEvent() {
+      const ev = storyEventsList[Math.floor(Math.random() * storyEventsList.length)];
+      window.currentStoryEvent = ev;
+
+      document.getElementById('story-event-title').innerText = ev.title;
+      document.getElementById('story-event-desc').innerText = ev.desc;
+      document.getElementById('story-btn-opt1').innerText = ev.opt1Text;
+      document.getElementById('story-btn-opt2').innerText = ev.opt2Text;
+
+      document.getElementById('story-event-modal').classList.remove('hidden');
+      speakAI("Wichtige Nachricht eingegangen.");
+    }
+
+    function resolveStoryEvent(optNum) {
+      document.getElementById('story-event-modal').classList.add('hidden');
+      if (window.currentStoryEvent) {
+        if (optNum === 1 && window.currentStoryEvent.action1) window.currentStoryEvent.action1();
+        if (optNum === 2 && window.currentStoryEvent.action2) window.currentStoryEvent.action2();
+        updateUI();
+        saveGameLocally();
+      }
+    }
+
+    // --- REAL-TIME SERVER CYBER-WEATHER ---
+    function updateServerWeather() {
+      const weathers = ['STABIL', 'SOLAR_STORM', 'CRYO_FROST', 'DATA_RAIN'];
+      const chosen = weathers[Math.floor(Math.random() * weathers.length)];
+      state.serverWeather = chosen;
+
+      const titleEl = document.getElementById('weather-title');
+      const descEl = document.getElementById('weather-desc');
+
+      if (titleEl && descEl) {
+        if (chosen === 'SOLAR_STORM') {
+          titleEl.innerText = "SERVER WETTER: ⚡ SOLARSTURM";
+          descEl.innerText = "Krypto-Mining erzeugt doppelt so viele Coins!";
+        } else if (chosen === 'CRYO_FROST') {
+          titleEl.innerText = "SERVER WETTER: ❄️ KRYO-FROST";
+          descEl.innerText = "Sektor-Ausbauten sind um 20% rabattiert!";
+        } else if (chosen === 'DATA_RAIN') {
+          titleEl.innerText = "SERVER WETTER: 🌧️ DATENREGEN";
+          descEl.innerText = "Klick-Leistung ist verdoppelt!";
+        } else {
+          titleEl.innerText = "SERVER WETTER: STABIL";
+          descEl.innerText = "Keine extremen Anomalien im Holo-Grid.";
+        }
+      }
+    }
+
     // --- OVERCLOCK & COMBO MECHANICS ---
     function toggleOverclocking() {
       if (state.isOverheated) { alert("Terminal überhitzt!"); return; }
@@ -1394,6 +1681,7 @@
       btn.className = "px-3 py-1.5 bg-slate-800 text-slate-500 font-mono font-bold text-xs rounded-xl cursor-not-allowed";
       text.classList.remove('hidden');
       card.classList.add('overheat-active');
+      speakAI("Warnung. Terminal überhitzt.");
 
       setTimeout(() => {
         state.isOverheated = false;
@@ -1542,7 +1830,7 @@
     function closeShortStock(idx) {
       const item = state.market[idx];
       if (item.shorted > 0) {
-        const revenue = item.price * 1.15; // Profit on short position
+        const revenue = item.price * 1.15;
         state.money += revenue;
         state.shorted -= 1;
         updateUI();
@@ -1595,7 +1883,7 @@
       }
     }
 
-    // --- MEMORY HACK MINI GAME ---
+    // --- MEMORY HACK & NETRUNNER PVP ---
     let memorySequence = [];
     let playerMemoryInput = [];
 
@@ -1638,14 +1926,24 @@
       }
     }
 
-    function executeRivalHack() {
-      const win = Math.random() > 0.3;
+    function buyNetrunnerShield() {
+      if (state.icash < 5) { alert("Du benötigst 💎 5 iCash!"); return; }
+      state.icash -= 5;
+      state.netrunnerShieldActive = true;
+      alert("🛡️ Quantum Firewall & Netrunner-Schild für 24h aktiviert!");
+      updateUI();
+      saveGameLocally();
+    }
+
+    function executeNetrunnerSabotage() {
+      const win = Math.random() > 0.4;
       if (win) {
-        const bounty = 25000 + Math.floor(Math.random() * 50000);
+        const bounty = 35000 + Math.floor(Math.random() * 50000);
         state.money += bounty;
-        alert(`🎯 KOPFGELD-SUCCESS! Du hast den Cyber-Rivalen ausgeraubt: +${formatMoney(bounty)}!`);
+        alert(`🎯 NETRUNNER SABOTAGE SUCCESS! Konkurrenten-Server gehackt: +${formatMoney(bounty)} erbeutet!`);
+        speakAI("Sabotage erfolgreich.");
       } else {
-        alert("🛡️ INFILTRATION ABGEWEHRT! Rivalen-Firewall war zu stark.");
+        alert("🛡️ SABOTAGE GESCHEITERT! Der Rivale hatte einen aktiven Netrunner-Schild.");
       }
       updateUI();
       saveGameLocally();
@@ -1672,6 +1970,7 @@
         drohne.count -= 5;
         state.spaceStations = (state.spaceStations || 0) + 1;
         alert("🚀 5 Scout-Drohnen erfolgreich zu 1 GIGANTISCHEN RAUMSTATION fusioniert! (+300% Bonus)");
+        speakAI("Raumstation im Orbit verankert.");
         updateUI();
         renderTabContent('orbit');
         saveGameLocally();
@@ -1747,7 +2046,7 @@
       const savedKey = localStorage.getItem('empire_season_key');
       if (savedKey && savedKey !== currentKey) {
         executeSeasonReset();
-        alert("🗓️ EINE NEUE MONATS-SAISON HAT BEGONNEN! Dein Imperium-Fortschritt wurde zurückgesetzt.");
+        alert("🗓️ EINE NEUE MONATS-SAISON HAT BEGONNEN! Dein Imperium wurde zurückgesetzt.");
       }
       localStorage.setItem('empire_season_key', currentKey);
     }
@@ -1798,6 +2097,7 @@
       renderTabContent(tabId);
       if(tabId === 'market') { drawAllCandleCharts(); updatePortfolioHeader(); }
       if(tabId === 'hack') initHackMiniGame();
+      if(tabId === 'singularity') renderSingularityTab();
       if(tabId === 'fame') { fetchLeaderboard(); renderAvatarSelector(); }
       if(tabId === 'daily') renderDailyRewards();
     }
@@ -1816,7 +2116,6 @@
       const count = state.departments[idx].count;
       let milestoneMultiplier = 1 + Math.floor(count / 10) * 0.25;
 
-      // SEKTOR-SYNERGIE BONUS (z.B. Paarweise Ausbauten Sektor 1 + 8)
       if (idx === 0 && state.departments[7].count > 0) base *= 1.25;
       if (idx === 7 && state.departments[0].count > 0) base *= 1.25;
 
@@ -1835,7 +2134,6 @@
         state.orbitals.forEach(o => { income += o.count * o.baseIncome; });
       }
 
-      // RAUMSTATION BONUS
       if (state.spaceStations) income *= (1 + state.spaceStations * 3.0);
 
       let labMultiplier = 1;
@@ -1846,13 +2144,21 @@
       }
       income *= labMultiplier;
 
-      // SYNDICATE FUND BOOST
       if (state.syndicateFundLevel) income *= (1 + state.syndicateFundLevel * 0.05);
+
+      // SINGULARITY PRESTIGE BONUS
+      const sq1 = state.singularityUpgrades.find(u => u.id === 'sq1');
+      if (sq1 && sq1.level > 0 && state.matrixShards > 0) {
+        income *= (1 + state.matrixShards * sq1.level * 0.20);
+      }
 
       const pi2 = state.permaUpgrades.find(u => u.id === 'pi2');
       if (pi2 && pi2.level > 0) {
         income *= Math.pow(1.5, pi2.level);
       }
+
+      // CRYO FROST WEATHER DISCOUNT / BONUS
+      if (state.serverWeather === 'CRYO_FROST') income *= 1.25;
 
       let staffMultiplier = 1;
       state.staff.forEach(s => {
@@ -1865,9 +2171,7 @@
         }
       });
 
-      // STAFF SYNERGIE (Junior Hacker + Analyst)
       if (state.staff[0].count > 0 && state.staff[1].count > 0) staffMultiplier += 0.20;
-
       income *= staffMultiplier;
 
       state.upgrades.filter(u => u.bought && u.type === 'global').forEach(u => {
@@ -1896,6 +2200,11 @@
         base *= Math.pow(2.0, pi1.level);
       }
 
+      const sq2 = state.singularityUpgrades.find(u => u.id === 'sq2');
+      if (sq2 && sq2.level > 0) {
+        base *= (1 + sq2.level * 1.0);
+      }
+
       state.staff.forEach(s => {
         if (s.id === 's1') base += s.count * 0.01 * (s.level || 1);
       });
@@ -1905,6 +2214,9 @@
 
       if (state.overclockActive && !state.isOverheated) base *= 4.0;
       if (state.comboMult) base *= state.comboMult;
+
+      // DATA RAIN WEATHER BONUS
+      if (state.serverWeather === 'DATA_RAIN') base *= 2.0;
 
       if (isPassActive()) {
         base *= 2.0;
@@ -1968,6 +2280,7 @@
         state.icash += reward;
 
         alert(`🎉 LEVEL UP! Du hast Level ${state.level} erreicht und 💎 +${reward} iCash erhalten!`);
+        speakAI(`Level ${state.level} erreicht.`);
       }
       updateUI();
     }
@@ -2282,6 +2595,10 @@
         lucide.createIcons();
       }
 
+      if (tabId === 'singularity') {
+        renderSingularityTab();
+      }
+
       if (tabId === 'daily') {
         renderDailyRewards();
       }
@@ -2290,7 +2607,9 @@
         const list = document.getElementById('list-depts');
         list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">1. Megastrukturen & Sektoren</h3>`;
         state.departments.forEach((d, idx) => {
-          const cost = d.baseCost * Math.pow(1.22, d.count);
+          let cost = d.baseCost * Math.pow(1.22, d.count);
+          if (state.serverWeather === 'CRYO_FROST') cost *= 0.8; // Wetter Rabatt
+
           const currentInc = getBaseIncomeForDept(idx) * d.count;
           const localizedName = t.departments && t.departments[idx] ? t.departments[idx].name : `Sektor ${idx+1}`;
           const imgUrl = deptImages[idx % deptImages.length];
@@ -2355,19 +2674,19 @@
           let marketDesc = m.type === 'stock' ? 'Börsen-Aktie (Long & Short handelbar)' : 'Krypto-Token & automatisches Rig-Mining';
           
           if (m.type === 'crypto') {
-            const rigCost = m.rigCost || 50;
+            let rigCost = m.rigCost || 50;
+            if (state.serverWeather === 'CRYO_FROST') rigCost *= 0.8;
             const rigsCount = m.rigs || 0;
             extraActionHtml = `
               <div class="mt-2.5 pt-2.5 border-t border-blue-500/10 flex justify-between items-center text-xs bg-[#070b14]/60 p-2 rounded-xl">
                 <div>
                   <span class="text-slate-300 font-mono text-[11px]">Rig-Farm: <strong class="text-purple-400">${rigsCount} Rigs</strong></span>
-                  <div class="text-[10px] text-purple-300 font-mono">+${(rigsCount * 0.1).toFixed(1)} ${m.name.split(' ')[0]} / min</div>
+                  <div class="text-[10px] text-purple-300 font-mono">+${(rigsCount * (state.serverWeather==='SOLAR_STORM'?0.2:0.1)).toFixed(1)} ${m.name.split(' ')[0]} / min</div>
                 </div>
                 <button onclick="buyMiningRig(${idx})" class="px-3 py-1.5 icash-btn text-[11px] rounded-lg font-semibold">Rig kaufen (${formatMoney(rigCost)})</button>
               </div>
             `;
           } else {
-            const currentLev = m.leverage || 1;
             extraActionHtml = `
               <div class="mt-2.5 pt-2.5 border-t border-blue-500/10 flex justify-between items-center text-xs bg-[#070b14]/60 p-2 rounded-xl">
                 <span class="text-slate-400 font-mono text-[11px]">Short-Trading (Geshortet: ${m.shorted || 0}):</span>
@@ -2473,6 +2792,17 @@
       }
 
       if (tabId === 'hack') {
+        const shieldBadge = document.getElementById('shield-status-badge');
+        if(shieldBadge) {
+          if (state.netrunnerShieldActive) {
+            shieldBadge.innerText = "Firewall Aktiv (Sicher)";
+            shieldBadge.className = "text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded";
+          } else {
+            shieldBadge.innerText = "Unprotected";
+            shieldBadge.className = "text-[10px] font-mono text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded";
+          }
+        }
+
         const list = document.getElementById('list-hack');
         list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2 mt-4">Klassische Black-Ops</h3>`;
         state.hacks.forEach((h, idx) => {
@@ -2575,7 +2905,9 @@
 
     function buyDept(idx) {
       const d = state.departments[idx];
-      const cost = d.baseCost * Math.pow(1.22, d.count);
+      let cost = d.baseCost * Math.pow(1.22, d.count);
+      if (state.serverWeather === 'CRYO_FROST') cost *= 0.8;
+
       if (state.money >= cost) {
         state.money -= cost;
         d.count++;
@@ -2634,9 +2966,11 @@
     function buyMiningRig(idx) {
       const item = state.market[idx];
       if (!item.rigs) item.rigs = 0;
-      if (!item.rigCost) item.rigCost = 50;
-      if (state.money >= item.rigCost) {
-        state.money -= item.rigCost;
+      let rigCost = item.rigCost || 50;
+      if (state.serverWeather === 'CRYO_FROST') rigCost *= 0.8;
+
+      if (state.money >= rigCost) {
+        state.money -= rigCost;
         item.rigs++;
         item.rigCost = Math.floor(item.rigCost * 1.4);
         updateQuestProgress('q3', 1);
@@ -2780,11 +3114,18 @@
     loadGameLocally();
     updateDynamicTexts();
     updateUI();
+    spawnCompanionDrone();
 
     setInterval(() => { updateSeasonCountdown(); }, 1000);
 
     // RAUMFAHRT METEOR EVENT (ALLE 45 SEC)
     setInterval(() => { if (Math.random() < 0.6) spawnSpaceEventMeteor(); }, 45000);
+
+    // DYNAMIC STORY EVENTS (ALLE 90 SEC)
+    setInterval(() => { if (Math.random() < 0.5) triggerRandomStoryEvent(); }, 90000);
+
+    // REAL-TIME SERVER WEATHER (ALLE 120 SEC)
+    setInterval(() => { updateServerWeather(); }, 120000);
 
     // MARKT NEWS RANDOM (ALLE 60 SEC)
     setInterval(() => { if (Math.random() < 0.3) triggerRandomMarketNews(); }, 60000);
@@ -2818,7 +3159,6 @@
     setInterval(() => {
       state.hacks.forEach(h => { if (h.cd > 0) h.cd--; });
 
-      // TECH-TREE TIMERS
       state.upgrades.forEach(u => {
         if (u.timer > 0) {
           u.timer--;
@@ -2839,7 +3179,8 @@
 
       state.market.forEach(m => {
         if(m.type === 'crypto' && m.rigs > 0) {
-          m.owned += m.rigs * 0.1;
+          const mult = state.serverWeather === 'SOLAR_STORM' ? 0.2 : 0.1;
+          m.owned += m.rigs * mult;
         }
       });
 
@@ -2867,7 +3208,7 @@
       }
 
       updateUI();
-      if (activeCurrentTab !== 'clicker' && activeCurrentTab !== 'market' && activeCurrentTab !== 'fame' && activeCurrentTab !== 'settings' && activeCurrentTab !== 'icash' && activeCurrentTab !== 'hack' && activeCurrentTab !== 'daily') {
+      if (activeCurrentTab !== 'clicker' && activeCurrentTab !== 'market' && activeCurrentTab !== 'fame' && activeCurrentTab !== 'settings' && activeCurrentTab !== 'icash' && activeCurrentTab !== 'hack' && activeCurrentTab !== 'daily' && activeCurrentTab !== 'singularity') {
         renderTabContent(activeCurrentTab);
       }
     }, 1000);
