@@ -558,7 +558,7 @@
         <p class="text-xs text-slate-400 mt-1">Schließe tägliche Verträge ab und drehe beliebig oft am Holo-Rad!</p>
       </div>
 
-      <!-- LUCKY WHEEL (JETZT MEHRFACH DREHBAR) -->
+      <!-- LUCKY WHEEL (MEHRFACH DREHBAR) -->
       <div class="holo-card p-4 border-amber-500/30 bg-gradient-to-b from-amber-950/20 to-[#0b101d] text-center space-y-3">
         <div class="font-bold text-xs text-amber-400 flex items-center justify-center gap-1.5">
           <i data-lucide="disc" class="w-4 h-4"></i> CYBER HOLO-WHEEL (GLÜCKSRAD)
@@ -1012,7 +1012,7 @@
     ];
 
     let state = {
-      version: 16,
+      version: 17,
       companyName: '',
       language: 'de',
       money: 0,
@@ -1144,6 +1144,10 @@
       if(!state.staff) state.staff = JSON.parse(JSON.stringify(defaultStaff));
       if(!state.hqs) state.hqs = JSON.parse(JSON.stringify(defaultHqs));
       if(!state.orbitals) state.orbitals = JSON.parse(JSON.stringify(defaultOrbitals));
+      if(!state.singularityUpgrades) state.singularityUpgrades = [
+        { id: 'sq1', name: 'Singularity Core Multiplier', desc: 'Erhöht passives Einkommen pro Matrix-Splitter um +20%.', cost: 2, level: 0, maxLevel: 10 },
+        { id: 'sq2', name: 'Matrix Overdrive', desc: 'Erhöht Klick-Power dauerhaft um +100% pro Stufe.', cost: 5, level: 0, maxLevel: 5 }
+      ];
     }
 
     const availableAvatars = [
@@ -1684,7 +1688,7 @@
       saveGameLocally();
     }
 
-    // --- GLÜCKSRAD JETZT UNBEGRENZT DREHBAR ---
+    // GLÜCKSRAD MEHRFACH DREHBAR
     function spinLuckyWheel() {
       const btn = document.getElementById('btn-spin-wheel');
       const visual = document.getElementById('wheel-visual');
@@ -2143,7 +2147,7 @@
     function updateUI() {
       document.getElementById('stat-money').innerText = formatMoney(state.money);
       document.getElementById('stat-icash').innerText = `💎 ${state.icash} iCash`;
-      // BEREINIGT: Hier wurde das zusätzliche "B" entfernt, sodass nun korrekt "/h" steht
+      // BEREINIGT: Ohne das doppelte "B" im Label
       document.getElementById('stat-income').innerText = '+' + formatMoney(getPassiveIncome()) + ' /h';
       document.getElementById('stat-level').innerText = state.level;
       document.getElementById('player-level-text').innerText = state.level;
@@ -2475,7 +2479,7 @@
             let rigCost = m.rigCost || 50;
             if (state.serverWeather === 'CRYO_FROST') rigCost *= 0.8;
             const rigsCount = m.rigs || 0;
-            // WICHTIG: Hier sind die Coin-Miner / Rigs nun voll integriert für Bild 1!
+            // COIN-MINER / RIGS INTEGRIERT
             extraActionHtml = `
               <div class="mt-2.5 pt-2.5 border-t border-blue-500/10 flex justify-between items-center text-xs bg-[#070b14]/60 p-2 rounded-xl">
                 <div>
