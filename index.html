@@ -85,6 +85,7 @@
       background-color: #020408;
       color: #94a3b8;
       overflow-x: hidden;
+      transition: background-color 0.5s ease;
     }
 
     .holo-card {
@@ -135,14 +136,28 @@
       box-shadow: 40px 0 80px rgba(0, 0, 0, 0.95);
     }
 
+    /* HQ Themes */
+    body.theme-neon { background-color: #0d021a; }
+    body.theme-cyan { background-color: #02121a; }
+    body.theme-gold { background-color: #120e02; }
+
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: #020408; }
     ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 2px; }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+      50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.8); }
+    }
+    .overheat-active { animation: pulse-glow 1s infinite; }
   </style>
 </head>
 <body class="bg-[#020408] text-slate-300 min-h-screen flex flex-col relative overflow-x-hidden">
 
-  <!-- ZWINGENDES LOGIN / REGISTRIERUNGS OVERLAY ALLES VERRIEGELT -->
+  <!-- SPATIAL METEORITE FLOATING EVENT -->
+  <div id="space-event-container" class="fixed inset-0 pointer-events-none z-50"></div>
+
+  <!-- ZWINGENDES LOGIN / REGISTRIERUNGS OVERLAY -->
   <div id="auth-overlay" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] flex items-center justify-center p-4">
     <div class="holo-card p-6 max-w-md w-full border-blue-500/50 bg-[#070b14] space-y-5 shadow-2xl relative">
       <div class="text-center space-y-1.5">
@@ -150,10 +165,9 @@
           <i data-lucide="shield-lock" class="w-6 h-6"></i>
         </div>
         <h2 class="font-extrabold text-base text-white tracking-widest uppercase">CYBER TYCOON // ACCESS CORE</h2>
-        <p class="text-xs text-slate-400">Bitte erstelle einen Account mit Benutzernamen oder melde dich an, um Zugriff zu erhalten.</p>
+        <p class="text-xs text-slate-400">Erstelle einen Account mit Benutzernamen oder melde dich an, um das Imperium zu starten.</p>
       </div>
 
-      <!-- TABS LOGIN / REGISTRIEREN IN OVERLAY -->
       <div class="flex border-b border-blue-500/20 text-xs font-semibold">
         <button id="tab-btn-login" onclick="switchAuthMode('login')" class="flex-1 py-2 text-center text-blue-400 border-b-2 border-blue-500">Anmelden</button>
         <button id="tab-btn-reg" onclick="switchAuthMode('register')" class="flex-1 py-2 text-center text-slate-400 hover:text-white">Registrieren</button>
@@ -231,21 +245,6 @@
         <button onclick="adminForceSeasonReset()" class="w-full py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-700 text-rose-200 text-xs font-bold rounded-xl transition flex items-center justify-center gap-2">
           <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Saison-Reset jetzt erzwingen!
         </button>
-      </div>
-
-      <div class="border-t border-rose-500/20 pt-3 space-y-2">
-        <div class="text-[11px] font-bold text-white uppercase tracking-wider">Anderen Spielern Geschenke senden</div>
-        <p class="text-[10px] text-slate-400">Gib die Firebase User-ID oder den exakten Cloud-Namen des Spielers ein:</p>
-        <input type="text" id="admin-target-user" placeholder="User-ID / Spieler-Name" class="w-full bg-[#0f172a] border border-rose-500/30 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
-        
-        <div class="grid grid-cols-2 gap-2 pt-1">
-          <button onclick="adminGiftMoney()" class="py-2 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800 text-emerald-200 text-xs font-bold rounded-xl transition">
-            💶 +€100.000 senden
-          </button>
-          <button onclick="adminGiftIcash()" class="py-2 bg-purple-950/80 hover:bg-purple-900 border border-purple-800 text-purple-200 text-xs font-bold rounded-xl transition">
-            💎 +25 iCash senden
-          </button>
-        </div>
       </div>
 
       <button onclick="closeAdminModal()" class="w-full py-2.5 bg-[#0f172a] hover:bg-[#1e293b] text-slate-300 border border-slate-700 text-xs font-bold rounded-xl transition mt-2">
@@ -339,23 +338,23 @@
       </button>
       <button onclick="switchTab('daily')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i>
-        <span>11. Tägliche Belohnung</span>
+        <span>11. Quests & Glücksrad</span>
       </button>
       <button onclick="switchTab('depts')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="layers" class="w-4 h-4 text-slate-500"></i>
-        <span>1. Megastrukturen & Sektoren</span>
+        <span>1. Megastrukturen & Synergien</span>
       </button>
       <button onclick="switchTab('upgrades')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="zap" class="w-4 h-4 text-slate-500"></i>
-        <span>2. Quanten-Forschung</span>
+        <span>2. Quanten-Tech Tree</span>
       </button>
       <button onclick="switchTab('market')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="bar-chart-3" class="w-4 h-4 text-slate-500"></i>
-        <span>3. Börse & Mining Charts</span>
+        <span>3. Börse, Shorting & News</span>
       </button>
       <button onclick="switchTab('lab')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="flask-conical" class="w-4 h-4 text-slate-500"></i>
-        <span>4. Advanced Lab</span>
+        <span>4. Prototyp-Lab & Patente</span>
       </button>
       <button onclick="switchTab('staff')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="users-round" class="w-4 h-4 text-slate-500"></i>
@@ -363,15 +362,15 @@
       </button>
       <button onclick="switchTab('hack')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="shield-alert" class="w-4 h-4 text-slate-500"></i>
-        <span>6. Black-Ops Infiltration & Mini-Hack</span>
+        <span>6. Memory-Hack & Rival-Hacks</span>
       </button>
       <button onclick="switchTab('hq')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="building-2" class="w-4 h-4 text-slate-500"></i>
-        <span>7. Corporate Headquarters</span>
+        <span>7. HQ & Raumausbau</span>
       </button>
       <button onclick="switchTab('orbit')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="orbit" class="w-4 h-4 text-indigo-400"></i>
-        <span>8. Orbital-Drohnen & Satelliten</span>
+        <span>8. Orbital-Drohnen & Raumstation</span>
       </button>
       <button onclick="switchTab('fame')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
         <i data-lucide="globe" class="w-4 h-4 text-slate-500"></i>
@@ -410,14 +409,24 @@
 
     <!-- TAB 0: TERMINAL -->
     <div id="tab-clicker" class="tab-panel space-y-4">
-      <div class="holo-card p-6 flex flex-col items-center justify-center relative overflow-hidden text-center">
+      <div class="holo-card p-6 flex flex-col items-center justify-center relative overflow-hidden text-center" id="clicker-card-container">
         <div class="absolute inset-0 h-32 opacity-30 pointer-events-none overflow-hidden">
           <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover">
           <div class="absolute inset-0 bg-gradient-to-b from-[#0b101d]/40 via-[#0b101d]/90 to-[#0b101d]"></div>
         </div>
 
-        <h3 id="tab0-title" class="font-bold text-base text-white tracking-wide relative z-10 mt-1">0. Core Terminal Overdrive</h3>
-        <p id="tab0-desc" class="text-xs text-slate-400 mt-1 mb-6 relative z-10">Generiere Datenimpulse, um das Imperium zu skalieren.</p>
+        <div class="flex justify-between items-center w-full mb-2 relative z-10">
+          <div class="text-left">
+            <span class="text-[10px] font-mono text-slate-400">COMBO MULTIPLIKATOR:</span>
+            <div id="combo-display" class="text-sm font-mono font-bold text-amber-400">1.0x (0 Hits)</div>
+          </div>
+          <button onclick="toggleOverclocking()" id="btn-overclock" class="px-3 py-1.5 bg-rose-950/80 hover:bg-rose-900 border border-rose-700 text-rose-300 font-mono font-bold text-xs rounded-xl shadow-lg transition">
+            ⚡ OVERCLOCK (4x)
+          </button>
+        </div>
+
+        <h3 id="tab0-title" class="font-bold text-base text-white tracking-wide relative z-10">0. Core Terminal Overdrive</h3>
+        <p id="tab0-desc" class="text-xs text-slate-400 mt-0.5 mb-4 relative z-10">Generiere Datenimpulse, um das Imperium zu skalieren.</p>
 
         <button id="click-btn" class="w-36 h-36 rounded-2xl bg-[#0f172a]/90 border-2 border-blue-500/40 hover:border-blue-400 flex flex-col items-center justify-center shadow-2xl active:scale-95 transition-all group my-2 cursor-pointer relative z-10 backdrop-blur-md">
           <div class="absolute inset-0 bg-blue-500/5 rounded-2xl group-hover:bg-blue-500/15 transition"></div>
@@ -425,6 +434,8 @@
           <span id="tab0-btn" class="font-bold text-[11px] text-white tracking-wider">IMPULS SENDEN</span>
           <span id="click-power-text" class="text-[10px] font-mono text-emerald-400 mt-1">+€0.01 / Klick</span>
         </button>
+
+        <div id="overheat-status-text" class="text-xs font-mono text-rose-400 font-bold hidden relative z-10">⚠️ TERMINAL ÜBERHITZT! SPERRE FÜR 10 SEC...</div>
 
         <div class="w-full bg-[#0f172a]/80 border border-blue-500/20 rounded-xl p-3.5 mt-4 flex justify-between items-center text-left relative z-10 backdrop-blur-md">
           <div>
@@ -454,9 +465,44 @@
         <h3 class="font-bold text-sm text-white flex items-center gap-2">
           <i data-lucide="gem" class="w-4 h-4 text-purple-400"></i> iCash Cyber-Zentrale & Premium Shop
         </h3>
-        <p class="text-xs text-slate-400 mt-1">Investiere iCash in permanente Boni, tausche sie gegen Startkapital (Euros) oder aktiviere den exklusiven Monats-Pass!</p>
+        <p class="text-xs text-slate-400 mt-1">Investiere iCash in Boni, öffne Holo-Cubes oder Spende ins Konsortium!</p>
       </div>
 
+      <!-- HOLO CUBE LOOTBOX -->
+      <div class="holo-card p-4 border-purple-500/50 bg-gradient-to-b from-purple-950/30 to-[#0b101d] space-y-3">
+        <div class="flex justify-between items-center">
+          <div class="font-bold text-xs text-white flex items-center gap-1.5">
+            <i data-lucide="box" class="w-4 h-4 text-purple-400"></i> HOLO-CUBE LOOTBOX
+          </div>
+          <span class="text-[10px] font-mono text-purple-300 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded">Preis: 💎 10 iCash</span>
+        </div>
+        <p class="text-[11px] text-slate-300">Öffne einen Holo-Cube für zufällige Belohnungen: Euros, iCash-Guthaben, seltene Avatare oder 24h-Multiplikatoren!</p>
+        <button onclick="openHoloCube()" class="w-full py-2.5 icash-btn text-xs font-bold rounded-xl shadow-lg">
+          📦 Holo-Cube Öffnen (💎 10 iCash)
+        </button>
+        <div id="lootbox-result" class="text-xs font-mono text-emerald-400 text-center font-bold h-4"></div>
+      </div>
+
+      <!-- SYNDICATE FUND / GILDE -->
+      <div class="holo-card p-4 border-indigo-500/40 bg-gradient-to-r from-indigo-950/30 via-[#0b101d] to-[#0b101d] space-y-3">
+        <div class="flex justify-between items-center">
+          <div class="font-bold text-xs text-white flex items-center gap-1.5">
+            <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i> SYNDICATE FUND / KONSORTIUM
+          </div>
+          <span id="syndicate-level-badge" class="text-[10px] font-mono text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded">Stufe 0</span>
+        </div>
+        <p class="text-[11px] text-slate-300">Zahle iCash in das Konsortium ein. Alle 50 iCash steigt die Stufe und erhöht permanent das Einkommen um +5%!</p>
+        <div class="flex gap-2">
+          <button onclick="donateToSyndicate(5)" class="flex-1 py-2 bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-700 text-indigo-200 text-xs font-bold rounded-xl transition">
+            Spende 💎 5 iCash
+          </button>
+          <button onclick="donateToSyndicate(20)" class="flex-1 py-2 bg-indigo-900 hover:bg-indigo-800 border border-indigo-600 text-indigo-100 text-xs font-bold rounded-xl transition">
+            Spende 💎 20 iCash
+          </button>
+        </div>
+      </div>
+
+      <!-- VIP PASS -->
       <div class="holo-card p-4 border-amber-500/40 bg-gradient-to-r from-amber-950/30 via-[#0b101d] to-[#0b101d]">
         <div class="flex justify-between items-center mb-2">
           <div class="font-bold text-xs text-white flex items-center gap-1.5">
@@ -474,13 +520,32 @@
       <div id="list-icash-features" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 11: TÄGLICHE BELOH NUNG -->
+    <!-- TAB 11: TÄGLICHE BELOHNUNG, QUESTS & GLÜCKSRAD -->
     <div id="tab-daily" class="tab-panel space-y-4 hidden">
       <div class="holo-card p-4 bg-gradient-to-r from-emerald-950/40 via-[#0b101d] to-[#0b101d] border-emerald-500/30">
         <h3 class="font-bold text-sm text-white flex items-center gap-2">
-          <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i> Tägliche Login-Belohnung
+          <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i> Quests, Glücksrad & Tagesbelohnungen
         </h3>
-        <p class="text-xs text-slate-400 mt-1">Komm jeden Tag online, um exklusive iCash-Diamanten und Euro-Pakete abzuholen! Hol dir Tag für Tag größere Boni.</p>
+        <p class="text-xs text-slate-400 mt-1">Schließe tägliche Verträge ab und drehe am Holo-Rad!</p>
+      </div>
+
+      <!-- LUCKY WHEEL -->
+      <div class="holo-card p-4 border-amber-500/30 bg-gradient-to-b from-amber-950/20 to-[#0b101d] text-center space-y-3">
+        <div class="font-bold text-xs text-amber-400 flex items-center justify-center gap-1.5">
+          <i data-lucide="disc" class="w-4 h-4"></i> CYBER HOLO-WHEEL (GLÜCKSRAD)
+        </div>
+        <div id="wheel-visual" class="w-24 h-24 rounded-full border-4 border-amber-500/40 border-t-amber-400 mx-auto flex items-center justify-center font-bold text-xs text-white transition-transform duration-1000 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+          SPIN
+        </div>
+        <button onclick="spinLuckyWheel()" id="btn-spin-wheel" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold text-xs rounded-xl shadow-lg hover:brightness-110 transition">
+          Kostenloser Tages-Spin!
+        </button>
+      </div>
+
+      <!-- DAILY CONTRACTS / QUESTS -->
+      <div class="space-y-2">
+        <div class="text-xs font-bold text-white uppercase tracking-wider">Tägliche Cyber-Verträge</div>
+        <div id="daily-quests-container" class="space-y-2"></div>
       </div>
 
       <div id="daily-rewards-container" class="grid grid-cols-1 gap-2.5"></div>
@@ -491,17 +556,45 @@
 
     <!-- TAB 1: SEKTOREN -->
     <div id="tab-depts" class="tab-panel space-y-3 hidden">
+      <div id="sector-synergy-banner" class="holo-card p-3 border-emerald-500/30 bg-emerald-950/20 text-xs text-emerald-300 font-mono">
+        ⚡ Sektor-Synergien aktiv: Paarweise Ausbauten gewähren +25% Zusatzbonus!
+      </div>
       <div id="list-depts" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 2: FORSCHUNG -->
-    <div id="tab-upgrades" class="tab-panel space-y-3 hidden">
+    <!-- TAB 2: FORSCHUNG & TECH-TREE -->
+    <div id="tab-upgrades" class="tab-panel space-y-4 hidden">
+      <div class="holo-card p-4 bg-gradient-to-r from-blue-950/40 via-[#0b101d] to-[#0b101d] border-blue-500/30">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <i data-lucide="git-branch" class="w-4 h-4 text-blue-400"></i> Quanten-Forschungsbaum (Tech-Tree)
+        </h3>
+        <p class="text-xs text-slate-400 mt-1">Wähle deinen Spezialisierungspfad: Krypto-Mining oder Corporate-Imperium!</p>
+      </div>
+
+      <div class="flex gap-2">
+        <button onclick="switchTechBranch('krypto')" id="btn-branch-krypto" class="flex-1 py-2 text-xs font-bold rounded-xl border border-purple-500/40 bg-purple-950/30 text-purple-300">
+          🪙 Krypto-Pfad
+        </button>
+        <button onclick="switchTechBranch('corp')" id="btn-branch-corp" class="flex-1 py-2 text-xs font-bold rounded-xl border border-blue-500/40 bg-blue-950/30 text-blue-300">
+          🏢 Corporate-Pfad
+        </button>
+      </div>
+
       <div id="list-upgrades" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 3: BÖRSE & MINING -->
+    <!-- TAB 3: BÖRSE, SHORTING & NEWS -->
     <div id="tab-market" class="tab-panel space-y-4 hidden">
       
+      <!-- NEWSFEED BANNER -->
+      <div class="holo-card p-3 border-rose-500/40 bg-rose-950/20 flex items-center gap-2.5">
+        <i data-lucide="newspaper" class="w-5 h-5 text-rose-400 animate-pulse"></i>
+        <div class="text-xs">
+          <div class="text-[9px] font-mono text-rose-400 uppercase font-bold">LIVE CYBER-NEWSFEED</div>
+          <div id="market-news-ticker" class="text-white font-semibold">Markt stabil. Keine anomalies im Holo-Grid.</div>
+        </div>
+      </div>
+
       <!-- PORTFOLIO WERTANZEIGE GANZ OBEN -->
       <div class="holo-card p-4 bg-gradient-to-r from-indigo-950/50 via-[#0b101d] to-[#0b101d] border-indigo-500/40 shadow-xl flex justify-between items-center">
         <div>
@@ -515,8 +608,8 @@
 
       <div class="holo-card p-4 bg-gradient-to-r from-blue-950/40 via-[#0b101d] to-[#0b101d] border-blue-500/30 flex justify-between items-center">
         <div>
-          <h3 class="font-bold text-sm text-white flex items-center gap-1.5"><i data-lucide="bar-chart-3" class="w-4 h-4 text-blue-400"></i> Wall Street & Holo-Mining</h3>
-          <p class="text-xs text-slate-400 mt-0.5">Rigs produzieren reine Coins (keine Euros). Verkaufe sie mit Gewinn an der Börse!</p>
+          <h3 class="font-bold text-sm text-white flex items-center gap-1.5"><i data-lucide="bar-chart-3" class="w-4 h-4 text-blue-400"></i> Wall Street, Short-Trading & Holo-Mining</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Handle Aktien Long/Short oder betreibe Rig-Mining.</p>
         </div>
         <div class="text-xs text-blue-400 font-mono bg-[#0f172a] px-3 py-1.5 rounded-xl border border-blue-500/20 shadow-lg text-right">
           <div class="text-[9px] text-slate-400 uppercase">Automatischer Drop</div>
@@ -539,20 +632,35 @@
     <!-- TAB 6: HACK & BLACK OPS -->
     <div id="tab-hack" class="tab-panel space-y-4 hidden">
       <div>
-        <h3 class="font-bold text-sm text-white">6. Black-Ops Infiltration & Mini-Hack</h3>
-        <p class="text-xs text-slate-400">Schnellere Infiltrationen und das interaktive Terminal-Hacken für iCash!</p>
+        <h3 class="font-bold text-sm text-white">6. Black-Ops Infiltration & Rival-Hacks</h3>
+        <p class="text-xs text-slate-400">Memory-Hacks und Angriffe auf Cyber-Rivalen!</p>
       </div>
 
+      <!-- MEMORY SEQUENCE MINI HACK -->
       <div class="holo-card p-4 border-purple-500/40 bg-gradient-to-b from-purple-950/20 to-[#0b101d]">
         <div class="flex justify-between items-center mb-2">
           <span class="font-mono text-xs font-bold text-purple-400 flex items-center gap-1">
-            <i data-lucide="terminal" class="w-4 h-4"></i> CYBER-NODE BYPASS (Mini-Hack)
+            <i data-lucide="brain" class="w-4 h-4"></i> NEURAL MEMORY BYPASS
           </span>
-          <span class="text-[10px] font-mono text-slate-400">Ziel: Korrekten Code finden</span>
+          <span id="memory-hack-level" class="text-[10px] font-mono text-slate-400">Sequenz-Länge: 3</span>
         </div>
-        <p class="text-xs text-slate-300 mb-3" id="hack-game-instruction">Wähle den richtigen Node, um den Firewall-Schutz zu durchbrechen und 💎 +2 iCash + €10.00 abzustauben!</p>
-        <div id="hack-game-nodes" class="grid grid-cols-3 gap-2 mb-2"></div>
-        <div id="hack-game-status" class="text-xs font-mono text-blue-400 text-center h-5 mt-2"></div>
+        <p class="text-xs text-slate-300 mb-3" id="memory-hack-instruction">Merke dir die blinkende Zahlenfolge und wiederhole sie!</p>
+        <div id="memory-sequence-display" class="h-10 bg-[#070b14] border border-purple-500/30 rounded-xl flex items-center justify-center font-mono font-bold text-lg text-purple-300 mb-3">
+          ---
+        </div>
+        <div id="memory-pad-buttons" class="grid grid-cols-4 gap-2 mb-2"></div>
+        <div id="memory-hack-status" class="text-xs font-mono text-blue-400 text-center h-5 mt-1"></div>
+      </div>
+
+      <!-- RIVAL BOUNTY HACKING -->
+      <div class="holo-card p-4 border-rose-500/30 bg-gradient-to-b from-rose-950/20 to-[#0b101d] space-y-2">
+        <div class="font-bold text-xs text-white flex items-center gap-1.5">
+          <i data-lucide="crosshair" class="w-4 h-4 text-rose-400"></i> RIVALEN KOPFGELD-INFILTRATION
+        </div>
+        <p class="text-[11px] text-slate-400">Infiltriere gegnerische Konsortien für riesige Euro-Beute!</p>
+        <button onclick="executeRivalHack()" class="w-full py-2.5 bg-rose-950/80 hover:bg-rose-900 border border-rose-700 text-rose-200 text-xs font-bold rounded-xl shadow-lg transition">
+          🎯 Rivalen Hacken (Chance auf +€50.000)
+        </button>
       </div>
 
       <div id="list-hack" class="space-y-3"></div>
@@ -566,9 +674,21 @@
     <!-- TAB 8: ORBITAL DROHNEN -->
     <div id="tab-orbit" class="tab-panel space-y-3 hidden">
       <div>
-        <h3 class="font-bold text-sm text-white">8. Orbital-Drohnen & Satelliten</h3>
-        <p class="text-xs text-slate-400">Positioniere High-Tech-Flotten im Orbit für globale Boni.</p>
+        <h3 class="font-bold text-sm text-white">8. Orbital-Drohnen & Raumstation</h3>
+        <p class="text-xs text-slate-400">Positioniere Drohnen und fusioniere sie zu Gigantischen Raumstationen.</p>
       </div>
+      
+      <!-- RAUMSTATION FUSION -->
+      <div class="holo-card p-4 border-indigo-500/40 bg-gradient-to-r from-indigo-950/40 via-[#0b101d] to-[#0b101d] flex justify-between items-center">
+        <div>
+          <div class="font-bold text-xs text-white">Orbital-Fusionieren</div>
+          <div class="text-[10px] text-indigo-300 font-mono mt-0.5">Kombiniere 5 Drohnen zu 1 Raumstation (+300% Bonus)</div>
+        </div>
+        <button onclick="fuseSpaceStation()" class="px-3.5 py-2 icash-btn text-xs font-bold rounded-xl">
+          🚀 Station Bauen
+        </button>
+      </div>
+
       <div id="list-orbit" class="space-y-3"></div>
     </div>
 
@@ -583,7 +703,7 @@
           </span>
           <span id="current-avatar-display" class="text-xs font-mono text-purple-300 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded">🤖 Standard</span>
         </div>
-        <p class="text-[11px] text-slate-400">Wähle deinen Hologramm-Avatar für die Weltrangliste. Schalte exklusive Avatare mit iCash frei oder nutze den Monats-Pass!</p>
+        <p class="text-[11px] text-slate-400">Wähle deinen Hologramm-Avatar für die Weltrangliste.</p>
         <div id="avatar-selection-grid" class="grid grid-cols-2 gap-2 pt-1"></div>
       </div>
 
@@ -807,64 +927,28 @@
       }
     }
 
-    async function adminGiftMoney() {
-      const target = document.getElementById('admin-target-user').value.trim();
-      if(!target) { alert("Bitte Ziel-User eingeben!"); return; }
-      if(!window.FB || !window.FB.db) { alert("Firebase nicht aktiv."); return; }
-      try {
-        const docRef = window.FB.doc(window.FB.db, "saves", target);
-        const docSnap = await window.FB.getDoc(docRef);
-        if(docSnap.exists()) {
-          const data = docSnap.data();
-          data.money = (data.money || 0) + 100000;
-          await window.FB.setDoc(docRef, data);
-          alert(`💶 Erfolgreich +€100.000 an Spieler ${target} gesendet!`);
-        } else {
-          alert("Spieler nicht gefunden!");
-        }
-      } catch(e) { alert("Fehler beim Senden: " + e.message); }
-    }
-
-    async function adminGiftIcash() {
-      const target = document.getElementById('admin-target-user').value.trim();
-      if(!target) { alert("Bitte Ziel-User eingeben!"); return; }
-      if(!window.FB || !window.FB.db) { alert("Firebase nicht aktiv."); return; }
-      try {
-        const docRef = window.FB.doc(window.FB.db, "saves", target);
-        const docSnap = await window.FB.getDoc(docRef);
-        if(docSnap.exists()) {
-          const data = docSnap.data();
-          data.icash = (data.icash || 0) + 25;
-          await window.FB.setDoc(docRef, data);
-          alert(`💎 Erfolgreich +25 iCash an Spieler ${target} gesendet!`);
-        } else {
-          alert("Spieler nicht gefunden!");
-        }
-      } catch(e) { alert("Fehler beim Senden: " + e.message); }
-    }
-
     const defaultProducts = [
-      { id: 'p1', name: 'KI-Assistent v1', cost: 1000.00, launched: false, bonus: 'Gibt +15% Boost auf gesamtes passives Einkommen' },
-      { id: 'p2', name: 'Quanten-Firewall', cost: 8500.00, launched: false, bonus: 'Gibt +15% Boost auf gesamtes passives Einkommen' },
-      { id: 'p3', name: 'Holo-Projektor Linse', cost: 65000.00, launched: false, bonus: 'Gibt +15% Boost auf gesamtes passives Einkommen' },
-      { id: 'p4', name: 'Autonomer Android', cost: 500000.00, launched: false, bonus: 'Gibt +15% Boost auf gesamtes passives Einkommen' },
-      { id: 'p5', name: 'Dyson-Kompaktkern', cost: 4000000.00, launched: false, bonus: 'Gibt +15% Boost auf gesamtes passives Einkommen' }
+      { id: 'p1', name: 'KI-Assistent v1', cost: 1000.00, launched: false, broken: false, bonus: 'Gibt +15% Boost auf gesamtes passives Einkommen' },
+      { id: 'p2', name: 'Quanten-Firewall', cost: 8500.00, launched: false, broken: false, bonus: 'Gibt +15% Boost auf gesamtes passives Einkommen' },
+      { id: 'p3', name: 'Holo-Projektor Linse', cost: 65000.00, launched: false, broken: false, bonus: 'Gibt +15% Boost auf gesamtes passives Einkommen' },
+      { id: 'p4', name: 'Autonomer Android', cost: 500000.00, launched: false, broken: false, bonus: 'Gibt +15% Boost auf gesamtes passives Einkommen' },
+      { id: 'p5', name: 'Dyson-Kompaktkern', cost: 4000000.00, launched: false, broken: false, bonus: 'Gibt +15% Boost auf gesamtes passives Einkommen' }
     ];
 
     const defaultStaff = [
-      { id: 's1', name: 'Junior Hacker', cost: 20.00, count: 0, desc: '+€0.01 Klick-Leistung pro Kopf' },
-      { id: 's2', name: 'Cyber-Analyst', cost: 250.00, count: 0, desc: '+1.0% passives Einkommen pro Kopf' },
-      { id: 's3', name: 'AI-Architekt', cost: 1800.00, count: 0, desc: '+1.5% passives Einkommen pro Kopf' },
-      { id: 's4', name: 'Syndikat-Direktor', cost: 15000.00, count: 0, desc: '+2.0% passives Einkommen pro Kopf' },
-      { id: 's5', name: 'Overlord Berater', cost: 100000.00, count: 0, desc: '+2.5% passives Einkommen pro Kopf' }
+      { id: 's1', name: 'Junior Hacker', cost: 20.00, count: 0, level: 1, exp: 0, desc: '+€0.01 Klick-Leistung pro Kopf' },
+      { id: 's2', name: 'Cyber-Analyst', cost: 250.00, count: 0, level: 1, exp: 0, desc: '+1.0% passives Einkommen pro Kopf' },
+      { id: 's3', name: 'AI-Architekt', cost: 1800.00, count: 0, level: 1, exp: 0, desc: '+1.5% passives Einkommen pro Kopf' },
+      { id: 's4', name: 'Syndikat-Direktor', cost: 15000.00, count: 0, level: 1, exp: 0, desc: '+2.0% passives Einkommen pro Kopf' },
+      { id: 's5', name: 'Overlord Berater', cost: 100000.00, count: 0, level: 1, exp: 0, desc: '+2.5% passives Einkommen pro Kopf' }
     ];
 
     const defaultHqs = [
-      { id: 'hq1', name: 'Keller-Serverraum', cost: 0, mult: 1.0, bought: true },
-      { id: 'hq2', name: 'Neon-Penthouse', cost: 5000.00, mult: 1.2, bought: false },
-      { id: 'hq3', name: 'Cyber-Tower Etage 50', cost: 80000.00, mult: 1.35, bought: false },
-      { id: 'hq4', name: 'Orbital-Plattform Alpha', cost: 1200000.00, mult: 1.5, bought: false },
-      { id: 'hq5', name: 'Quantum Citadel (Zentrale)', cost: 20000000.00, mult: 1.8, bought: false }
+      { id: 'hq1', name: 'Keller-Serverraum', cost: 0, mult: 1.0, bought: true, theme: 'default', roomBuilt: false },
+      { id: 'hq2', name: 'Neon-Penthouse', cost: 5000.00, mult: 1.2, bought: false, theme: 'theme-neon', roomBuilt: false },
+      { id: 'hq3', name: 'Cyber-Tower Etage 50', cost: 80000.00, mult: 1.35, bought: false, theme: 'theme-cyan', roomBuilt: false },
+      { id: 'hq4', name: 'Orbital-Plattform Alpha', cost: 1200000.00, mult: 1.5, bought: false, theme: 'theme-gold', roomBuilt: false },
+      { id: 'hq5', name: 'Quantum Citadel (Zentrale)', cost: 20000000.00, mult: 1.8, bought: false, theme: 'theme-neon', roomBuilt: false }
     ];
 
     const defaultOrbitals = [
@@ -875,7 +959,7 @@
     ];
 
     let state = {
-      version: 13,
+      version: 14,
       companyName: '',
       language: 'de',
       money: 0,
@@ -895,6 +979,22 @@
       lastSaveTimestamp: Date.now(),
       selectedAvatar: '🤖 Standard Klon',
       unlockedAvatars: ['🤖 Standard Klon', '💻 Cyber Hacker'],
+
+      // Erweiterte State Variables
+      overclockActive: false,
+      isOverheated: false,
+      comboHits: 0,
+      comboMult: 1.0,
+      lastClickTime: 0,
+      syndicateFundLevel: 0,
+      syndicateDonations: 0,
+      techBranch: 'corp', // 'krypto' oder 'corp'
+      spaceStations: 0,
+      dailyQuests: [
+        { id: 'q1', text: 'Führe 5 Klick-Impulse aus', goal: 5, current: 0, reward: 2, claimed: false },
+        { id: 'q2', text: 'Absolviere 1 Mini-Hack', goal: 1, current: 0, reward: 3, claimed: false },
+        { id: 'q3', text: 'Kaufe 1 Sektor oder Rig', goal: 1, current: 0, reward: 4, claimed: false }
+      ],
 
       permaUpgrades: [
         { id: 'pi1', name: 'Quantum Click Matrix', desc: 'Verdoppelt dauerhaft die Klick-Leistung.', cost: 5, level: 0, maxLevel: 10, mult: 2.0 },
@@ -928,25 +1028,25 @@
       ],
 
       upgrades: [
-        { id: 'u1', cost: 2.50, bought: false, mult: 2.0, type: 'click' },
-        { id: 'u2', cost: 10.00, bought: false, mult: 1.25, type: 'global' },
-        { id: 'u3', cost: 50.00, bought: false, mult: 2.0, type: 'click' },
-        { id: 'u4', cost: 300.00, bought: false, mult: 1.3, type: 'global' },
-        { id: 'u5', cost: 1500.00, bought: false, mult: 2.0, type: 'click' },
-        { id: 'u6', cost: 8000.00, bought: false, mult: 1.35, type: 'global' },
-        { id: 'u7', cost: 45000.00, bought: false, mult: 2.0, type: 'click' },
-        { id: 'u8', cost: 250000.00, bought: false, mult: 1.4, type: 'global' },
-        { id: 'u9', cost: 1500000.00, bought: false, mult: 1.5, type: 'global' }
+        { id: 'u1', cost: 2.50, bought: false, mult: 2.0, type: 'click', branch: 'corp', timeSec: 0, timer: 0 },
+        { id: 'u2', cost: 10.00, bought: false, mult: 1.25, type: 'global', branch: 'corp', timeSec: 0, timer: 0 },
+        { id: 'u3', cost: 50.00, bought: false, mult: 2.0, type: 'click', branch: 'krypto', timeSec: 10, timer: 0 },
+        { id: 'u4', cost: 300.00, bought: false, mult: 1.3, type: 'global', branch: 'krypto', timeSec: 20, timer: 0 },
+        { id: 'u5', cost: 1500.00, bought: false, mult: 2.0, type: 'click', branch: 'corp', timeSec: 30, timer: 0 },
+        { id: 'u6', cost: 8000.00, bought: false, mult: 1.35, type: 'global', branch: 'corp', timeSec: 45, timer: 0 },
+        { id: 'u7', cost: 45000.00, bought: false, mult: 2.0, type: 'click', branch: 'krypto', timeSec: 60, timer: 0 },
+        { id: 'u8', cost: 250000.00, bought: false, mult: 1.4, type: 'global', branch: 'krypto', timeSec: 90, timer: 0 },
+        { id: 'u9', cost: 1500000.00, bought: false, mult: 1.5, type: 'global', branch: 'corp', timeSec: 120, timer: 0 }
       ],
 
       market: [
-        { id: 'm1', type: 'stock', name: 'CyberCorp Aktien', price: 15.00, change: 1.2, owned: 0, leverage: 1, candles: [{o:14, h:15, l:13.8, c:15}, {o:15, h:15.5, l:14.5, c:14.8}, {o:14.8, h:15.2, l:14.6, c:15}] },
-        { id: 'm2', type: 'stock', name: 'NanoTech Dynamics', price: 5.00, change: -0.4, owned: 0, leverage: 1, candles: [{o:5.2, h:5.4, l:5.1, c:5.2}, {o:5.2, h:5.3, l:4.9, c:5.0}, {o:5.0, h:5.1, l:4.8, c:5.0}] },
-        { id: 'm3', type: 'stock', name: 'NeuralNet Systems', price: 45.00, change: 0.8, owned: 0, leverage: 1, candles: [{o:43, h:44, l:42.5, c:43.5}, {o:43.5, h:44.2, l:43.1, c:44}, {o:44, h:45.2, l:43.9, c:45}] },
-        { id: 'm4', type: 'stock', name: 'OmniDrive Inc.', price: 180.00, change: 2.1, owned: 0, leverage: 1, candles: [{o:170, h:173, l:169, c:172}, {o:172, h:176, l:171, c:175}, {o:175, h:181, l:174, c:180}] },
-        { id: 'm5', type: 'crypto', name: 'NeoCoin (Krypto)', price: 1200.00, change: 3.5, owned: 0, rigs: 0, rigCost: 500.00, candles: [{o:1150, h:1170, l:1140, c:1160}, {o:1160, h:1190, l:1155, c:1180}, {o:1180, h:1210, l:1175, c:1200}] },
-        { id: 'm6', type: 'crypto', name: 'HoloToken', price: 150.00, change: -1.1, owned: 0, rigs: 0, rigCost: 80.00, candles: [{o:155, h:157, l:153, c:154}, {o:154, h:155, l:151, c:152}, {o:152, h:153, l:149, c:150}] },
-        { id: 'm7', type: 'crypto', name: 'DarkByte Cash', price: 12.00, change: 0.2, owned: 0, rigs: 0, rigCost: 20.00, candles: [{o:11.8, h:12.1, l:11.7, c:11.9}, {o:11.9, h:12.2, l:11.8, c:12.1}, {o:12.1, h:12.3, l:11.9, c:12.0}] }
+        { id: 'm1', type: 'stock', name: 'CyberCorp Aktien', price: 15.00, change: 1.2, owned: 0, shorted: 0, leverage: 1, candles: [{o:14, h:15, l:13.8, c:15}, {o:15, h:15.5, l:14.5, c:14.8}, {o:14.8, h:15.2, l:14.6, c:15}] },
+        { id: 'm2', type: 'stock', name: 'NanoTech Dynamics', price: 5.00, change: -0.4, owned: 0, shorted: 0, leverage: 1, candles: [{o:5.2, h:5.4, l:5.1, c:5.2}, {o:5.2, h:5.3, l:4.9, c:5.0}, {o:5.0, h:5.1, l:4.8, c:5.0}] },
+        { id: 'm3', type: 'stock', name: 'NeuralNet Systems', price: 45.00, change: 0.8, owned: 0, shorted: 0, leverage: 1, candles: [{o:43, h:44, l:42.5, c:43.5}, {o:43.5, h:44.2, l:43.1, c:44}, {o:44, h:45.2, l:43.9, c:45}] },
+        { id: 'm4', type: 'stock', name: 'OmniDrive Inc.', price: 180.00, change: 2.1, owned: 0, shorted: 0, leverage: 1, candles: [{o:170, h:173, l:169, c:172}, {o:172, h:176, l:171, c:175}, {o:175, h:181, l:174, c:180}] },
+        { id: 'm5', type: 'crypto', name: 'NeoCoin (Krypto)', price: 1200.00, change: 3.5, owned: 0, shorted: 0, rigs: 0, rigCost: 500.00, candles: [{o:1150, h:1170, l:1140, c:1160}, {o:1160, h:1190, l:1155, c:1180}, {o:1180, h:1210, l:1175, c:1200}] },
+        { id: 'm6', type: 'crypto', name: 'HoloToken', price: 150.00, change: -1.1, owned: 0, shorted: 0, rigs: 0, rigCost: 80.00, candles: [{o:155, h:157, l:153, c:154}, {o:154, h:155, l:151, c:152}, {o:152, h:153, l:149, c:150}] },
+        { id: 'm7', type: 'crypto', name: 'DarkByte Cash', price: 12.00, change: 0.2, owned: 0, shorted: 0, rigs: 0, rigCost: 20.00, candles: [{o:11.8, h:12.1, l:11.7, c:11.9}, {o:11.9, h:12.2, l:11.8, c:12.1}, {o:12.1, h:12.3, l:11.9, c:12.0}] }
       ],
 
       products: JSON.parse(JSON.stringify(defaultProducts)),
@@ -973,6 +1073,7 @@
       checkOfflineEarnings(oldTime);
       saveGameLocally();
       updateDynamicTexts();
+      applyHQTheme();
       updateUI();
       renderTabContent(activeCurrentTab);
     };
@@ -982,6 +1083,11 @@
       if(!state.staff) state.staff = JSON.parse(JSON.stringify(defaultStaff));
       if(!state.hqs) state.hqs = JSON.parse(JSON.stringify(defaultHqs));
       if(!state.orbitals) state.orbitals = JSON.parse(JSON.stringify(defaultOrbitals));
+      if(!state.dailyQuests) state.dailyQuests = [
+        { id: 'q1', text: 'Führe 5 Klick-Impulse aus', goal: 5, current: 0, reward: 2, claimed: false },
+        { id: 'q2', text: 'Absolviere 1 Mini-Hack', goal: 1, current: 0, reward: 3, claimed: false },
+        { id: 'q3', text: 'Kaufe 1 Sektor oder Rig', goal: 1, current: 0, reward: 4, claimed: false }
+      ];
     }
 
     const availableAvatars = [
@@ -1058,7 +1164,7 @@
         season: "HOLO EDITION 2026",
         passivLabel: "Passiv / Min",
         companyValLabel: "Gesamt-Assets",
-        nav: ["0. Core Terminal", "0.5. iCash Cyber-Zentrale", "11. Tägliche Belohnung", "1. Megastrukturen", "2. Quanten-Forschung", "3. Börse & Mining Charts", "4. Advanced Lab", "5. Experten", "6. Black-Ops & Mini-Hack", "7. HQ", "8. Satelliten", "9. Cloud & Rangliste", "10. Einstellungen"],
+        nav: ["0. Core Terminal", "0.5. iCash Cyber-Zentrale", "11. Quests & Glücksrad", "1. Megastrukturen", "2. Quanten-Tech Tree", "3. Börse & Shorting", "4. Advanced Lab", "5. Experten", "6. Memory & Rival Hacks", "7. HQ & Raumausbau", "8. Satelliten", "9. Cloud & Rangliste", "10. Einstellungen"],
         departments: [
           { name: "Alpha Cyber-Grid" }, { name: "Nano-Assembler Plant" }, { name: "Quantum Node Array" },
           { name: "Synthetic Bio-Lab" }, { name: "Neural Matrix Hub" }, { name: "Holographic Forge" },
@@ -1069,9 +1175,14 @@
       }
     };
     translations.en = translations.de;
-    translations.fr = translations.de;
-    translations.es = translations.de;
-    translations.it = translations.de;
+
+    function applyHQTheme() {
+      document.body.classList.remove('theme-neon', 'theme-cyan', 'theme-gold');
+      const activeHq = state.hqs.filter(h => h.bought).slice(-1)[0];
+      if (activeHq && activeHq.theme && activeHq.theme !== 'default') {
+        document.body.classList.add(activeHq.theme);
+      }
+    }
 
     function setLanguage(lang) {
       state.language = lang;
@@ -1249,13 +1360,348 @@
         state.icash -= cost;
         state.unlockedAvatars.push(avatarName);
         state.selectedAvatar = avatarName;
-        alert(`🎉 Avatar "${avatarName}" erfolgreich freigeschaltet und ausgerüstet!`);
+        alert(`🎉 Avatar "${avatarName}" erfolgreich freigeschaltet!`);
         updateUI();
         renderAvatarSelector();
         saveGameLocally();
       } else {
-        alert("Nicht genügend iCash, um diesen Avatar zu kaufen!");
+        alert("Nicht genügend iCash!");
       }
+    }
+
+    // --- OVERCLOCK & COMBO MECHANICS ---
+    function toggleOverclocking() {
+      if (state.isOverheated) { alert("Terminal überhitzt!"); return; }
+      state.overclockActive = !state.overclockActive;
+      const btn = document.getElementById('btn-overclock');
+      if (state.overclockActive) {
+        btn.innerText = "⚡ OVERCLOCK AKTIV (4x)";
+        btn.className = "px-3 py-1.5 bg-rose-600 hover:bg-rose-500 border border-rose-400 text-white font-mono font-bold text-xs rounded-xl shadow-lg transition animate-pulse";
+      } else {
+        btn.innerText = "⚡ OVERCLOCK (4x)";
+        btn.className = "px-3 py-1.5 bg-rose-950/80 hover:bg-rose-900 border border-rose-700 text-rose-300 font-mono font-bold text-xs rounded-xl shadow-lg transition";
+      }
+      updateUI();
+    }
+
+    function triggerOverheat() {
+      state.isOverheated = true;
+      state.overclockActive = false;
+      const btn = document.getElementById('btn-overclock');
+      const text = document.getElementById('overheat-status-text');
+      const card = document.getElementById('clicker-card-container');
+      btn.innerText = "⚠️ ÜBERHITZT";
+      btn.className = "px-3 py-1.5 bg-slate-800 text-slate-500 font-mono font-bold text-xs rounded-xl cursor-not-allowed";
+      text.classList.remove('hidden');
+      card.classList.add('overheat-active');
+
+      setTimeout(() => {
+        state.isOverheated = false;
+        text.classList.add('hidden');
+        card.classList.remove('overheat-active');
+        btn.innerText = "⚡ OVERCLOCK (4x)";
+        btn.className = "px-3 py-1.5 bg-rose-950/80 hover:bg-rose-900 border border-rose-700 text-rose-300 font-mono font-bold text-xs rounded-xl shadow-lg transition";
+      }, 10000);
+    }
+
+    function registerClickCombo() {
+      const now = Date.now();
+      if (now - state.lastClickTime < 600) {
+        state.comboHits++;
+        if (state.comboHits >= 25) state.comboMult = 10.0;
+        else if (state.comboHits >= 15) state.comboMult = 5.0;
+        else if (state.comboHits >= 8) state.comboMult = 2.5;
+        else if (state.comboHits >= 3) state.comboMult = 1.5;
+      } else {
+        state.comboHits = 1;
+        state.comboMult = 1.0;
+      }
+      state.lastClickTime = now;
+      updateQuestProgress('q1', 1);
+
+      const display = document.getElementById('combo-display');
+      if (display) display.innerText = `${state.comboMult.toFixed(1)}x (${state.comboHits} Hits)`;
+    }
+
+    // --- HOLO LOOTBOX & SYNDICATE FUND ---
+    function openHoloCube() {
+      if (state.icash < 10) { alert("Du benötigst 💎 10 iCash!"); return; }
+      state.icash -= 10;
+      const roll = Math.random();
+      const resEl = document.getElementById('lootbox-result');
+      let rewardText = "";
+
+      if (roll < 0.4) {
+        const cashWin = 2500 * state.level;
+        state.money += cashWin;
+        state.totalEarned += cashWin;
+        rewardText = `🎉 GEWINN: +${formatMoney(cashWin)} Kapital!`;
+      } else if (roll < 0.7) {
+        state.icash += 18;
+        rewardText = `💎 MEGA JACKPOT: +18 iCash!`;
+      } else if (roll < 0.9) {
+        if (!state.unlockedAvatars.includes('🔮 Sovereign AI')) state.unlockedAvatars.push('🔮 Sovereign AI');
+        rewardText = `🔮 AVATAR UNLOCKED: Sovereign AI!`;
+      } else {
+        const boostAmt = getPassiveIncome() * 15;
+        state.money += boostAmt;
+        rewardText = `⚡ BOOST: +${formatMoney(boostAmt)} Instant Cash!`;
+      }
+
+      if(resEl) resEl.innerText = rewardText;
+      updateUI();
+      saveGameLocally();
+    }
+
+    function donateToSyndicate(amount) {
+      if (state.icash < amount) { alert("Nicht genügend iCash!"); return; }
+      state.icash -= amount;
+      state.syndicateDonations += amount;
+      state.syndicateFundLevel = Math.floor(state.syndicateDonations / 50);
+      alert(`🤝 Dankeschön! Konsortium-Spende von 💎 ${amount} iCash verarbeitet.`);
+      updateUI();
+      saveGameLocally();
+    }
+
+    // --- LUCKY WHEEL & QUESTS ---
+    function spinLuckyWheel() {
+      const btn = document.getElementById('btn-spin-wheel');
+      const visual = document.getElementById('wheel-visual');
+      btn.disabled = true;
+
+      const randomDegree = 1440 + Math.floor(Math.random() * 360);
+      visual.style.transform = `rotate(${randomDegree}deg)`;
+
+      setTimeout(() => {
+        const prizeRoll = Math.random();
+        if (prizeRoll < 0.3) {
+          state.icash += 5;
+          alert("🎰 GLÜCKSRAD: +💎 5 iCash gewonnen!");
+        } else if (prizeRoll < 0.7) {
+          const win = 1000 * state.level;
+          state.money += win;
+          alert(`🎰 GLÜCKSRAD: +${formatMoney(win)} Gewonnen!`);
+        } else {
+          state.icash += 12;
+          alert("🎰 GLÜCKSRAD: MEGA-GEWINN! +💎 12 iCash!");
+        }
+        btn.disabled = false;
+        updateUI();
+        saveGameLocally();
+      }, 1000);
+    }
+
+    function updateQuestProgress(questId, val) {
+      const q = state.dailyQuests.find(item => item.id === questId);
+      if (q && !q.claimed) {
+        q.current += val;
+        if (q.current > q.goal) q.current = q.goal;
+      }
+    }
+
+    function claimQuestReward(questId) {
+      const q = state.dailyQuests.find(item => item.id === questId);
+      if (q && q.current >= q.goal && !q.claimed) {
+        q.claimed = true;
+        state.icash += q.reward;
+        alert(`🏆 Quest erfüllt! +💎 ${q.reward} iCash erhalten.`);
+        updateUI();
+        renderDailyRewards();
+        saveGameLocally();
+      }
+    }
+
+    // --- TECH TREE BRANCHES ---
+    function switchTechBranch(branch) {
+      state.techBranch = branch;
+      renderTabContent('upgrades');
+      const btnKrypto = document.getElementById('btn-branch-krypto');
+      const btnCorp = document.getElementById('btn-branch-corp');
+      if (branch === 'krypto') {
+        btnKrypto.className = "flex-1 py-2 text-xs font-bold rounded-xl border border-purple-500 bg-purple-600 text-white shadow-lg";
+        btnCorp.className = "flex-1 py-2 text-xs font-bold rounded-xl border border-blue-500/40 bg-blue-950/30 text-blue-300";
+      } else {
+        btnCorp.className = "flex-1 py-2 text-xs font-bold rounded-xl border border-blue-500 bg-blue-600 text-white shadow-lg";
+        btnKrypto.className = "flex-1 py-2 text-xs font-bold rounded-xl border border-purple-500/40 bg-purple-950/30 text-purple-300";
+      }
+    }
+
+    // --- SHORT SELLING & NEWSFEED ---
+    function shortStock(idx) {
+      const item = state.market[idx];
+      const actualCost = item.price;
+      if (state.money >= actualCost) {
+        state.money -= actualCost;
+        item.shorted = (item.shorted || 0) + 1;
+        updateUI();
+        renderTabContent('market');
+        saveGameLocally();
+      }
+    }
+
+    function closeShortStock(idx) {
+      const item = state.market[idx];
+      if (item.shorted > 0) {
+        const revenue = item.price * 1.15; // Profit on short position
+        state.money += revenue;
+        state.shorted -= 1;
+        updateUI();
+        renderTabContent('market');
+        saveGameLocally();
+      }
+    }
+
+    function triggerRandomMarketNews() {
+      const news = [
+        { text: "🚨 HACKER-ANGRIFF: Krypto-Kurse brechen ein!", impact: -12, target: 'crypto' },
+        { text: "🚀 KI-DURCHBRUCH: Aktienmarkt schießt in die Höhe!", impact: 15, target: 'stock' },
+        { text: "⚡ Dyson-Sphäre vor Fertigstellung: HoloToken pumpt!", impact: 20, target: 'm6' }
+      ];
+      const chosen = news[Math.floor(Math.random() * news.length)];
+      const newsTicker = document.getElementById('market-news-ticker');
+      if(newsTicker) newsTicker.innerText = chosen.text;
+
+      state.market.forEach(m => {
+        if (chosen.target === 'crypto' && m.type === 'crypto') m.price *= (1 + chosen.impact / 100);
+        else if (chosen.target === 'stock' && m.type === 'stock') m.price *= (1 + chosen.impact / 100);
+        else if (chosen.target === m.id) m.price *= (1 + chosen.impact / 100);
+      });
+      if(activeCurrentTab === 'market') renderTabContent('market');
+    }
+
+    // --- LAB PATENT SALE & PROTOTYPE REPAIR ---
+    function sellPatent(idx) {
+      const p = state.products[idx];
+      if (p.launched && !p.broken) {
+        p.launched = false;
+        state.icash += 15;
+        alert(`📜 Patent für "${p.name}" verkauft! +💎 15 iCash erhalten.`);
+        updateUI();
+        renderTabContent('lab');
+        saveGameLocally();
+      }
+    }
+
+    function repairPrototype(idx) {
+      const p = state.products[idx];
+      const repairCost = p.cost * 0.4;
+      if (state.money >= repairCost) {
+        state.money -= repairCost;
+        p.broken = false;
+        alert(`🛠️ Prototyp "${p.name}" erfolgreich repariert!`);
+        updateUI();
+        renderTabContent('lab');
+        saveGameLocally();
+      }
+    }
+
+    // --- MEMORY HACK MINI GAME ---
+    let memorySequence = [];
+    let playerMemoryInput = [];
+
+    function startMemoryHack() {
+      memorySequence = [];
+      playerMemoryInput = [];
+      const len = 3 + Math.floor(state.level / 5);
+      for(let i=0; i<len; i++) memorySequence.push(Math.floor(Math.random() * 4) + 1);
+
+      const seqDisp = document.getElementById('memory-sequence-display');
+      const statusEl = document.getElementById('memory-hack-status');
+      if(seqDisp) seqDisp.innerText = memorySequence.join(' - ');
+      if(statusEl) statusEl.innerText = "Merke dir die Zahlenfolge...";
+
+      setTimeout(() => {
+        if(seqDisp) seqDisp.innerText = "???";
+        if(statusEl) statusEl.innerText = "Eingabe jetzt starten!";
+      }, 2500);
+    }
+
+    function inputMemoryPad(val) {
+      playerMemoryInput.push(val);
+      const statusEl = document.getElementById('memory-hack-status');
+
+      const currentIndex = playerMemoryInput.length - 1;
+      if (playerMemoryInput[currentIndex] !== memorySequence[currentIndex]) {
+        if(statusEl) statusEl.innerText = "❌ FEHLER! Sequenz gescheitert.";
+        setTimeout(startMemoryHack, 1500);
+        return;
+      }
+
+      if (playerMemoryInput.length === memorySequence.length) {
+        const rewardCash = 50.00 * state.level;
+        state.money += rewardCash;
+        state.icash += 3;
+        if(statusEl) statusEl.innerText = `🎉 ERFOLG! +💎 3 iCash & +${formatMoney(rewardCash)}`;
+        updateQuestProgress('q2', 1);
+        addExp(40);
+        setTimeout(startMemoryHack, 2000);
+      }
+    }
+
+    function executeRivalHack() {
+      const win = Math.random() > 0.3;
+      if (win) {
+        const bounty = 25000 + Math.floor(Math.random() * 50000);
+        state.money += bounty;
+        alert(`🎯 KOPFGELD-SUCCESS! Du hast den Cyber-Rivalen ausgeraubt: +${formatMoney(bounty)}!`);
+      } else {
+        alert("🛡️ INFILTRATION ABGEWEHRT! Rivalen-Firewall war zu stark.");
+      }
+      updateUI();
+      saveGameLocally();
+    }
+
+    // --- HQ ROOM CUSTOMIZATION & ORBITAL FUSION ---
+    function buildHQRoom(idx) {
+      const hq = state.hqs[idx];
+      const roomCost = hq.cost * 0.5 || 2500;
+      if (state.money >= roomCost) {
+        state.money -= roomCost;
+        hq.roomBuilt = true;
+        hq.mult += 0.25;
+        alert(`🏛️ Verhandlungssaal in ${hq.name} gebaut! Multiplikator erhöht!`);
+        updateUI();
+        renderTabContent('hq');
+        saveGameLocally();
+      }
+    }
+
+    function fuseSpaceStation() {
+      const drohne = state.orbitals[0];
+      if (drohne.count >= 5) {
+        drohne.count -= 5;
+        state.spaceStations = (state.spaceStations || 0) + 1;
+        alert("🚀 5 Scout-Drohnen erfolgreich zu 1 GIGANTISCHEN RAUMSTATION fusioniert! (+300% Bonus)");
+        updateUI();
+        renderTabContent('orbit');
+        saveGameLocally();
+      } else {
+        alert("Du benötigst mindestens 5 Scout-Drohnen für eine Fusion!");
+      }
+    }
+
+    // --- SPATIAL METEORITE SPINNER ---
+    function spawnSpaceEventMeteor() {
+      const container = document.getElementById('space-event-container');
+      if(!container) return;
+
+      const meteor = document.createElement('div');
+      meteor.className = "pointer-events-auto absolute cursor-pointer bg-gradient-to-r from-amber-500 to-rose-500 rounded-full w-8 h-8 flex items-center justify-center text-white shadow-lg animate-bounce border border-amber-300";
+      meteor.style.top = Math.floor(20 + Math.random() * 60) + "%";
+      meteor.style.left = Math.floor(10 + Math.random() * 80) + "%";
+      meteor.innerHTML = "☄️";
+
+      meteor.onclick = () => {
+        const bonus = 5000 * state.level;
+        state.money += bonus;
+        alert(`☄️ METEORIT ABGEFANGEN! +${formatMoney(bonus)} erhalten!`);
+        meteor.remove();
+        updateUI();
+        saveGameLocally();
+      };
+
+      container.appendChild(meteor);
+      setTimeout(() => { if(meteor.parentNode) meteor.remove(); }, 8000);
     }
 
     function getMonthKey() {
@@ -1275,13 +1721,15 @@
 
       state.departments.forEach(d => { d.count = 0; });
       state.upgrades.forEach(u => { u.bought = false; });
-      state.products.forEach(p => { p.launched = false; });
-      state.staff.forEach(s => { s.count = 0; });
-      state.hqs.forEach((h, idx) => { h.bought = (idx === 0); });
+      state.products.forEach(p => { p.launched = false; p.broken = false; });
+      state.staff.forEach(s => { s.count = 0; s.level = 1; });
+      state.hqs.forEach((h, idx) => { h.bought = (idx === 0); h.roomBuilt = false; });
       state.orbitals.forEach(o => { o.count = 0; });
+      state.spaceStations = 0;
 
       state.market.forEach(m => {
         m.owned = 0;
+        m.shorted = 0;
         if(m.type === 'crypto') {
           m.rigs = 0;
           m.rigCost = 50;
@@ -1299,7 +1747,7 @@
       const savedKey = localStorage.getItem('empire_season_key');
       if (savedKey && savedKey !== currentKey) {
         executeSeasonReset();
-        alert("🗓️ EINE NEUE MONATS-SAISON HAT BEGONNEN! Dein Imperium-Fortschritt und alle Börsen-/Mining-Assets wurden zurückgesetzt.");
+        alert("🗓️ EINE NEUE MONATS-SAISON HAT BEGONNEN! Dein Imperium-Fortschritt wurde zurückgesetzt.");
       }
       localStorage.setItem('empire_season_key', currentKey);
     }
@@ -1367,6 +1815,11 @@
       let base = baseIncomes[idx] || 0.05;
       const count = state.departments[idx].count;
       let milestoneMultiplier = 1 + Math.floor(count / 10) * 0.25;
+
+      // SEKTOR-SYNERGIE BONUS (z.B. Paarweise Ausbauten Sektor 1 + 8)
+      if (idx === 0 && state.departments[7].count > 0) base *= 1.25;
+      if (idx === 7 && state.departments[0].count > 0) base *= 1.25;
+
       return base * milestoneMultiplier;
     }
 
@@ -1382,13 +1835,19 @@
         state.orbitals.forEach(o => { income += o.count * o.baseIncome; });
       }
 
+      // RAUMSTATION BONUS
+      if (state.spaceStations) income *= (1 + state.spaceStations * 3.0);
+
       let labMultiplier = 1;
       if (state.products) {
         state.products.forEach(p => {
-          if (p.launched) labMultiplier += 0.15;
+          if (p.launched && !p.broken) labMultiplier += 0.15;
         });
       }
       income *= labMultiplier;
+
+      // SYNDICATE FUND BOOST
+      if (state.syndicateFundLevel) income *= (1 + state.syndicateFundLevel * 0.05);
 
       const pi2 = state.permaUpgrades.find(u => u.id === 'pi2');
       if (pi2 && pi2.level > 0) {
@@ -1398,12 +1857,17 @@
       let staffMultiplier = 1;
       state.staff.forEach(s => {
         if(s.count > 0) {
-          if(s.id === 's2') staffMultiplier += s.count * 0.01;
-          if(s.id === 's3') staffMultiplier += s.count * 0.015;
-          if(s.id === 's4') staffMultiplier += s.count * 0.02;
-          if(s.id === 's5') staffMultiplier += s.count * 0.025;
+          const sLvl = s.level || 1;
+          if(s.id === 's2') staffMultiplier += s.count * 0.01 * sLvl;
+          if(s.id === 's3') staffMultiplier += s.count * 0.015 * sLvl;
+          if(s.id === 's4') staffMultiplier += s.count * 0.02 * sLvl;
+          if(s.id === 's5') staffMultiplier += s.count * 0.025 * sLvl;
         }
       });
+
+      // STAFF SYNERGIE (Junior Hacker + Analyst)
+      if (state.staff[0].count > 0 && state.staff[1].count > 0) staffMultiplier += 0.20;
+
       income *= staffMultiplier;
 
       state.upgrades.filter(u => u.bought && u.type === 'global').forEach(u => {
@@ -1433,11 +1897,14 @@
       }
 
       state.staff.forEach(s => {
-        if (s.id === 's1') base += s.count * 0.01;
+        if (s.id === 's1') base += s.count * 0.01 * (s.level || 1);
       });
       state.upgrades.filter(u => u.bought && u.type === 'click').forEach(u => {
         base *= u.mult;
       });
+
+      if (state.overclockActive && !state.isOverheated) base *= 4.0;
+      if (state.comboMult) base *= state.comboMult;
 
       if (isPassActive()) {
         base *= 2.0;
@@ -1478,6 +1945,9 @@
           passBtn.innerText = "Pass aktivieren (💎 50 iCash / 30 Tage)";
         }
       }
+
+      const syndBadge = document.getElementById('syndicate-level-badge');
+      if(syndBadge) syndBadge.innerText = `Stufe ${state.syndicateFundLevel || 0} (+${(state.syndicateFundLevel||0)*5}%)`;
 
       document.getElementById('exp-text').innerText = `${Math.floor(state.exp)} / ${state.expNeeded} EXP`;
       document.getElementById('exp-bar').style.width = Math.min(100, (state.exp / state.expNeeded) * 100) + '%';
@@ -1587,9 +2057,28 @@
 
     function renderDailyRewards() {
       const container = document.getElementById('daily-rewards-container');
+      const questsContainer = document.getElementById('daily-quests-container');
       const claimBtn = document.getElementById('btn-claim-daily');
-      if(!container) return;
 
+      if(questsContainer && state.dailyQuests) {
+        questsContainer.innerHTML = '';
+        state.dailyQuests.forEach(q => {
+          const ready = q.current >= q.goal && !q.claimed;
+          questsContainer.innerHTML += `
+            <div class="holo-card p-3 flex justify-between items-center text-xs">
+              <div>
+                <div class="font-bold text-white">${q.text}</div>
+                <div class="text-[10px] text-slate-400 font-mono mt-0.5 font-bold">Fortschritt: ${q.current}/${q.goal} (Belohnung: 💎 ${q.reward} iCash)</div>
+              </div>
+              <button onclick="claimQuestReward('${q.id}')" ${!ready ? 'disabled' : ''} class="px-3 py-1.5 ${q.claimed ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30' : (ready ? 'icash-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} rounded-lg font-bold">
+                ${q.claimed ? '✓ Erfüllt' : 'Belohnung'}
+              </button>
+            </div>
+          `;
+        });
+      }
+
+      if(!container) return;
       container.innerHTML = '';
       const currentStreakIndex = state.dailyStreak % 7;
       const ready = canClaimDaily();
@@ -1653,46 +2142,19 @@
       saveGameLocally();
     }
 
-    let correctHackNode = 0;
     function initHackMiniGame() {
-      const nodesContainer = document.getElementById('hack-game-nodes');
-      const statusEl = document.getElementById('hack-game-status');
-      if(!nodesContainer) return;
+      const padButtons = document.getElementById('memory-pad-buttons');
+      if (!padButtons) return;
+      padButtons.innerHTML = '';
 
-      nodesContainer.innerHTML = '';
-      statusEl.innerText = '';
-      correctHackNode = Math.floor(Math.random() * 3);
-
-      for(let i=0; i<3; i++) {
-        const codeNum = Math.floor(1000 + Math.random() * 9000);
-        nodesContainer.innerHTML += `
-          <button onclick="attemptHackNode(${i})" class="p-3 bg-[#0f172a] hover:bg-purple-950/40 border border-purple-500/30 rounded-xl font-mono text-xs text-purple-300 font-bold transition flex flex-col items-center justify-center gap-1 shadow-lg">
-            <i data-lucide="shield" class="w-4 h-4 text-purple-400"></i>
-            <span>NODE #${i+1} [${codeNum}]</span>
+      for(let i=1; i<=4; i++) {
+        padButtons.innerHTML += `
+          <button onclick="inputMemoryPad(${i})" class="p-3 bg-[#0f172a] hover:bg-purple-950/50 border border-purple-500/30 rounded-xl font-mono text-sm text-purple-300 font-bold transition shadow-lg">
+            ${i}
           </button>
         `;
       }
-      lucide.createIcons();
-    }
-
-    function attemptHackNode(selectedIdx) {
-      const statusEl = document.getElementById('hack-game-status');
-      if(selectedIdx === correctHackNode) {
-        const rewardCash = 10.00 * state.level;
-        const rewardIcash = 2;
-        state.money += rewardCash;
-        state.totalEarned += rewardCash;
-        state.icash += rewardIcash;
-        statusEl.className = "text-xs font-mono text-emerald-400 text-center h-5 mt-2 font-bold";
-        statusEl.innerText = `[SUCCESS] +💎 ${rewardIcash} iCash & +${formatMoney(rewardCash)}`;
-        addExp(30);
-        setTimeout(initHackMiniGame, 1800);
-      } else {
-        statusEl.className = "text-xs font-mono text-rose-400 text-center h-5 mt-2 font-bold";
-        statusEl.innerText = `[ACCESS DENIED] Falscher Node!`;
-        setTimeout(initHackMiniGame, 1500);
-      }
-      updateUI();
+      startMemoryHack();
     }
 
     function drawCandleChart(canvasId, candles) {
@@ -1854,9 +2316,14 @@
 
       if (tabId === 'upgrades') {
         const list = document.getElementById('list-upgrades');
-        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">2. Quanten-Forschung</h3>`;
-        state.upgrades.forEach((u, idx) => {
+        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">2. Quanten-Forschungsbaum (${state.techBranch.toUpperCase()})</h3>`;
+        const filteredUpgrades = state.upgrades.filter(u => u.branch === state.techBranch);
+
+        filteredUpgrades.forEach((u) => {
+          const idx = state.upgrades.indexOf(u);
           const imgUrl = upgradeImages[idx % upgradeImages.length];
+          const isTimerActive = u.timer > 0;
+
           list.innerHTML += `
             <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
               <div class="sm:w-28 h-20 sm:h-auto relative overflow-hidden bg-[#070b14]">
@@ -1864,11 +2331,11 @@
               </div>
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
-                  <div class="font-bold text-xs text-white">Quanten-Forschung #${idx+1}</div>
-                  <div class="text-[11px] text-emerald-400 mt-0.5">Imperium-Boost</div>
+                  <div class="font-bold text-xs text-white">Forschung #${idx+1} [${u.branch}]</div>
+                  <div class="text-[11px] text-emerald-400 mt-0.5">${isTimerActive ? `Forschung läuft: ${u.timer}s` : 'Imperium-Boost'}</div>
                 </div>
-                <button onclick="buyUpgrade(${idx})" ${u.bought ? 'disabled' : ''} class="px-3 py-1.5 ${u.bought ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30' : (state.money >= u.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
-                  ${u.bought ? 'Erforscht' : formatMoney(u.cost)}
+                <button onclick="buyUpgrade(${idx})" ${u.bought || isTimerActive ? 'disabled' : ''} class="px-3 py-1.5 ${u.bought ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30 font-bold' : (state.money >= u.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
+                  ${u.bought ? 'Erforscht' : (isTimerActive ? `${u.timer}s` : formatMoney(u.cost))}
                 </button>
               </div>
             </div>
@@ -1885,7 +2352,7 @@
           const badgeBg = isPos ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border-rose-500/30';
 
           let extraActionHtml = '';
-          let marketDesc = m.type === 'stock' ? 'Börsen-Aktie (Aktiv handelbar mit Hebel)' : 'Krypto-Token & automatisches Rig-Mining (Erzeugt REINE COINS)';
+          let marketDesc = m.type === 'stock' ? 'Börsen-Aktie (Long & Short handelbar)' : 'Krypto-Token & automatisches Rig-Mining';
           
           if (m.type === 'crypto') {
             const rigCost = m.rigCost || 50;
@@ -1903,10 +2370,10 @@
             const currentLev = m.leverage || 1;
             extraActionHtml = `
               <div class="mt-2.5 pt-2.5 border-t border-blue-500/10 flex justify-between items-center text-xs bg-[#070b14]/60 p-2 rounded-xl">
-                <span class="text-slate-400 font-mono text-[11px]">Trading-Hebel:</span>
+                <span class="text-slate-400 font-mono text-[11px]">Short-Trading (Geshortet: ${m.shorted || 0}):</span>
                 <div class="flex gap-1">
-                  <button onclick="setLeverage(${idx}, 1)" class="px-2.5 py-1 rounded text-[10px] font-mono font-bold ${currentLev === 1 ? 'bg-blue-600 text-white' : 'bg-[#0f172a] text-slate-400 border border-blue-500/20'}">1x</button>
-                  <button onclick="setLeverage(${idx}, 5)" class="px-2.5 py-1 rounded text-[10px] font-mono font-bold ${currentLev === 5 ? 'bg-purple-600 text-white' : 'bg-[#0f172a] text-slate-400 border border-purple-500/20'}">5x 🔥</button>
+                  <button onclick="shortStock(${idx})" class="px-2.5 py-1 rounded text-[10px] font-mono font-bold bg-rose-950 border border-rose-700 text-rose-300">Short (-)</button>
+                  <button onclick="closeShortStock(${idx})" class="px-2.5 py-1 rounded text-[10px] font-mono font-bold bg-emerald-950 border border-emerald-700 text-emerald-300">Schließen</button>
                 </div>
               </div>
             `;
@@ -1956,19 +2423,23 @@
         list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">4. Advanced Engineering Lab</h3>`;
         state.products.forEach((p, idx) => {
           const imgUrl = labImages[idx % labImages.length];
+          const isBroken = p.broken;
+
           list.innerHTML += `
-            <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
+            <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition ${isBroken ? 'border-rose-500/50 bg-rose-950/10' : ''}">
               <div class="sm:w-28 h-20 sm:h-auto relative overflow-hidden bg-[#070b14]">
                 <img src="${imgUrl}" class="w-full h-full object-cover">
               </div>
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
-                  <div class="font-bold text-xs text-white">${p.name}</div>
+                  <div class="font-bold text-xs text-white">${p.name} ${isBroken ? '<span class="text-rose-400 font-mono text-[10px]">(DEFEKT)</span>' : ''}</div>
                   <div class="text-[11px] text-emerald-400 font-mono mt-0.5">+15% Boost auf Passiv-Einkommen</div>
                 </div>
-                <button onclick="launchProduct(${idx})" ${p.launched ? 'disabled' : ''} class="px-3 py-1.5 ${p.launched ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30 font-bold' : (state.money >= p.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
-                  ${p.launched ? 'Online' : formatMoney(p.cost)}
-                </button>
+                <div class="flex gap-1.5">
+                  ${p.launched && !isBroken ? `<button onclick="sellPatent(${idx})" class="px-2.5 py-1.5 icash-btn text-xs rounded-lg font-bold">Patent (💎 15)</button>` : ''}
+                  ${isBroken ? `<button onclick="repairPrototype(${idx})" class="px-3 py-1.5 bg-rose-950 text-rose-300 border border-rose-700 text-xs rounded-lg font-bold">Reparieren (${formatMoney(p.cost * 0.4)})</button>` : ''}
+                  ${!p.launched ? `<button onclick="launchProduct(${idx})" class="px-3 py-1.5 ${state.money >= p.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold transition">${formatMoney(p.cost)}</button>` : ''}
+                </div>
               </div>
             </div>
           `;
@@ -1980,6 +2451,8 @@
         list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">5. Vorstand & Experten</h3>`;
         state.staff.forEach((s, idx) => {
           const imgUrl = staffImages[idx % staffImages.length];
+          const sLvl = s.level || 1;
+
           list.innerHTML += `
             <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
               <div class="sm:w-28 h-20 sm:h-auto relative overflow-hidden bg-[#070b14]">
@@ -1987,7 +2460,7 @@
               </div>
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
-                  <div class="font-bold text-xs text-white">${s.name}</div>
+                  <div class="font-bold text-xs text-white">${s.name} (Rang ${sLvl})</div>
                   <div class="text-[11px] text-slate-400 mt-0.5">${s.desc}</div>
                 </div>
                 <button onclick="hireStaff(${idx})" class="px-3 py-1.5 ${state.money >= s.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold transition">
@@ -2019,9 +2492,11 @@
 
       if (tabId === 'hq') {
         const list = document.getElementById('list-hq');
-        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">7. Corporate Headquarters</h3>`;
+        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">7. Corporate Headquarters & Ausbau</h3>`;
         state.hqs.forEach((hq, idx) => {
           const imgUrl = hqImages[idx % hqImages.length];
+          const hasRoom = hq.roomBuilt;
+
           list.innerHTML += `
             <div class="holo-card flex flex-col sm:flex-row overflow-hidden transition">
               <div class="sm:w-28 h-20 sm:h-auto relative overflow-hidden bg-[#070b14]">
@@ -2030,11 +2505,14 @@
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
                   <div class="font-bold text-xs text-white">${hq.name}</div>
-                  <div class="text-[11px] text-emerald-400 mt-0.5">Multiplikator: x${hq.mult}</div>
+                  <div class="text-[11px] text-emerald-400 mt-0.5">Multiplikator: x${hq.mult.toFixed(2)} ${hasRoom ? '🏛️ Saal aktiv' : ''}</div>
                 </div>
-                <button onclick="buyHQ(${idx})" ${hq.bought || state.money < hq.cost ? 'disabled' : ''} class="px-3 py-1.5 ${hq.bought ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30 font-bold' : (state.money >= hq.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
-                  ${hq.bought ? 'Zentrale aktiv' : formatMoney(hq.cost)}
-                </button>
+                <div class="flex gap-1.5">
+                  ${hq.bought && !hasRoom ? `<button onclick="buildHQRoom(${idx})" class="px-2.5 py-1.5 bg-indigo-950 text-indigo-300 border border-indigo-700 text-xs rounded-lg font-bold">Saal Bauen</button>` : ''}
+                  <button onclick="buyHQ(${idx})" ${hq.bought || state.money < hq.cost ? 'disabled' : ''} class="px-3 py-1.5 ${hq.bought ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30 font-bold' : (state.money >= hq.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} text-xs rounded-lg font-semibold transition">
+                    ${hq.bought ? 'Aktiv' : formatMoney(hq.cost)}
+                  </button>
+                </div>
               </div>
             </div>
           `;
@@ -2043,7 +2521,9 @@
 
       if (tabId === 'orbit') {
         const list = document.getElementById('list-orbit');
-        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">8. Orbital-Drohnen & Satelliten</h3>`;
+        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">8. Orbital-Drohnen & Raumstationen</h3>`;
+        list.innerHTML += `<div class="text-xs text-indigo-300 font-mono mb-2">Stationen im Orbit: 🚀 ${state.spaceStations || 0}</div>`;
+
         state.orbitals.forEach((o, idx) => {
           const cost = o.baseCost * Math.pow(1.25, o.count);
           const imgUrl = orbitalImages[idx % orbitalImages.length];
@@ -2054,7 +2534,7 @@
               </div>
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
-                  <div class="font-bold text-xs text-white">${o.name}</div>
+                  <div class="font-bold text-xs text-white">${o.name} (${o.count})</div>
                   <div class="text-[11px] text-emerald-400 mt-0.5">Ertrag: +${formatMoney(o.baseIncome)}/min</div>
                 </div>
                 <button onclick="buyOrbital(${idx})" class="px-3 py-1.5 ${state.money >= cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed'} text-xs rounded-lg font-semibold transition">
@@ -2068,34 +2548,6 @@
 
       if (tabId === 'fame') { fetchLeaderboard(); renderAvatarSelector(); }
       if (tabId === 'settings') { renderLanguageTab(); }
-    }
-
-    function setLeverage(idx, lev) {
-      state.market[idx].leverage = lev;
-      renderTabContent('market');
-      saveGameLocally();
-    }
-
-    function triggerHoloPump(idx) {
-      const cost = 2;
-      if (state.icash >= cost) {
-        state.icash -= cost;
-        const item = state.market[idx];
-        const boost = 1.05 + Math.random() * 0.12;
-        item.price *= boost;
-        item.change = parseFloat((item.change + (boost * 10)).toFixed(1));
-        
-        if(!item.candles) item.candles = [];
-        item.candles.push({ o: item.price/boost, h: item.price*1.02, l: item.price*0.98, c: item.price });
-        if(item.candles.length > 12) item.candles.shift();
-
-        alert(`🚀 HOLO-PUMP ERFOLGREICH! ${item.name}`);
-        updateUI();
-        renderTabContent('market');
-        saveGameLocally();
-      } else {
-        alert("Nicht genügend iCash (💎 2 erforderlich)!");
-      }
     }
 
     function buyPermaUpgrade(idx) {
@@ -2127,6 +2579,7 @@
       if (state.money >= cost) {
         state.money -= cost;
         d.count++;
+        updateQuestProgress('q3', 1);
         addExp(25);
         updateUI();
         renderTabContent('depts');
@@ -2136,9 +2589,13 @@
 
     function buyUpgrade(idx) {
       const u = state.upgrades[idx];
-      if (!u.bought && state.money >= u.cost) {
+      if (!u.bought && state.money >= u.cost && u.timer === 0) {
         state.money -= u.cost;
-        u.bought = true;
+        if (u.timeSec && u.timeSec > 0) {
+          u.timer = u.timeSec;
+        } else {
+          u.bought = true;
+        }
         addExp(50);
         updateUI();
         renderTabContent('upgrades');
@@ -2148,12 +2605,10 @@
 
     function buyStock(idx) {
       const item = state.market[idx];
-      const lev = item.leverage || 1;
-      const actualCost = item.price * lev;
-
+      const actualCost = item.price;
       if (state.money >= actualCost) {
         state.money -= actualCost;
-        item.owned += lev;
+        item.owned += 1;
         updateUI();
         renderTabContent('market');
         saveGameLocally();
@@ -2184,6 +2639,7 @@
         state.money -= item.rigCost;
         item.rigs++;
         item.rigCost = Math.floor(item.rigCost * 1.4);
+        updateQuestProgress('q3', 1);
         updateUI();
         renderTabContent('market');
         saveGameLocally();
@@ -2194,8 +2650,15 @@
       const p = state.products[idx];
       if (!p.launched && state.money >= p.cost) {
         state.money -= p.cost;
-        p.launched = true;
-        addExp(100);
+        const roll = Math.random();
+        if (roll < 0.2) {
+          p.broken = true;
+          alert(`⚠️ FEHLSCHLAG! Prototyp "${p.name}" hatte einen Systemfehler und muss repariert werden.`);
+        } else {
+          p.launched = true;
+          addExp(100);
+          alert(`🚀 PROTOTYP SUCCESS! "${p.name}" erfolgreich gestartet.`);
+        }
         updateUI();
         renderTabContent('lab');
         saveGameLocally();
@@ -2207,6 +2670,11 @@
       if (state.money >= s.cost) {
         state.money -= s.cost;
         s.count++;
+        s.exp = (s.exp || 0) + 1;
+        if (s.exp >= 5) {
+          s.level = (s.level || 1) + 1;
+          s.exp = 0;
+        }
         s.cost *= 1.35;
         addExp(35);
         updateUI();
@@ -2221,6 +2689,7 @@
         h.cd = h.maxCd;
         state.money += h.reward;
         state.totalEarned += h.reward;
+        updateQuestProgress('q2', 1);
         updateUI();
         renderTabContent('hack');
         saveGameLocally();
@@ -2234,6 +2703,7 @@
         hq.bought = true;
         state.icash += 15;
         alert(`🏢 HQ FREIGESCHALTET! +💎 15 iCash!`);
+        applyHQTheme();
         updateUI();
         renderTabContent('hq');
         saveGameLocally();
@@ -2253,7 +2723,15 @@
     }
 
     document.getElementById('click-btn').addEventListener('click', () => {
+      if (state.isOverheated) return;
       playClickBeep();
+      registerClickCombo();
+
+      if (state.overclockActive && Math.random() < 0.2) {
+        triggerOverheat();
+        return;
+      }
+
       const pwr = getClickPower();
       state.money += pwr;
       state.totalEarned += pwr;
@@ -2290,6 +2768,7 @@
             window.state = state;
             fixMissingNames();
             checkSeasonReset();
+            applyHQTheme();
             checkOfflineEarnings(oldTime);
           }
         } catch (e) { console.error(e); }
@@ -2304,9 +2783,15 @@
 
     setInterval(() => { updateSeasonCountdown(); }, 1000);
 
+    // RAUMFAHRT METEOR EVENT (ALLE 45 SEC)
+    setInterval(() => { if (Math.random() < 0.6) spawnSpaceEventMeteor(); }, 45000);
+
+    // MARKT NEWS RANDOM (ALLE 60 SEC)
+    setInterval(() => { if (Math.random() < 0.3) triggerRandomMarketNews(); }, 60000);
+
     setInterval(() => {
       const pi3 = state.permaUpgrades.find(u => u.id === 'pi3');
-      if (pi3 && pi3.level > 0) {
+      if (pi3 && pi3.level > 0 && !state.isOverheated) {
         const pwr = getClickPower();
         state.money += pwr;
         state.totalEarned += pwr;
@@ -2332,6 +2817,17 @@
 
     setInterval(() => {
       state.hacks.forEach(h => { if (h.cd > 0) h.cd--; });
+
+      // TECH-TREE TIMERS
+      state.upgrades.forEach(u => {
+        if (u.timer > 0) {
+          u.timer--;
+          if (u.timer <= 0) {
+            u.bought = true;
+            alert(`🔬 FORSCHUNG FERTIGGESTELLT: Upgrade #${u.id}!`);
+          }
+        }
+      });
 
       if (state.miningSecondsLeft > 0) {
         state.miningSecondsLeft--;
