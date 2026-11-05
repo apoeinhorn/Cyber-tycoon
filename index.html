@@ -137,13 +137,8 @@
       pointer-events: auto;
     }
 
-    /* Category Fullscreen Panels */
-    .category-page {
-      display: none;
-    }
-    .category-page.active {
-      display: block;
-    }
+    .category-page { display: none; }
+    .category-page.active { display: block; }
 
     body.theme-neon { background-color: #0d021a; }
     body.theme-cyan { background-color: #02121a; }
@@ -178,7 +173,7 @@
   <div id="space-event-container" class="fixed inset-0 pointer-events-none z-50"></div>
   <div id="companion-drone-container" class="fixed bottom-24 right-6 z-40 cursor-pointer pointer-events-auto"></div>
 
-  <!-- TOP DROPDOWN MENU (ALLE 14 GAMING KATEGORIEN) -->
+  <!-- TOP DROPDOWN MENU -->
   <div id="top-dropdown-menu" class="fixed inset-0 bg-[#050810]/98 backdrop-blur-3xl z-[100] flex flex-col p-4 sm:p-6 overflow-y-auto">
     <div class="flex justify-between items-center pb-4 border-b border-cyan-500/20 mb-4 sticky top-0 bg-[#050810] z-10 pt-2">
       <div class="flex items-center space-x-2 text-white font-extrabold text-sm tracking-widest uppercase">
@@ -190,105 +185,105 @@
       </button>
     </div>
 
-    <!-- 14 Kategorien Raster -->
+    <!-- Kategorien Raster ohne Nummern -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-w-2xl mx-auto w-full pb-24">
       
       <button onclick="switchCategoryPage('clicker')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-cyan-400 transition group bg-gradient-to-b from-blue-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition">
           <i data-lucide="cpu" class="w-5 h-5"></i>
         </div>
-        <span class="text-xs font-bold text-white">0. Core Terminal</span>
+        <span class="text-xs font-bold text-white">Core Terminal</span>
       </button>
 
       <button onclick="switchCategoryPage('icash')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-purple-400 transition group bg-gradient-to-b from-purple-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:scale-110 transition">
           <i data-lucide="gem" class="w-5 h-5"></i>
         </div>
-        <span class="text-xs font-bold text-white">0.5. iCash Zentrale</span>
+        <span class="text-xs font-bold text-white">iCash Zentrale</span>
       </button>
 
       <button onclick="switchCategoryPage('singularity')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-cyan-400 transition group bg-gradient-to-b from-cyan-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-300 group-hover:scale-110 transition">
           <i data-lucide="atom" class="w-5 h-5"></i>
         </div>
-        <span class="text-xs font-bold text-white">0.8. Singularität</span>
+        <span class="text-xs font-bold text-white">Singularität</span>
       </button>
 
       <button onclick="switchCategoryPage('daily')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-emerald-400 transition group bg-gradient-to-b from-emerald-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition">
           <i data-lucide="gift" class="w-5 h-5"></i>
         </div>
-        <span class="text-xs font-bold text-white">11. Quests & Rad</span>
+        <span class="text-xs font-bold text-white">Quests & Rad</span>
       </button>
 
       <button onclick="switchCategoryPage('depts')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-blue-400 transition group bg-gradient-to-b from-blue-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 group-hover:scale-110 transition">
           <i data-lucide="layers" class="w-5 h-5"></i>
         </div>
-        <span class="text-xs font-bold text-white">1. Megastrukturen</span>
+        <span class="text-xs font-bold text-white">Megastrukturen</span>
       </button>
 
       <button onclick="switchCategoryPage('upgrades')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-amber-400 transition group bg-gradient-to-b from-amber-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-110 transition">
           <i data-lucide="zap" class="w-5 h-5"></i>
         </div>
-        <span class="text-xs font-bold text-white">2. Quanten-Tech Tree</span>
+        <span class="text-xs font-bold text-white">Quanten-Tech Tree</span>
       </button>
 
       <button onclick="switchCategoryPage('market')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-emerald-400 transition group bg-gradient-to-b from-emerald-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition">
           <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
         </div>
-        <span class="text-xs font-bold text-white">3. Börse & Wetter</span>
+        <span class="text-xs font-bold text-white">Börse & Wetter</span>
       </button>
 
       <button onclick="switchCategoryPage('lab')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-indigo-400 transition group bg-gradient-to-b from-indigo-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition">
           <i data-lucide="flask-conical" class="w-5 h-5"></i>
         </div>
-        <span class="text-xs font-bold text-white">4. Prototyp-Lab</span>
+        <span class="text-xs font-bold text-white">Prototyp-Lab</span>
       </button>
 
       <button onclick="switchCategoryPage('staff')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-purple-400 transition group bg-gradient-to-b from-purple-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-300 group-hover:scale-110 transition">
           <i data-lucide="users-round" class="w-5 h-5"></i>
         </div>
-        <span class="text-xs font-bold text-white">5. Vorstand</span>
+        <span class="text-xs font-bold text-white">Vorstand</span>
       </button>
 
       <button onclick="switchCategoryPage('hack')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-rose-400 transition group bg-gradient-to-b from-rose-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 group-hover:scale-110 transition">
           <i data-lucide="shield-alert" class="w-5 h-5"></i>
         </div>
-        <span class="text-xs font-bold text-white">6. Memory & PvP</span>
+        <span class="text-xs font-bold text-white">Memory & PvP</span>
       </button>
 
       <button onclick="switchCategoryPage('hq')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-cyan-400 transition group bg-gradient-to-b from-cyan-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition">
           <i data-lucide="building-2" class="w-5 h-5"></i>
         </div>
-        <span class="text-xs font-bold text-white">7. HQ & Raumausbau</span>
+        <span class="text-xs font-bold text-white">HQ & Raumausbau</span>
       </button>
 
       <button onclick="switchCategoryPage('orbit')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-indigo-400 transition group bg-gradient-to-b from-indigo-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition">
           <i data-lucide="orbit" class="w-5 h-5"></i>
         </div>
-        <span class="text-xs font-bold text-white">8. Orbital-Drohnen</span>
+        <span class="text-xs font-bold text-white">Orbital-Drohnen</span>
       </button>
 
       <button onclick="switchCategoryPage('fame')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-blue-400 transition group bg-gradient-to-b from-blue-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-300 group-hover:scale-110 transition">
           <i data-lucide="globe" class="w-5 h-5"></i>
         </div>
-        <span class="text-xs font-bold text-white">9. Weltrangliste</span>
+        <span class="text-xs font-bold text-white">Weltrangliste & Legenden</span>
       </button>
 
       <button onclick="switchCategoryPage('settings')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-slate-400 transition group bg-gradient-to-b from-slate-900/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-slate-500/10 border border-slate-500/30 flex items-center justify-center text-slate-300 group-hover:scale-110 transition">
           <i data-lucide="sliders" class="w-5 h-5"></i>
         </div>
-        <span class="text-xs font-bold text-white">10. Einstellungen</span>
+        <span class="text-xs font-bold text-white">Einstellungen</span>
       </button>
 
     </div>
@@ -477,7 +472,7 @@
       </div>
     </div>
 
-    <!-- CATEGORY PAGE 0: CORE TERMINAL (HAUPTSEITE) -->
+    <!-- CATEGORY PAGE: CORE TERMINAL -->
     <div id="page-clicker" class="category-page active space-y-4">
       <div class="holo-card p-6 flex flex-col items-center justify-center relative overflow-hidden text-center" id="clicker-card-container">
         <div class="absolute inset-0 h-32 opacity-30 pointer-events-none overflow-hidden">
@@ -495,7 +490,7 @@
           </button>
         </div>
 
-        <h3 id="tab0-title" class="font-bold text-base text-white tracking-wide relative z-10">0. Core Terminal Overdrive</h3>
+        <h3 id="tab0-title" class="font-bold text-base text-white tracking-wide relative z-10">Core Terminal Overdrive</h3>
         <p id="tab0-desc" class="text-xs text-slate-400 mt-0.5 mb-4 relative z-10">Generiere Datenimpulse, um das Imperium zu skalieren.</p>
 
         <button id="click-btn" class="w-36 h-36 rounded-2xl bg-[#0f172a]/90 border-2 border-cyan-500/40 hover:border-cyan-400 flex flex-col items-center justify-center shadow-2xl active:scale-95 transition-all group my-2 cursor-pointer relative z-10 backdrop-blur-md">
@@ -529,11 +524,11 @@
       </div>
     </div>
 
-    <!-- CATEGORY PAGE 0.5: ICASH ZENTRALE -->
+    <!-- CATEGORY PAGE: ICASH ZENTRALE -->
     <div id="page-icash" class="category-page space-y-4">
       <div class="flex justify-between items-center">
         <h3 class="font-bold text-sm text-white flex items-center gap-2">
-          <i data-lucide="gem" class="w-4 h-4 text-purple-400"></i> 0.5. iCash Cyber-Zentrale
+          <i data-lucide="gem" class="w-4 h-4 text-purple-400"></i> iCash Cyber-Zentrale
         </h3>
         <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold flex items-center gap-1">&larr; Terminal</button>
       </div>
@@ -581,11 +576,11 @@
       <div id="list-icash-features" class="space-y-3"></div>
     </div>
 
-    <!-- CATEGORY PAGE 0.8: SINGULARITÄTS-PROTOKOLL -->
+    <!-- CATEGORY PAGE: SINGULARITÄTS-PROTOKOLL -->
     <div id="page-singularity" class="category-page space-y-4">
       <div class="flex justify-between items-center">
         <h3 class="font-bold text-sm text-white flex items-center gap-2">
-          <i data-lucide="atom" class="w-4 h-4 text-cyan-400"></i> 0.8. Singularitäts-Protokoll (Prestige)
+          <i data-lucide="atom" class="w-4 h-4 text-cyan-400"></i> Singularitäts-Protokoll (Prestige)
         </h3>
         <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
@@ -603,11 +598,11 @@
       <div id="singularity-upgrades-list" class="space-y-3"></div>
     </div>
 
-    <!-- CATEGORY PAGE 11: QUESTS & GLÜCKSRAD -->
+    <!-- CATEGORY PAGE: QUESTS & GLÜCKSRAD -->
     <div id="page-daily" class="category-page space-y-4">
       <div class="flex justify-between items-center">
         <h3 class="font-bold text-sm text-white flex items-center gap-2">
-          <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i> 11. Quests & Glücksrad
+          <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i> Quests & Glücksrad
         </h3>
         <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
@@ -641,10 +636,10 @@
       <div id="daily-claim-timer-text" class="text-[11px] font-mono text-slate-400 text-center hidden">Nächste Belohnung in: <span class="text-emerald-400 font-bold" id="daily-claim-countdown">24:00:00</span></div>
     </div>
 
-    <!-- CATEGORY PAGE 1: MEGASTRUKTUREN -->
+    <!-- CATEGORY PAGE: MEGASTRUKTUREN -->
     <div id="page-depts" class="category-page space-y-3">
       <div class="flex justify-between items-center mb-1">
-        <h3 class="font-bold text-sm text-white">1. Megastrukturen & Synergien</h3>
+        <h3 class="font-bold text-sm text-white">Megastrukturen & Synergien</h3>
         <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
       <div id="sector-synergy-banner" class="holo-card p-3 border-emerald-500/30 bg-emerald-950/20 text-xs text-emerald-300 font-mono">
@@ -653,10 +648,10 @@
       <div id="list-depts" class="space-y-3"></div>
     </div>
 
-    <!-- CATEGORY PAGE 2: TECH TREE -->
+    <!-- CATEGORY PAGE: TECH TREE -->
     <div id="page-upgrades" class="category-page space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="font-bold text-sm text-white">2. Quanten-Tech Tree</h3>
+        <h3 class="font-bold text-sm text-white">Quanten-Tech Tree</h3>
         <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
       <div class="flex gap-2">
@@ -670,10 +665,10 @@
       <div id="list-upgrades" class="space-y-3"></div>
     </div>
 
-    <!-- CATEGORY PAGE 3: BÖRSE & WETTER -->
+    <!-- CATEGORY PAGE: BÖRSE & WETTER -->
     <div id="page-market" class="category-page space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="font-bold text-sm text-white">3. Börse, Shorting & Wetter</h3>
+        <h3 class="font-bold text-sm text-white">Börse, Shorting & Wetter</h3>
         <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
 
@@ -706,28 +701,28 @@
       <div id="list-market" class="space-y-3"></div>
     </div>
 
-    <!-- CATEGORY PAGE 4: PROTOTYP-LAB -->
+    <!-- CATEGORY PAGE: PROTOTYP-LAB -->
     <div id="page-lab" class="category-page space-y-3">
       <div class="flex justify-between items-center mb-1">
-        <h3 class="font-bold text-sm text-white">4. Prototyp-Lab & Patente</h3>
+        <h3 class="font-bold text-sm text-white">Prototyp-Lab & Patente</h3>
         <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
       <div id="list-lab" class="space-y-3"></div>
     </div>
 
-    <!-- CATEGORY PAGE 5: VORSTAND -->
+    <!-- CATEGORY PAGE: VORSTAND -->
     <div id="page-staff" class="category-page space-y-3">
       <div class="flex justify-between items-center mb-1">
-        <h3 class="font-bold text-sm text-white">5. Vorstand & Experten</h3>
+        <h3 class="font-bold text-sm text-white">Vorstand & Experten</h3>
         <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
       <div id="list-staff" class="space-y-3"></div>
     </div>
 
-    <!-- CATEGORY PAGE 6: MEMORY & PVP -->
+    <!-- CATEGORY PAGE: MEMORY & PVP -->
     <div id="page-hack" class="category-page space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="font-bold text-sm text-white">6. Memory & Netrunner PvP</h3>
+        <h3 class="font-bold text-sm text-white">Memory & Netrunner PvP</h3>
         <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
 
@@ -766,19 +761,19 @@
       <div id="list-hack" class="space-y-3"></div>
     </div>
 
-    <!-- CATEGORY PAGE 7: HQ -->
+    <!-- CATEGORY PAGE: HQ -->
     <div id="page-hq" class="category-page space-y-3">
       <div class="flex justify-between items-center mb-1">
-        <h3 class="font-bold text-sm text-white">7. HQ & Raumausbau</h3>
+        <h3 class="font-bold text-sm text-white">HQ & Raumausbau</h3>
         <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
       <div id="list-hq" class="space-y-3"></div>
     </div>
 
-    <!-- CATEGORY PAGE 8: ORBITAL DROHNEN -->
+    <!-- CATEGORY PAGE: ORBITAL DROHNEN -->
     <div id="page-orbit" class="category-page space-y-3">
       <div class="flex justify-between items-center mb-1">
-        <h3 class="font-bold text-sm text-white">8. Orbital-Drohnen & Raumstation</h3>
+        <h3 class="font-bold text-sm text-white">Orbital-Drohnen & Raumstation</h3>
         <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
       <div class="holo-card p-4 border-indigo-500/40 bg-gradient-to-r from-indigo-950/40 via-[#0b101d] to-[#0b101d] flex justify-between items-center">
@@ -793,38 +788,93 @@
       <div id="list-orbit" class="space-y-3"></div>
     </div>
 
-    <!-- CATEGORY PAGE 9: WELTRANGLISTE -->
+    <!-- CATEGORY PAGE: WELTRANGLISTE & LEGENDEN (ANGEPASST AN SCREENSHOTS) -->
     <div id="page-fame" class="category-page space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="font-bold text-sm text-white">9. Cloud-Sync & Weltrangliste</h3>
+        <h3 class="font-bold text-sm text-white">Weltrangliste & Legenden</h3>
         <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
 
-      <div class="holo-card p-4 space-y-3 border-purple-500/30">
-        <div class="flex justify-between items-center">
-          <span class="font-bold text-xs text-white flex items-center gap-1.5">
-            <i data-lucide="user-cog" class="w-4 h-4 text-purple-400"></i> Imperium Profil-Avatar
-          </span>
-          <span id="current-avatar-display" class="text-xs font-mono text-purple-300 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded">🤖 Standard</span>
-        </div>
-        <div id="avatar-selection-grid" class="grid grid-cols-2 gap-2 pt-1"></div>
+      <!-- Sub-Navigation wie in den Screenshots: Rangliste | Legenden -->
+      <div class="flex bg-[#070b14] p-1 rounded-2xl border border-blue-500/20">
+        <button onclick="switchFameSubTab('leaderboard')" id="btn-sub-leaderboard" class="flex-1 py-2 text-xs font-bold rounded-xl bg-blue-600 text-white shadow-md transition">🏆 Rangliste</button>
+        <button onclick="switchFameSubTab('legends')" id="btn-sub-legends" class="flex-1 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white transition">👑 Legenden</button>
       </div>
 
-      <div class="holo-card p-4 space-y-3">
+      <!-- RANGLISTE VIEW -->
+      <div id="fame-subview-leaderboard" class="space-y-4">
+        <!-- Top 3 Podium -->
+        <div id="podium-container" class="grid grid-cols-3 gap-2 items-end pt-6 pb-2 px-2 bg-gradient-to-b from-blue-950/20 to-[#0b101d] holo-card border-blue-500/30 text-center">
+          <!-- Platz 2 (Silber) -->
+          <div class="flex flex-col items-center">
+            <div class="relative mb-1">
+              <div class="w-12 h-12 rounded-full border-2 border-slate-300 bg-slate-800 flex items-center justify-center text-lg overflow-hidden shadow-md" id="podium-2-avatar">🥈</div>
+            </div>
+            <div class="w-full bg-slate-700/80 rounded-t-lg p-2 pt-4 border-t-2 border-slate-400 shadow">
+              <div id="podium-2-name" class="text-[10px] font-bold text-white truncate">---</div>
+              <div id="podium-2-score" class="text-[9px] font-mono text-slate-300">★ 0</div>
+            </div>
+          </div>
+          <!-- Platz 1 (Gold) -->
+          <div class="flex flex-col items-center -top-3 relative">
+            <div class="relative mb-1">
+              <div class="w-14 h-14 rounded-full border-2 border-amber-400 bg-amber-950/50 flex items-center justify-center text-xl overflow-hidden shadow-lg ring-2 ring-amber-400/50" id="podium-1-avatar">👑</div>
+            </div>
+            <div class="w-full bg-amber-600/80 rounded-t-lg p-2 pt-6 border-t-2 border-amber-300 shadow-xl">
+              <div id="podium-1-name" class="text-[11px] font-extrabold text-white truncate">---</div>
+              <div id="podium-1-score" class="text-[10px] font-mono text-amber-100 font-bold">★ 0</div>
+            </div>
+          </div>
+          <!-- Platz 3 (Bronze) -->
+          <div class="flex flex-col items-center">
+            <div class="relative mb-1">
+              <div class="w-12 h-12 rounded-full border-2 border-amber-700 bg-amber-950/50 flex items-center justify-center text-lg overflow-hidden shadow-md" id="podium-3-avatar">🥉</div>
+            </div>
+            <div class="w-full bg-amber-900/60 rounded-t-lg p-2 pt-4 border-t-2 border-amber-600 shadow">
+              <div id="podium-3-name" class="text-[10px] font-bold text-white truncate">---</div>
+              <div id="podium-3-score" class="text-[9px] font-mono text-amber-200">★ 0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Eigener Rang -->
+        <div class="p-3 bg-purple-950/40 border border-purple-500/40 rounded-xl flex justify-between items-center text-xs">
+          <div class="flex items-center space-x-3">
+            <span id="my-rank-number" class="font-mono font-bold text-purple-400 text-sm">--</span>
+            <span id="my-rank-avatar" class="text-base">🤖</span>
+            <span id="my-rank-name" class="font-bold text-white">Dein Imperium</span>
+          </div>
+          <span id="my-rank-score" class="font-mono text-amber-400 font-bold">★ 0</span>
+        </div>
+
+        <!-- Restliche Rangliste -->
+        <div id="leaderboard-list" class="space-y-2">
+          <div class="text-xs text-slate-500 italic">Lade Rangliste...</div>
+        </div>
+      </div>
+
+      <!-- LEGENDEN VIEW (Mit Medaillen-Zählern nach Saison-Wechsel) -->
+      <div id="fame-subview-legends" class="space-y-4 hidden">
+        <div class="holo-p p-4 bg-gradient-to-b from-amber-950/20 to-[#0b101d] border-amber-500/30 rounded-2xl p-4 text-center space-y-2">
+          <h4 class="font-extrabold text-sm text-amber-400 uppercase tracking-widest">🏆 Ewige Legenden-Ruhmeshalle</h4>
+          <p class="text-[11px] text-slate-300">Hier werden die Champions vergangener Saisons mit ihren Gold-, Silber- und Bronzemedaillen verewigt!</p>
+        </div>
+        <div id="legends-list" class="space-y-2">
+          <!-- Wird dynamisch gefüllt -->
+        </div>
+      </div>
+
+      <div class="holo-card p-4 space-y-3 mt-4">
         <div id="firebase-user-status" class="text-xs text-blue-400 font-mono font-medium">Verbinde mit Empire Core...</div>
         <button id="firebase-logout-btn" onclick="handleLogout()" class="w-full py-2 bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-800 text-xs rounded-xl font-semibold transition hidden">Abmelden</button>
         <button onclick="saveGameToCloudManual()" class="w-full py-2 holo-btn text-xs rounded-xl font-semibold">Cloud-Sync erzwingen</button>
       </div>
-
-      <div id="leaderboard-list" class="space-y-2">
-        <div class="text-xs text-slate-500 italic">Lade Rangliste...</div>
-      </div>
     </div>
 
-    <!-- CATEGORY PAGE 10: EINSTELLUNGEN -->
+    <!-- CATEGORY PAGE: EINSTELLUNGEN -->
     <div id="page-settings" class="category-page space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="font-bold text-sm text-white">10. System-Einstellungen</h3>
+        <h3 class="font-bold text-sm text-white">System-Einstellungen</h3>
         <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
       <div id="settings-content-box" class="holo-card p-4 space-y-3"></div>
@@ -832,14 +882,13 @@
 
   </main>
 
-  <!-- UNTERE FOOTER NAVIGATION MIT NEON GT BUTTON -->
+  <!-- UNTERE FOOTER NAVIGATION -->
   <nav class="fixed bottom-0 left-0 right-0 bg-[#070b14]/95 backdrop-blur-2xl border-t border-cyan-500/20 py-2.5 px-6 flex items-center justify-between z-50">
     <button onclick="switchCategoryPage('clicker')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-cyan-400 transition">
       <i data-lucide="cpu" class="w-5 h-5"></i>
       <span class="text-[9px] font-mono font-bold">TERMINAL</span>
     </button>
 
-    <!-- ZENTRALER NEON GT LOGO BUTTON -->
     <div class="relative -top-5">
       <button onclick="toggleTopMenu()" class="w-16 h-16 rounded-full bg-gradient-to-tr from-cyan-600 via-purple-600 to-pink-500 p-1 shadow-[0_0_25px_rgba(6,182,212,0.6)] flex items-center justify-center hover:scale-105 active:scale-95 transition gt-logo-anim cursor-pointer">
         <div class="w-full h-full rounded-full bg-[#030712] border-2 border-cyan-400/80 flex items-center justify-center relative overflow-hidden">
@@ -862,7 +911,7 @@
     </button>
   </nav>
 
-  <!-- GESAMTE SPIEL-LOGIK (VOLLSTÄNDIG) -->
+  <!-- GESAMTE SPIEL-LOGIK -->
   <script>
     let audioCtx = null;
     function initAudioContext() {
@@ -942,6 +991,27 @@
       if(catId === 'singularity') renderSingularityTab();
       if(catId === 'fame') { fetchLeaderboard(); renderAvatarSelector(); }
       if(catId === 'daily') { checkDailyQuestsRefresh(); checkWheelAvailability(); checkDailyClaimAvailability(); renderDailyRewards(); }
+    }
+
+    function switchFameSubTab(sub) {
+      const subLeaderboard = document.getElementById('fame-subview-leaderboard');
+      const subLegends = document.getElementById('fame-subview-legends');
+      const btnL = document.getElementById('btn-sub-leaderboard');
+      const btnLeg = document.getElementById('btn-sub-legends');
+
+      if (sub === 'legends') {
+        subLeaderboard.classList.add('hidden');
+        subLegends.classList.remove('hidden');
+        btnLeg.className = "flex-1 py-2 text-xs font-bold rounded-xl bg-amber-600 text-white shadow-md transition";
+        btnL.className = "flex-1 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white transition";
+        renderLegendsView();
+      } else {
+        subLegends.classList.add('hidden');
+        subLeaderboard.classList.remove('hidden');
+        btnL.className = "flex-1 py-2 text-xs font-bold rounded-xl bg-blue-600 text-white shadow-md transition";
+        btnLeg.className = "flex-1 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white transition";
+        fetchLeaderboard();
+      }
     }
 
     async function switchAuthMode(mode) {
@@ -1038,7 +1108,7 @@
     function adminAddIcash() { state.icash += 50; updateUI(); saveGameLocally(); alert("💎 +50 Admin iCash hinzugefügt!"); }
     function adminTimeJump() { const earned = getPassiveIncome() * 24; state.money += earned; state.totalEarned += earned; updateUI(); saveGameLocally(); alert(`⚡ 24 Stunden Zeitraffer ausgeführt! +${formatMoney(earned)} gutgeschrieben.`); }
     function adminUnlockAll() { state.departments.forEach(d => { if(d.count === 0) d.count = 1; }); state.hqs.forEach(h => { h.bought = true; }); updateUI(); saveGameLocally(); alert("🔓 Alles Freigeschaltet!"); }
-    function adminForceSeasonReset() { if(confirm("⚠️ WARNUNG: Möchtest du wirklich eine NEUE Saison starten?")) { executeSeasonReset(); alert("🎉 SAISON RESET ERFOLGREICH DURCHGEFÜHRT!"); } }
+    function adminForceSeasonReset() { if(confirm("⚠️ WARNUNG: Möchtest du wirklich eine NEUE Saison starten und Legenden aktualisieren?")) { executeSeasonReset(); alert("🎉 SAISON RESET & LEGENDEN AKTUALISIERT!"); } }
 
     const defaultProducts = [
       { id: 'p1', name: 'KI-Assistent v1', cost: 1000.00, launched: false, broken: false, bonus: 'Gibt +15% Boost auf passives Einkommen' },
@@ -1072,7 +1142,7 @@
     ];
 
     let state = {
-      version: 21,
+      version: 22,
       companyName: '',
       language: 'de',
       money: 0,
@@ -1108,6 +1178,12 @@
       lastWheelSpinTime: 0,
       lastDailyClaimTime: 0,
       lastQuestRefreshDate: '',
+
+      legends: [
+        { name: "JeanValjean", gold: 1, silver: 0, bronze: 0, avatar: "🤵🏾" },
+        { name: "Finion22", gold: 0, silver: 1, bronze: 2, avatar: "🧙🏼" },
+        { name: "TheKingFaya", gold: 0, silver: 1, bronze: 0, avatar: "🛡️" }
+      ],
 
       dailyQuests: [
         { id: 'q1', text: 'Führe 15 Klick-Impulse aus', goal: 15, current: 0, reward: 3, claimed: false },
@@ -1209,23 +1285,7 @@
       if(!state.staff) state.staff = JSON.parse(JSON.stringify(defaultStaff));
       if(!state.hqs) state.hqs = JSON.parse(JSON.stringify(defaultHqs));
       if(!state.orbitals) state.orbitals = JSON.parse(JSON.stringify(defaultOrbitals));
-      if(!state.market) {
-        state.market = [
-          { id: 'm1', type: 'stock', name: 'CyberCorp Aktien', price: 15.00, change: 1.2, owned: 0, shorted: 0, leverage: 1, candles: [{o:14, h:15, l:13.8, c:15}] },
-          { id: 'm2', type: 'stock', name: 'NanoTech Dynamics', price: 5.00, change: -0.4, owned: 0, shorted: 0, leverage: 1, candles: [{o:5.2, h:5.4, l:5.1, c:5.2}] },
-          { id: 'm3', type: 'stock', name: 'NeuralNet Systems', price: 45.00, change: 0.8, owned: 0, shorted: 0, leverage: 1, candles: [{o:43, h:44, l:42.5, c:43.5}] },
-          { id: 'm4', type: 'stock', name: 'OmniDrive Inc.', price: 180.00, change: 2.1, owned: 0, shorted: 0, leverage: 1, candles: [{o:170, h:173, l:169, c:172}] },
-          { id: 'm5', type: 'crypto', name: 'NeoCoin (Krypto)', price: 1200.00, change: 3.5, owned: 0, shorted: 0, rigs: 0, rigCost: 500.00, candles: [{o:1150, h:1170, l:1140, c:1160}] },
-          { id: 'm6', type: 'crypto', name: 'HoloToken', price: 150.00, change: -1.1, owned: 0, shorted: 0, rigs: 0, rigCost: 80.00, candles: [{o:155, h:157, l:153, c:154}] },
-          { id: 'm7', type: 'crypto', name: 'DarkByte Cash', price: 12.00, change: 0.2, owned: 0, shorted: 0, rigs: 0, rigCost: 20.00, candles: [{o:11.8, h:12.1, l:11.7, c:11.9}] }
-        ];
-      }
-      state.market.forEach((m, idx) => {
-        if(!m.name) {
-          const defaults = ['CyberCorp Aktien', 'NanoTech Dynamics', 'NeuralNet Systems', 'OmniDrive Inc.', 'NeoCoin (Krypto)', 'HoloToken', 'DarkByte Cash'];
-          m.name = defaults[idx] || `Asset #${idx+1}`;
-        }
-      });
+      if(!state.legends) state.legends = [];
     }
 
     function checkDailyQuestsRefresh() {
@@ -1374,7 +1434,7 @@
         await window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", user.uid), {
           companyName: nameToSave,
           totalValue: state.totalEarned,
-          avatar: state.selectedAvatar || '🤖 Standard Klon',
+          avatar: state.selectedAvatar || '🤖',
           updatedAt: Date.now()
         });
         
@@ -1392,28 +1452,78 @@
       try {
         const q = window.FB.query(window.FB.collection(window.FB.db, "leaderboard"), window.FB.orderBy("totalValue", "desc"), window.FB.limit(10));
         const querySnapshot = await window.FB.getDocs(q);
-        listEl.innerHTML = '';
-        if(querySnapshot.empty) {
-          listEl.innerHTML = `<div class="text-xs text-slate-500 italic">Noch keine Einträge in der Rangliste.</div>`;
-          return;
-        }
+        
         let rank = 1;
+        let docsArray = [];
         querySnapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          listEl.innerHTML += `
-            <div class="holo-card p-3 flex justify-between items-center text-xs">
-              <div class="flex items-center space-x-2.5">
-                <span class="font-mono font-bold text-blue-400">#${rank++}</span>
-                <span class="text-base">${data.avatar || '🤖'}</span>
-                <span class="font-bold text-white">${data.companyName || 'Unbekannt'}</span>
+          docsArray.push(docSnap.data());
+        });
+
+        // Podium füllen (Top 3)
+        if(docsArray.length >= 1) {
+          document.getElementById('podium-1-name').innerText = docsArray[0].companyName;
+          document.getElementById('podium-1-score').innerText = '★ ' + Math.floor(docsArray[0].totalValue || 0);
+          document.getElementById('podium-1-avatar').innerText = docsArray[0].avatar || '👑';
+        }
+        if(docsArray.length >= 2) {
+          document.getElementById('podium-2-name').innerText = docsArray[1].companyName;
+          document.getElementById('podium-2-score').innerText = '★ ' + Math.floor(docsArray[1].totalValue || 0);
+          document.getElementById('podium-2-avatar').innerText = docsArray[1].avatar || '🥈';
+        }
+        if(docsArray.length >= 3) {
+          document.getElementById('podium-3-name').innerText = docsArray[2].companyName;
+          document.getElementById('podium-3-score').innerText = '★ ' + Math.floor(docsArray[2].totalValue || 0);
+          document.getElementById('podium-3-avatar').innerText = docsArray[2].avatar || '🥉';
+        }
+
+        // Rest ab Platz 4 in der Liste anzeigen
+        listEl.innerHTML = '';
+        docsArray.forEach((data, index) => {
+          const currentRank = index + 1;
+          if (currentRank > 3) {
+            listEl.innerHTML += `
+              <div class="holo-card p-3 flex justify-between items-center text-xs">
+                <div class="flex items-center space-x-3">
+                  <span class="font-mono font-bold text-slate-400 w-6">#${currentRank}</span>
+                  <span class="text-base">${data.avatar || '🤖'}</span>
+                  <span class="font-bold text-white">${data.companyName}</span>
+                </div>
+                <span class="font-mono text-amber-400 font-bold">★ ${Math.floor(data.totalValue || 0)}</span>
               </div>
-              <span class="font-mono text-emerald-400 font-bold">${formatMoney(data.totalValue || 0)}</span>
-            </div>
-          `;
+            `;
+          }
         });
       } catch (e) {
         console.error("Ranglisten-Fehler:", e);
       }
+    }
+
+    function renderLegendsView() {
+      const legendsEl = document.getElementById('legends-list');
+      if (!legendsEl) return;
+      legendsEl.innerHTML = '';
+
+      if (!state.legends || state.legends.length === 0) {
+        legendsEl.innerHTML = `<div class="text-xs text-slate-500 text-center py-6">Noch keine Legenden verzeichnet. Nach Saison-Wechsel erscheinen hier die Champions!</div>`;
+        return;
+      }
+
+      state.legends.forEach((leg, index) => {
+        legendsEl.innerHTML += `
+          <div class="holo-card p-3 flex justify-between items-center text-xs">
+            <div class="flex items-center space-x-3">
+              <span class="font-mono font-bold text-amber-400 w-6">#${index + 1}</span>
+              <span class="text-base">${leg.avatar || '👑'}</span>
+              <span class="font-bold text-white">${leg.name}</span>
+            </div>
+            <div class="flex items-center space-x-3 font-mono text-xs font-bold">
+              <span class="text-amber-400" title="Gold">🥇 ${leg.gold}</span>
+              <span class="text-slate-300" title="Silber">🥈 ${leg.silver}</span>
+              <span class="text-amber-700" title="Bronze">🥉 ${leg.bronze}</span>
+            </div>
+          </div>
+        `;
+      });
     }
 
     function renderAvatarSelector() {
@@ -1972,6 +2082,15 @@
     }
 
     function executeSeasonReset() {
+      // Vor dem Reset den Ersten der Rangliste / aktuellen Spieler in die Legenden eintragen (als Goldmedaille für diesen Champion)
+      const champName = state.companyName || 'Champion';
+      const existingLegend = state.legends.find(l => l.name === champName);
+      if (existingLegend) {
+        existingLegend.gold += 1;
+      } else {
+        state.legends.push({ name: champName, gold: 1, silver: 0, bronze: 0, avatar: state.selectedAvatar ? state.selectedAvatar.split(' ')[0] : '👑' });
+      }
+
       state.money = 0;
       state.totalEarned = 0;
       state.clickPower = 0.01;
@@ -2148,6 +2267,13 @@
 
       document.getElementById('exp-text').innerText = `${Math.floor(state.exp)} / ${state.expNeeded} EXP`;
       document.getElementById('exp-bar').style.width = Math.min(100, (state.exp / state.expNeeded) * 100) + '%';
+      
+      const myNameEl = document.getElementById('my-rank-name');
+      const myScoreEl = document.getElementById('my-rank-score');
+      const myAvatarEl = document.getElementById('my-rank-avatar');
+      if(myNameEl) myNameEl.innerText = state.companyName || 'Dein Imperium';
+      if(myScoreEl) myScoreEl.innerText = '★ ' + Math.floor(state.totalEarned);
+      if(myAvatarEl) myAvatarEl.innerText = state.selectedAvatar ? state.selectedAvatar.split(' ')[0] : '🤖';
     }
 
     function addExp(amount) {
@@ -2365,7 +2491,7 @@
 
       if (tabId === 'depts') {
         const list = document.getElementById('list-depts');
-        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">1. Megastrukturen & Sektoren</h3>`;
+        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">Megastrukturen & Sektoren</h3>`;
         state.departments.forEach((d, idx) => {
           let cost = d.baseCost * Math.pow(1.22, d.count);
           if (state.serverWeather === 'CRYO_FROST') cost *= 0.8;
@@ -2395,7 +2521,7 @@
 
       if (tabId === 'upgrades') {
         const list = document.getElementById('list-upgrades');
-        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">2. Quanten-Forschungsbaum (${state.techBranch.toUpperCase()})</h3>`;
+        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">Quanten-Forschungsbaum (${state.techBranch.toUpperCase()})</h3>`;
         const filteredUpgrades = state.upgrades.filter(u => u.branch === state.techBranch);
 
         filteredUpgrades.forEach((u) => {
@@ -2409,7 +2535,7 @@
               </div>
               <div class="p-4 flex-1 flex justify-between items-center">
                 <div>
-                  <div class="font-bold text-xs text-white">Forschung #${idx+1} [${u.branch}]</div>
+                  <div class="font-bold text-xs text-white">Forschung [${u.branch}]</div>
                   <div class="text-[11px] text-emerald-400 mt-0.5">Imperium-Boost</div>
                 </div>
                 <button onclick="buyUpgrade(${idx})" ${u.bought ? 'disabled' : ''} class="px-3 py-1.5 ${u.bought ? 'bg-[#0f172a] text-emerald-400 font-bold' : (state.money >= u.cost ? 'holo-btn text-white' : 'bg-[#0f172a] text-slate-600')} text-xs rounded-lg font-semibold">
@@ -2481,7 +2607,7 @@
 
       if (tabId === 'lab') {
         const list = document.getElementById('list-lab');
-        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">4. Advanced Engineering Lab</h3>`;
+        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">Advanced Engineering Lab</h3>`;
         state.products.forEach((p, idx) => {
           const imgUrl = labImages[idx % labImages.length];
           list.innerHTML += `
@@ -2505,7 +2631,7 @@
 
       if (tabId === 'staff') {
         const list = document.getElementById('list-staff');
-        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">5. Vorstand & Experten</h3>`;
+        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">Vorstand & Experten</h3>`;
         state.staff.forEach((s, idx) => {
           const imgUrl = staffImages[idx % staffImages.length];
           list.innerHTML += `
@@ -2534,7 +2660,7 @@
           list.innerHTML += `
             <div class="holo-card p-3.5 flex justify-between items-center">
               <div>
-                <div class="font-bold text-xs text-white">Operation #${idx+1}</div>
+                <div class="font-bold text-xs text-white">Operation</div>
                 <div class="text-[11px] text-slate-400 mt-0.5">Ertrag: <span class="text-emerald-400 font-mono font-bold">+${formatMoney(h.reward)}</span></div>
               </div>
               <button onclick="executeHack(${idx})" class="px-3 py-1.5 bg-rose-950/80 text-rose-300 border border-rose-800 text-xs rounded-lg font-semibold">
@@ -2547,7 +2673,7 @@
 
       if (tabId === 'hq') {
         const list = document.getElementById('list-hq');
-        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">7. Corporate Headquarters</h3>`;
+        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">Corporate Headquarters</h3>`;
         state.hqs.forEach((hq, idx) => {
           const imgUrl = hqImages[idx % hqImages.length];
           list.innerHTML += `
@@ -2571,7 +2697,7 @@
 
       if (tabId === 'orbit') {
         const list = document.getElementById('list-orbit');
-        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">8. Orbital-Drohnen & Raumstationen</h3>`;
+        list.innerHTML = `<h3 class="font-bold text-xs text-white mb-2">Orbital-Drohnen & Raumstationen</h3>`;
         state.orbitals.forEach((o, idx) => {
           const cost = o.baseCost * Math.pow(1.25, o.count);
           const imgUrl = orbitalImages[idx % orbitalImages.length];
