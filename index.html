@@ -998,7 +998,7 @@
         if(userCred && userCred.user) {
           await window.FB.updateProfile(userCred.user, { displayName: username });
           state.companyName = username;
-          await saveGameToCloudManual();
+          await saveGameToCloudAuto();
           speakAI("Neues Imperium initialisiert. Viel Erfolg, Boss.");
         }
       } catch(e) {
@@ -1358,8 +1358,8 @@
       speakAI("Abgemeldet.");
     }
 
-    async function saveGameToCloudManual() {
-      if (!window.FB || !window.FB.auth.currentUser) { alert('Zuerst einloggen!'); return; }
+    async function saveGameToCloudAuto() {
+      if (!window.FB || !window.FB.auth.currentUser) return;
       try {
         state.lastSaveTimestamp = Date.now();
         const user = window.FB.auth.currentUser;
@@ -1373,8 +1373,15 @@
           avatar: state.selectedAvatar || '🤖 Standard Klon',
           updatedAt: Date.now()
         });
-        
+      } catch (e) { console.error("Auto-Cloud-Sync Fehler:", e); }
+    }
+
+    async function saveGameToCloudManual() {
+      if (!window.FB || !window.FB.auth.currentUser) { alert('Zuerst einloggen!'); return; }
+      try {
+        await saveGameToCloudAuto();
         fetchLeaderboard();
+        showSaveIndicator();
       } catch (e) { alert('Fehler: ' + e.message); }
     }
 
@@ -2812,6 +2819,17 @@
       checkWheelAvailability();
       checkDailyClaimAvailability();
     }, 1000);
+
+    // Automatischer Cloud-Sync und Ranglisten-Aktualisierung alle 5 Sekunden
+    setInterval(() => {
+      if (window.FB && window.FB.auth && window.FB.auth.currentUser) {
+        saveGameToCloudAuto();
+        const famePage = document.getElementById('page-fame');
+        if (famePage && famePage.classList.contains('active')) {
+          fetchLeaderboard();
+        }
+      }
+    }, 5000);
 
     setInterval(() => { if (Math.random() < 0.6) spawnSpaceEventMeteor(); }, 45000);
     setInterval(() => { if (Math.random() < 0.5) triggerRandomStoryEvent(); }, 90000);
