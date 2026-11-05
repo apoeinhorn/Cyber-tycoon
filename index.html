@@ -555,10 +555,10 @@
         <h3 class="font-bold text-sm text-white flex items-center gap-2">
           <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i> Quests, Glücksrad & Tagesbelohnungen
         </h3>
-        <p class="text-xs text-slate-400 mt-1">Schließe tägliche Verträge ab und drehe beliebig oft am Holo-Rad!</p>
+        <p class="text-xs text-slate-400 mt-1">Schließe tägliche Verträge ab und drehe täglich am Holo-Rad!</p>
       </div>
 
-      <!-- LUCKY WHEEL (MEHRFACH DREHBAR) -->
+      <!-- LUCKY WHEEL (1x TÄGLICH MIT TIMER) -->
       <div class="holo-card p-4 border-amber-500/30 bg-gradient-to-b from-amber-950/20 to-[#0b101d] text-center space-y-3">
         <div class="font-bold text-xs text-amber-400 flex items-center justify-center gap-1.5">
           <i data-lucide="disc" class="w-4 h-4"></i> CYBER HOLO-WHEEL (GLÜCKSRAD)
@@ -567,8 +567,9 @@
           SPIN
         </div>
         <button onclick="spinLuckyWheel()" id="btn-spin-wheel" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold text-xs rounded-xl shadow-lg hover:brightness-110 transition">
-          Holo-Rad Drehen! (Frei)
+          Holo-Rad Drehen! (1x Täglich)
         </button>
+        <div id="wheel-timer-text" class="text-[11px] font-mono text-slate-400 hidden">Nächster Dreh in: <span class="text-amber-400 font-bold" id="wheel-countdown">24:00:00</span></div>
       </div>
 
       <div class="space-y-2">
@@ -1012,7 +1013,7 @@
     ];
 
     let state = {
-      version: 17,
+      version: 18,
       companyName: '',
       language: 'de',
       money: 0,
@@ -1045,11 +1046,15 @@
       matrixShards: 0,
       netrunnerShieldActive: false,
       serverWeather: 'STABIL',
+      lastWheelSpinTime: 0,
+      lastQuestRefreshDate: '',
 
       dailyQuests: [
-        { id: 'q1', text: 'Führe 5 Klick-Impulse aus', goal: 5, current: 0, reward: 2, claimed: false },
-        { id: 'q2', text: 'Absolviere 1 Mini-Hack', goal: 1, current: 0, reward: 3, claimed: false },
-        { id: 'q3', text: 'Kaufe 1 Sektor oder Rig', goal: 1, current: 0, reward: 4, claimed: false }
+        { id: 'q1', text: 'Führe 10 Klick-Impulse aus', goal: 10, current: 0, reward: 3, claimed: false },
+        { id: 'q2', text: 'Absolviere 2 Mini-Hacks', goal: 2, current: 0, reward: 5, claimed: false },
+        { id: 'q3', text: 'Erweitere 2 Sektoren', goal: 2, current: 0, reward: 6, claimed: false },
+        { id: 'q4', text: 'Kaufe 1 Krypto-Mining Rig', goal: 1, current: 0, reward: 5, claimed: false },
+        { id: 'q5', text: 'Investiere in 1 Aktie', goal: 1, current: 0, reward: 4, claimed: false }
       ],
 
       singularityUpgrades: [
@@ -1131,6 +1136,7 @@
       state = { ...state, ...cloudData };
       window.state = state;
       fixMissingNames();
+      checkDailyQuestsRefresh();
       checkOfflineEarnings(oldTime);
       saveGameLocally();
       updateDynamicTexts();
@@ -1148,6 +1154,26 @@
         { id: 'sq1', name: 'Singularity Core Multiplier', desc: 'Erhöht passives Einkommen pro Matrix-Splitter um +20%.', cost: 2, level: 0, maxLevel: 10 },
         { id: 'sq2', name: 'Matrix Overdrive', desc: 'Erhöht Klick-Power dauerhaft um +100% pro Stufe.', cost: 5, level: 0, maxLevel: 5 }
       ];
+      if(!state.dailyQuests) {
+        state.dailyQuests = [
+          { id: 'q1', text: 'Führe 10 Klick-Impulse aus', goal: 10, current: 0, reward: 3, claimed: false },
+          { id: 'q2', text: 'Absolviere 2 Mini-Hacks', goal: 2, current: 0, reward: 5, claimed: false },
+          { id: 'q3', text: 'Erweitere 2 Sektoren', goal: 2, current: 0, reward: 6, claimed: false },
+          { id: 'q4', text: 'Kaufe 1 Krypto-Mining Rig', goal: 1, current: 0, reward: 5, claimed: false },
+          { id: 'q5', text: 'Investiere in 1 Aktie', goal: 1, current: 0, reward: 4, claimed: false }
+        ];
+      }
+    }
+
+    function checkDailyQuestsRefresh() {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      if (state.lastQuestRefreshDate !== todayStr) {
+        state.lastQuestRefreshDate = todayStr;
+        state.dailyQuests.forEach(q => {
+          q.current = 0;
+          q.claimed = false;
+        });
+      }
     }
 
     const availableAvatars = [
@@ -1688,8 +1714,42 @@
       saveGameLocally();
     }
 
-    // GLÜCKSRAD MEHRFACH DREHBAR
+    // GLÜCKSRAD 1X TÄGLICH MIT 24H TIMER
+    function checkWheelAvailability() {
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+      const btn = document.getElementById('btn-spin-wheel');
+      const timerEl = document.getElementById('wheel-timer-text');
+      const countdownEl = document.getElementById('wheel-countdown');
+
+      if (!btn) return;
+
+      if (state.lastWheelSpinTime && (now - state.lastWheelSpinTime < oneDay)) {
+        const timeLeft = oneDay - (now - state.lastWheelSpinTime);
+        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        const mins = Math.floor((timeLeft / (1000 * 60)) % 60);
+        const secs = Math.floor((timeLeft / 1000) % 60);
+
+        btn.disabled = true;
+        btn.className = "w-full py-2.5 bg-slate-800 text-slate-500 font-bold text-xs rounded-xl cursor-not-allowed";
+        if(timerEl) timerEl.classList.remove('hidden');
+        if(countdownEl) countdownEl.innerText = `${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+      } else {
+        btn.disabled = false;
+        btn.className = "w-full py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold text-xs rounded-xl shadow-lg hover:brightness-110 transition";
+        if(timerEl) timerEl.classList.add('hidden');
+      }
+    }
+
     function spinLuckyWheel() {
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+      if (state.lastWheelSpinTime && (now - state.lastWheelSpinTime < oneDay)) {
+        alert("Das Glücksrades kann nur 1x pro Tag gedreht werden!");
+        return;
+      }
+
+      state.lastWheelSpinTime = now;
       const btn = document.getElementById('btn-spin-wheel');
       const visual = document.getElementById('wheel-visual');
       btn.disabled = true;
@@ -1710,18 +1770,20 @@
           state.icash += 12;
           alert("🎰 GLÜCKSRAD: MEGA-GEWINN! +💎 12 iCash!");
         }
-        btn.disabled = false;
+        checkWheelAvailability();
         updateUI();
         saveGameLocally();
       }, 1000);
     }
 
     function updateQuestProgress(questId, val) {
+      checkDailyQuestsRefresh();
       const q = state.dailyQuests.find(item => item.id === questId);
       if (q && !q.claimed) {
         q.current += val;
         if (q.current > q.goal) q.current = q.goal;
       }
+      if(activeCurrentTab === 'daily') renderDailyRewards();
     }
 
     function claimQuestReward(questId) {
@@ -2025,7 +2087,7 @@
       if(tabId === 'hack') initHackMiniGame();
       if(tabId === 'singularity') renderSingularityTab();
       if(tabId === 'fame') { fetchLeaderboard(); renderAvatarSelector(); }
-      if(tabId === 'daily') renderDailyRewards();
+      if(tabId === 'daily') { checkDailyQuestsRefresh(); checkWheelAvailability(); renderDailyRewards(); }
     }
 
     function formatMoney(num) {
@@ -2147,7 +2209,6 @@
     function updateUI() {
       document.getElementById('stat-money').innerText = formatMoney(state.money);
       document.getElementById('stat-icash').innerText = `💎 ${state.icash} iCash`;
-      // BEREINIGT: Ohne das doppelte "B" im Label
       document.getElementById('stat-income').innerText = '+' + formatMoney(getPassiveIncome()) + ' /h';
       document.getElementById('stat-level').innerText = state.level;
       document.getElementById('player-level-text').innerText = state.level;
@@ -2244,6 +2305,7 @@
     ];
 
     function renderDailyRewards() {
+      checkDailyQuestsRefresh();
       const container = document.getElementById('daily-rewards-container');
       const questsContainer = document.getElementById('daily-quests-container');
 
@@ -2277,6 +2339,7 @@
           </div>
         `;
       });
+      checkWheelAvailability();
     }
 
     function claimDailyReward() {
@@ -2479,11 +2542,10 @@
             let rigCost = m.rigCost || 50;
             if (state.serverWeather === 'CRYO_FROST') rigCost *= 0.8;
             const rigsCount = m.rigs || 0;
-            // COIN-MINER / RIGS INTEGRIERT
             extraActionHtml = `
               <div class="mt-2.5 pt-2.5 border-t border-blue-500/10 flex justify-between items-center text-xs bg-[#070b14]/60 p-2 rounded-xl">
                 <div>
-                  <span class="text-slate-300 font-mono text-[11px]">Coin-Miner Farm: <strong class="text-purple-400">${rigsCount} Rigs</strong></span>
+                  <span class="text-slate-300 font-mono text-[11px]">Coin-Miner Farm: <strong class="text-purple-400">${rigsCount} Rigs</strong> (+${(rigsCount * 0.1).toFixed(1)} Coin/m)</span>
                 </div>
                 <button onclick="buyMiningRig(${idx})" class="px-3 py-1.5 icash-btn text-[11px] rounded-lg font-semibold">Coin-Miner kaufen (${formatMoney(rigCost)})</button>
               </div>
@@ -2699,6 +2761,7 @@
       if (state.money >= item.price) {
         state.money -= item.price;
         item.owned += 1;
+        updateQuestProgress('q5', 1);
         updateUI();
         renderTabContent('market');
         saveGameLocally();
@@ -2730,7 +2793,7 @@
         state.money -= rigCost;
         item.rigs++;
         item.rigCost = Math.floor(item.rigCost * 1.4);
-        updateQuestProgress('q3', 1);
+        updateQuestProgress('q4', 1);
         updateUI();
         renderTabContent('market');
         saveGameLocally();
@@ -2842,6 +2905,7 @@
             state = { ...state, ...parsed };
             window.state = state;
             fixMissingNames();
+            checkDailyQuestsRefresh();
             checkSeasonReset();
             applyHQTheme();
             checkOfflineEarnings(oldTime);
@@ -2850,6 +2914,7 @@
       }
     }
 
+    checkDailyQuestsRefresh();
     checkSeasonReset();
     updateSeasonCountdown();
     loadGameLocally();
@@ -2857,7 +2922,11 @@
     updateUI();
     spawnCompanionDrone();
 
-    setInterval(() => { updateSeasonCountdown(); }, 1000);
+    setInterval(() => { 
+      updateSeasonCountdown(); 
+      checkWheelAvailability();
+    }, 1000);
+
     setInterval(() => { if (Math.random() < 0.6) spawnSpaceEventMeteor(); }, 45000);
     setInterval(() => { if (Math.random() < 0.5) triggerRandomStoryEvent(); }, 90000);
     setInterval(() => { updateServerWeather(); }, 120000);
@@ -2872,6 +2941,15 @@
           state.money += incPerMinute;
           state.totalEarned += incPerMinute;
         }
+
+        // Krypto-Rig Mining Einnahmen Erzeugung
+        state.market.forEach(m => {
+          if (m.type === 'crypto' && m.rigs && m.rigs > 0) {
+            let producedCoins = m.rigs * 0.1;
+            if (state.serverWeather === 'SOLAR_STORM') producedCoins *= 2.0;
+            m.owned += producedCoins;
+          }
+        });
       }
       updateUI();
     }, 1000);
