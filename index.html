@@ -159,7 +159,7 @@
 </head>
 <body class="bg-[#020408] text-slate-300 min-h-screen flex flex-col relative overflow-x-hidden">
 
-  <!-- TOP DROPDOWN MENU (Verbleibende Kategorien) -->
+  <!-- TOP DROPDOWN MENU -->
   <div id="top-dropdown-menu" class="fixed inset-0 bg-[#050810]/98 backdrop-blur-3xl z-[100] flex flex-col p-4 sm:p-6 overflow-y-auto">
     <div class="flex justify-between items-center pb-4 border-b border-cyan-500/20 mb-4 sticky top-0 bg-[#050810] z-10 pt-2">
       <div class="flex items-center space-x-2 text-white font-extrabold text-sm tracking-widest uppercase">
@@ -171,7 +171,6 @@
       </button>
     </div>
 
-    <!-- Reduziertes Raster (Nur verbleibende Kategorien) -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-w-2xl mx-auto w-full pb-24">
       
       <button onclick="switchCategoryPage('clicker')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-cyan-400 transition group bg-gradient-to-b from-blue-950/40 to-[#070b14]">
@@ -179,6 +178,13 @@
           <i data-lucide="cpu" class="w-5 h-5"></i>
         </div>
         <span class="text-xs font-bold text-white">Core Terminal</span>
+      </button>
+
+      <button onclick="switchCategoryPage('buildings')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-amber-400 transition group bg-gradient-to-b from-amber-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-110 transition">
+          <i data-lucide="building" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">Meine Gebäude</span>
       </button>
 
       <button onclick="switchCategoryPage('icash')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-purple-400 transition group bg-gradient-to-b from-purple-950/40 to-[#070b14]">
@@ -206,7 +212,7 @@
         <div class="w-11 h-11 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-300 group-hover:scale-110 transition">
           <i data-lucide="globe" class="w-5 h-5"></i>
         </div>
-        <span class="text-xs font-bold text-white">Weltrangliste & Legenden</span>
+        <span class="text-xs font-bold text-white">Weltrangliste</span>
       </button>
 
       <button onclick="switchCategoryPage('settings')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-slate-400 transition group bg-gradient-to-b from-slate-900/40 to-[#070b14]">
@@ -216,6 +222,23 @@
         <span class="text-xs font-bold text-white">Einstellungen</span>
       </button>
 
+    </div>
+  </div>
+
+  <!-- GEBÄUDE-AUSWAHL MODAL (1000 Gebäudepool) -->
+  <div id="building-shop-modal" class="fixed inset-0 bg-black/90 backdrop-blur-xl z-[120] flex items-center justify-center p-4 hidden">
+    <div class="holo-card p-5 max-w-lg w-full border-amber-500/50 bg-[#070b14] space-y-4 shadow-2xl max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center border-b border-amber-500/20 pb-3">
+        <h3 class="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="building-2" class="w-4 h-4 text-amber-400"></i> Gebäude-Katalog (1.000 verfügbare Objekte)
+        </h3>
+        <button onclick="closeBuildingShop()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center hover:bg-slate-700 transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div id="building-shop-list" class="flex-1 overflow-y-auto space-y-2 pr-1">
+        <!-- Wird dynamisch mit 1000 Gebäuden befüllt -->
+      </div>
     </div>
   </div>
 
@@ -295,13 +318,6 @@
             ⚡ +24h Zeitraffer
           </button>
         </div>
-      </div>
-
-      <div class="border-t border-rose-500/20 pt-3 space-y-2">
-        <div class="text-[11px] font-bold text-rose-400 uppercase tracking-wider">Saison & Server-Steuerung</div>
-        <button onclick="adminForceSeasonReset()" class="w-full py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-700 text-rose-200 text-xs font-bold rounded-xl transition flex items-center justify-center gap-2">
-          <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Saison-Reset jetzt erzwingen!
-        </button>
       </div>
 
       <button onclick="closeAdminModal()" class="w-full py-2.5 bg-[#0f172a] hover:bg-[#1e293b] text-slate-300 border border-slate-700 text-xs font-bold rounded-xl transition mt-2">
@@ -432,6 +448,30 @@
           <div class="w-full h-2 bg-[#0f172a] rounded-full overflow-hidden border border-blue-500/20">
             <div id="exp-bar" class="h-full bg-cyan-500 rounded-full transition-all duration-300 shadow-[0_0_10px_#06b6d4]" style="width: 0%"></div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORY PAGE: MEINE GEBÄUDE (NEU GEFÄßT WIE AUF DEM SCREENSHOT) -->
+    <div id="page-buildings" class="category-page space-y-4">
+      <div class="holo-card p-6 text-center space-y-4 bg-gradient-to-b from-amber-950/20 to-[#0b101d] border-amber-500/40 shadow-xl">
+        <h2 class="font-extrabold text-xl text-amber-400 tracking-wider uppercase">MEINE GEBÄUDE</h2>
+        <div id="owned-buildings-counter" class="text-3xl font-extrabold font-mono text-white tracking-widest">0 / 1000</div>
+        
+        <button onclick="openBuildingShop()" class="w-full py-3.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:brightness-110 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-[0_0_20px_rgba(245,158,11,0.4)] transition flex items-center justify-center gap-2">
+          <i data-lucide="building" class="w-5 h-5"></i> Ein Gebäude kaufen
+        </button>
+      </div>
+
+      <div class="flex justify-between items-center px-1">
+        <span class="text-xs text-slate-400 font-mono">Erworbene Immobilien:</span>
+        <span id="total-buildings-income" class="text-xs text-emerald-400 font-mono font-bold">+€0.00/STUNDE</span>
+      </div>
+
+      <!-- Liste der gekauften Gebäude (zu Beginn leer) -->
+      <div id="owned-buildings-list" class="space-y-3">
+        <div class="holo-card p-6 text-center text-slate-500 text-xs italic">
+          Noch keine Gebäude gekauft. Klicke oben auf „Ein Gebäude kaufen“, um deine Sammlung zu starten!
         </div>
       </div>
     </div>
@@ -636,7 +676,7 @@
     </button>
   </nav>
 
-  <!-- SPIEL-LOGIK (Bereinigt um entfernte Systeme) -->
+  <!-- SPIEL-LOGIK MIT 1000 GEBÄUDEN -->
   <script>
     let audioCtx = null;
     function initAudioContext() {
@@ -700,6 +740,7 @@
       if(catId === 'singularity') renderSingularityTab();
       if(catId === 'fame') { fetchLeaderboard(); renderAvatarSelector(); }
       if(catId === 'daily') { checkDailyQuestsRefresh(); checkWheelAvailability(); checkDailyClaimAvailability(); renderDailyRewards(); }
+      if(catId === 'buildings') { renderBuildingsPage(); }
     }
 
     function switchFameSubTab(sub) {
@@ -770,7 +811,7 @@
       const errEl = document.getElementById('overlay-auth-error');
 
       if(!username) {
-        if(errEl) { errEl.innerText = "Bitte gib einen Benutzernamen ein!"; errEl.classList.remove('hidden'); }
+        if(errEl) { errEl.innerText = "Bitte gib einen Benutzernamen ein!"; errEl.classList.add('hidden'); }
         return;
       }
 
@@ -814,15 +855,31 @@
     function adminAddMoney() { state.money += 1000000; state.totalEarned += 1000000; updateUI(); saveGameLocally(); alert("💰 +€1.000.000 Admin-Kapital hinzugefügt!"); }
     function adminAddIcash() { state.icash += 50; updateUI(); saveGameLocally(); alert("💎 +50 Admin iCash hinzugefügt!"); }
     function adminTimeJump() { const earned = getPassiveIncome() * 24; state.money += earned; state.totalEarned += earned; updateUI(); saveGameLocally(); alert(`⚡ 24 Stunden Zeitraffer ausgeführt! +${formatMoney(earned)} gutgeschrieben.`); }
-    function adminForceSeasonReset() { if(confirm("⚠️ WARNUNG: Möchtest du wirklich eine NEUE Saison starten und Legenden aktualisieren?")) { executeSeasonReset(); alert("🎉 SAISON RESET & LEGENDEN AKTUALISIERT!"); } }
+
+    // Generierung der 1000 Gebäude beim Start falls nicht vorhanden
+    function generateMasterBuildings() {
+      if (state.masterBuildings && state.masterBuildings.length === 1000) return state.masterBuildings;
+      const list = [];
+      const types = ['Eigentum', 'Gewerbe', 'Kultur', 'Tech-Hub', 'Cyber-Tower'];
+      for (let i = 1; i <= 1000; i++) {
+        list.push({
+          id: i,
+          name: `Cyber-Immobilie #${i}`,
+          type: types[i % types.length],
+          baseCost: 50 * Math.pow(1.15, i - 1),
+          baseIncome: 5 * Math.pow(1.12, i - 1)
+        });
+      }
+      return list;
+    }
 
     let state = {
-      version: 23,
+      version: 24,
       companyName: '',
       language: 'de',
-      money: 0,
-      totalEarned: 0,
-      icash: 0,
+      money: 1000,
+      totalEarned: 1000,
+      icash: 10,
       clickPower: 0.01,
       clickUpgLevel: 0,
       clickUpgCost: 0.50,
@@ -830,12 +887,9 @@
       exp: 0,
       expNeeded: 200,
       incomeTimerSeconds: 60,
-      dailyStreak: 0,
-      lastClaimTimestamp: 0,
       lastSaveTimestamp: Date.now(),
       selectedAvatar: '🤖 Standard Klon',
-      unlockedAvatars: ['🤖 Standard Klon', '💻 Cyber Hacker', '👑 Cyber Emperor'],
-
+      unlockedAvatars: ['🤖 Standard Klon', '💻 Cyber Hacker'],
       overclockActive: false,
       isOverheated: false,
       comboHits: 0,
@@ -845,36 +899,38 @@
       lastWheelSpinTime: 0,
       lastDailyClaimTime: 0,
       lastQuestRefreshDate: '',
+      
+      // Gebäude-System
+      masterBuildings: [],
+      userBuildings: {}, // Speichert { buildingId: { count: X, level: Y } }
 
       legends: [
-        { name: "JeanValjean", gold: 1, silver: 0, bronze: 0, avatar: "🤵🏾" },
-        { name: "Finion22", gold: 0, silver: 1, bronze: 2, avatar: "🧙🏼" },
-        { name: "TheKingFaya", gold: 0, silver: 1, bronze: 0, avatar: "🛡️" }
+        { name: "JeanValjean", gold: 1, silver: 0, bronze: 0, avatar: "🤵🏾" }
       ],
-
       dailyQuests: [
         { id: 'q1', text: 'Führe 15 Klick-Impulse aus', goal: 15, current: 0, reward: 3, claimed: false },
         { id: 'q2', text: 'Spiele am Glücksrad', goal: 1, current: 0, reward: 5, claimed: false }
       ],
-
       singularityUpgrades: [
         { id: 'sq1', name: 'Singularity Core Multiplier', desc: 'Erhöht passives Einkommen pro Matrix-Splitter um +20%.', cost: 2, level: 0, maxLevel: 10 },
         { id: 'sq2', name: 'Matrix Overdrive', desc: 'Erhöht Klick-Power dauerhaft um +100% pro Stufe.', cost: 5, level: 0, maxLevel: 5 }
       ],
-
       permaUpgrades: [
         { id: 'pi1', name: 'Quantum Click Matrix', desc: 'Verdoppelt dauerhaft die Klick-Leistung.', cost: 5, level: 0, maxLevel: 10, mult: 2.0 },
-        { id: 'pi2', name: 'Neural Income Booster', desc: 'Erhöht das gesamte passive Einkommen um +50% pro Stufe.', cost: 10, level: 0, maxLevel: 10, mult: 1.5 },
-        { id: 'pi3', name: 'Auto-Impulse Core', desc: 'Generiert alle 10 Sekunden automatisch 1 Klick-Impuls.', cost: 25, level: 0, maxLevel: 1, mult: 1.0 }
+        { id: 'pi2', name: 'Neural Income Booster', desc: 'Erhöht das gesamte passive Einkommen um +50% pro Stufe.', cost: 10, level: 0, maxLevel: 10, mult: 1.5 }
       ]
     };
 
+    state.masterBuildings = generateMasterBuildings();
     window.state = state;
 
     window.mergeCloudAndLocalState = function(cloudData) {
       if (!cloudData) return;
       const oldTime = state.lastSaveTimestamp || Date.now();
       state = { ...state, ...cloudData };
+      if (!state.masterBuildings || state.masterBuildings.length !== 1000) {
+        state.masterBuildings = generateMasterBuildings();
+      }
       window.state = state;
       checkDailyQuestsRefresh();
       checkOfflineEarnings(oldTime);
@@ -887,437 +943,112 @@
       const allClaimed = state.dailyQuests.every(q => q.claimed);
       if (state.lastQuestRefreshDate !== todayStr || allClaimed) {
         state.lastQuestRefreshDate = todayStr;
-        state.dailyQuests.forEach(q => {
-          q.current = 0;
-          q.claimed = false;
-        });
+        state.dailyQuests.forEach(q => { q.current = 0; q.claimed = false; });
       }
     }
 
-    const availableAvatars = [
-      { name: '🤖 Standard Klon', type: 'free' },
-      { name: '💻 Cyber Hacker', type: 'free' },
-      { name: '⚡ Quantum Overlord', type: 'icash', cost: 15 },
-      { name: '🔮 Sovereign AI', type: 'icash', cost: 30 }
-    ];
-
-    const translations = { de: {} };
-
-    function setLanguage(lang) {
-      state.language = lang;
-      saveGameLocally();
-      updateUI();
+    // Gebäude Shop Steuerung
+    function openBuildingShop() {
+      document.getElementById('building-shop-modal').classList.remove('hidden');
+      renderBuildingShopList();
+      lucide.createIcons();
     }
 
-    function renderLanguageTab() {
-      const lang = state.language || 'de';
-      const container = document.getElementById('settings-content-box');
+    function closeBuildingShop() {
+      document.getElementById('building-shop-modal').classList.add('hidden');
+    }
+
+    function renderBuildingShopList() {
+      const container = document.getElementById('building-shop-list');
       if (!container) return;
-
-      container.innerHTML = `
-        <div class="font-bold text-xs text-slate-200 mb-2">Sprache / Language</div>
-        <div class="grid grid-cols-1 gap-2">
-          <button onclick="setLanguage('de')" class="p-3 bg-[#0f172a] hover:bg-[#1e293b] border ${lang === 'de' ? 'border-blue-500 text-white' : 'border-blue-500/20 text-slate-400'} rounded-xl text-xs text-left font-semibold flex justify-between items-center transition">
-            <span>🇩🇪 Deutsch</span> ${lang === 'de' ? '<span class="text-[10px] text-blue-400 font-mono">Aktiv</span>' : ''}
-          </button>
-          <button onclick="setLanguage('en')" class="p-3 bg-[#0f172a] hover:bg-[#1e293b] border ${lang === 'en' ? 'border-blue-500 text-white' : 'border-blue-500/20 text-slate-400'} rounded-xl text-xs text-left font-semibold flex justify-between items-center transition">
-            <span>🇬🇧 English</span> ${lang === 'en' ? '<span class="text-[10px] text-blue-400 font-mono">Active</span>' : ''}
-          </button>
-        </div>
-      `;
-    }
-
-    async function handleLogout() {
-      if (!window.FB) return;
-      await window.FB.signOut(window.FB.auth);
-    }
-
-    async function saveGameToCloudManual() {
-      if (!window.FB || !window.FB.auth.currentUser) { alert('Zuerst einloggen!'); return; }
-      try {
-        state.lastSaveTimestamp = Date.now();
-        const user = window.FB.auth.currentUser;
-        const nameToSave = user.displayName || state.companyName || user.email.split('@')[0];
-        state.companyName = nameToSave;
-        
-        await window.FB.setDoc(window.FB.doc(window.FB.db, "saves", user.uid), state);
-        await window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", user.uid), {
-          companyName: nameToSave,
-          totalValue: state.totalEarned,
-          avatar: state.selectedAvatar || '🤖',
-          updatedAt: Date.now()
-        });
-        
-        alert('Cloud-Sync erfolgreich!');
-        fetchLeaderboard();
-      } catch (e) { alert('Fehler: ' + e.message); }
-    }
-
-    async function fetchLeaderboard() {
-      const listEl = document.getElementById('leaderboard-list');
-      if (!window.FB || !window.FB.db) {
-        if(listEl) listEl.innerHTML = `<div class="text-xs text-rose-400">Offline-Modus: Rangliste nicht verfügbar.</div>`;
-        return;
-      }
-      try {
-        const q = window.FB.query(window.FB.collection(window.FB.db, "leaderboard"), window.FB.orderBy("totalValue", "desc"), window.FB.limit(10));
-        const querySnapshot = await window.FB.getDocs(q);
-        
-        let docsArray = [];
-        querySnapshot.forEach((docSnap) => {
-          docsArray.push(docSnap.data());
-        });
-
-        if(docsArray.length >= 1) {
-          document.getElementById('podium-1-name').innerText = docsArray[0].companyName;
-          document.getElementById('podium-1-score').innerText = '★ ' + Math.floor(docsArray[0].totalValue || 0);
-          document.getElementById('podium-1-avatar').innerText = docsArray[0].avatar || '👑';
-        }
-        if(docsArray.length >= 2) {
-          document.getElementById('podium-2-name').innerText = docsArray[1].companyName;
-          document.getElementById('podium-2-score').innerText = '★ ' + Math.floor(docsArray[1].totalValue || 0);
-          document.getElementById('podium-2-avatar').innerText = docsArray[1].avatar || '🥈';
-        }
-        if(docsArray.length >= 3) {
-          document.getElementById('podium-3-name').innerText = docsArray[2].companyName;
-          document.getElementById('podium-3-score').innerText = '★ ' + Math.floor(docsArray[2].totalValue || 0);
-          document.getElementById('podium-3-avatar').innerText = docsArray[2].avatar || '🥉';
-        }
-
-        listEl.innerHTML = '';
-        docsArray.forEach((data, index) => {
-          const currentRank = index + 1;
-          if (currentRank > 3) {
-            listEl.innerHTML += `
-              <div class="holo-card p-3 flex justify-between items-center text-xs">
-                <div class="flex items-center space-x-3">
-                  <span class="font-mono font-bold text-slate-400 w-6">#${currentRank}</span>
-                  <span class="text-base">${data.avatar || '🤖'}</span>
-                  <span class="font-bold text-white">${data.companyName}</span>
-                </div>
-                <span class="font-mono text-amber-400 font-bold">★ ${Math.floor(data.totalValue || 0)}</span>
-              </div>
-            `;
-          }
-        });
-      } catch (e) {
-        console.error("Ranglisten-Fehler:", e);
-      }
-    }
-
-    function renderLegendsView() {
-      const legendsEl = document.getElementById('legends-list');
-      if (!legendsEl) return;
-      legendsEl.innerHTML = '';
-
-      if (!state.legends || state.legends.length === 0) {
-        legendsEl.innerHTML = `<div class="text-xs text-slate-500 text-center py-6">Noch keine Legenden verzeichnet.</div>`;
-        return;
-      }
-
-      state.legends.forEach((leg, index) => {
-        legendsEl.innerHTML += `
-          <div class="holo-card p-3 flex justify-between items-center text-xs">
-            <div class="flex items-center space-x-3">
-              <span class="font-mono font-bold text-amber-400 w-6">#${index + 1}</span>
-              <span class="text-base">${leg.avatar || '👑'}</span>
-              <span class="font-bold text-white">${leg.name}</span>
-            </div>
-            <div class="flex items-center space-x-3 font-mono text-xs font-bold">
-              <span class="text-amber-400" title="Gold">🥇 ${leg.gold}</span>
-              <span class="text-slate-300" title="Silber">🥈 ${leg.silver}</span>
-              <span class="text-amber-700" title="Bronze">🥉 ${leg.bronze}</span>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    function renderAvatarSelector() {
-      const disp = document.getElementById('current-avatar-display');
-      if(disp) disp.innerText = state.selectedAvatar || '🤖 Standard Klon';
-    }
-
-    function getPotentialShards() {
-      return Math.floor((state.totalEarned || 0) / 100000);
-    }
-
-    function triggerSingularityProtocol() {
-      const potential = getPotentialShards();
-      if (potential <= 0) {
-        alert("Du benötigst mehr Gesamt-Assets, um die Singularität zu zünden!");
-        return;
-      }
-      if(confirm(`⚠️ WARNUNG: Möchtest du das Singularitäts-Protokoll zünden? Dein Imperium wird zurückgesetzt, aber du erhältst +${potential} 🌀 Matrix-Splitter!`)) {
-        state.matrixShards = (state.matrixShards || 0) + potential;
-        state.money = 0;
-        state.totalEarned = 0;
-        state.clickPower = 0.01;
-        state.clickUpgLevel = 0;
-        state.clickUpgCost = 0.50;
-        state.level = 1;
-        state.exp = 0;
-        state.expNeeded = 200;
-
-        updateUI();
-        renderSingularityTab();
-        saveGameLocally();
-      }
-    }
-
-    function buySingularityUpgrade(idx) {
-      const sq = state.singularityUpgrades[idx];
-      const cost = sq.cost * (sq.level + 1);
-      if (state.matrixShards >= cost && sq.level < sq.maxLevel) {
-        state.matrixShards -= cost;
-        sq.level++;
-        updateUI();
-        renderSingularityTab();
-        saveGameLocally();
-      }
-    }
-
-    function renderSingularityTab() {
-      const container = document.getElementById('singularity-upgrades-list');
-      const potEl = document.getElementById('potential-shards-display');
-      const curEl = document.getElementById('current-shards-display');
-      if(!container) return;
-
-      const pot = getPotentialShards();
-      if(potEl) potEl.innerText = `${pot} 🌀`;
-      if(curEl) curEl.innerText = `${state.matrixShards || 0} 🌀`;
-
       container.innerHTML = '';
-      state.singularityUpgrades.forEach((sq, idx) => {
-        const cost = sq.cost * (sq.level + 1);
-        const canBuy = state.matrixShards >= cost && sq.level < sq.maxLevel;
+
+      state.masterBuildings.forEach(b => {
+        const ownedData = state.userBuildings[b.id] || { count: 0, level: 1 };
+        // Jedes weitere Gebäude wird teurer (15% Steigerung pro Stück)
+        const currentCost = b.baseCost * Math.pow(1.15, ownedData.count);
+        const currentIncome = b.baseIncome * ownedData.count;
+
         container.innerHTML += `
-          <div class="holo-card p-3.5 flex justify-between items-center">
+          <div class="holo-card p-3 flex justify-between items-center text-xs">
             <div>
-              <div class="font-bold text-xs text-white">${sq.name} (Stufe ${sq.level}/${sq.maxLevel})</div>
-              <div class="text-[10px] text-slate-400 mt-0.5">${sq.desc}</div>
+              <div class="font-bold text-white">${b.name} <span class="text-[9px] text-amber-400 font-mono">(${b.type})</span></div>
+              <div class="text-[10px] text-slate-400 font-mono mt-0.5">Besitz: <strong class="text-white">${ownedData.count}</strong> | Ertrag: <span class="text-emerald-400">+${formatMoney(currentIncome)}/h</span></div>
             </div>
-            <button onclick="buySingularityUpgrade(${idx})" ${sq.level >= sq.maxLevel ? 'disabled' : ''} class="px-3.5 py-1.5 ${sq.level >= sq.maxLevel ? 'bg-[#0f172a] text-cyan-400 border border-cyan-500/30' : (canBuy ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white' : 'bg-[#0f172a] text-slate-600 border border-cyan-500/10 cursor-not-allowed')} text-xs rounded-xl font-semibold transition">
-              ${sq.level >= sq.maxLevel ? 'Max' : `${cost} 🌀`}
+            <button onclick="buyBuilding(${b.id})" class="px-3 py-2 holo-btn text-xs font-bold rounded-xl shadow">
+              Kaufen (${formatMoney(currentCost)})
             </button>
           </div>
         `;
       });
     }
 
-    function toggleOverclocking() {
-      if (state.isOverheated) { alert("Terminal überhitzt!"); return; }
-      state.overclockActive = !state.overclockActive;
-      const btn = document.getElementById('btn-overclock');
-      if (state.overclockActive) {
-        btn.innerText = "⚡ OVERCLOCK AKTIV (4x)";
-        btn.className = "px-3 py-1.5 bg-rose-600 hover:bg-rose-500 border border-rose-400 text-white font-mono font-bold text-xs rounded-xl shadow-lg transition animate-pulse";
+    function buyBuilding(buildingId) {
+      const b = state.masterBuildings.find(item => item.id === buildingId);
+      if (!b) return;
+
+      if (!state.userBuildings[buildingId]) {
+        state.userBuildings[buildingId] = { count: 0, level: 1 };
+      }
+      const owned = state.userBuildings[buildingId];
+      const cost = b.baseCost * Math.pow(1.15, owned.count);
+
+      if (state.money >= cost) {
+        state.money -= cost;
+        owned.count++;
+        updateUI();
+        renderBuildingShopList();
+        renderBuildingsPage();
+        saveGameLocally();
       } else {
-        btn.innerText = "⚡ OVERCLOCK (4x)";
-        btn.className = "px-3 py-1.5 bg-rose-950/80 hover:bg-rose-900 border border-rose-700 text-rose-300 font-mono font-bold text-xs rounded-xl shadow-lg transition";
-      }
-      updateUI();
-    }
-
-    function triggerOverheat() {
-      state.isOverheated = true;
-      state.overclockActive = false;
-      const btn = document.getElementById('btn-overclock');
-      const text = document.getElementById('overheat-status-text');
-      const card = document.getElementById('clicker-card-container');
-      btn.innerText = "⚠️ ÜBERHITZT";
-      btn.className = "px-3 py-1.5 bg-slate-800 text-slate-500 font-mono font-bold text-xs rounded-xl cursor-not-allowed";
-      text.classList.remove('hidden');
-      card.classList.add('overheat-active');
-
-      setTimeout(() => {
-        state.isOverheated = false;
-        text.classList.add('hidden');
-        card.classList.remove('overheat-active');
-        btn.innerText = "⚡ OVERCLOCK (4x)";
-        btn.className = "px-3 py-1.5 bg-rose-950/80 hover:bg-rose-900 border border-rose-700 text-rose-300 font-mono font-bold text-xs rounded-xl shadow-lg transition";
-      }, 10000);
-    }
-
-    function registerClickCombo() {
-      const now = Date.now();
-      if (now - state.lastClickTime < 600) {
-        state.comboHits++;
-        if (state.comboHits >= 25) state.comboMult = 10.0;
-        else if (state.comboHits >= 15) state.comboMult = 5.0;
-        else if (state.comboHits >= 8) state.comboMult = 2.5;
-        else if (state.comboHits >= 3) state.comboMult = 1.5;
-      } else {
-        state.comboHits = 1;
-        state.comboMult = 1.0;
-      }
-      state.lastClickTime = now;
-      updateQuestProgress('q1', 1);
-
-      const display = document.getElementById('combo-display');
-      if (display) display.innerText = `${state.comboMult.toFixed(1)}x (${state.comboHits} Hits)`;
-    }
-
-    function openHoloCube() {
-      if (state.icash < 10) { alert("Du benötigst 💎 10 iCash!"); return; }
-      state.icash -= 10;
-      const roll = Math.random();
-      const resEl = document.getElementById('lootbox-result');
-      let rewardText = "";
-
-      if (roll < 0.4) {
-        const cashWin = 2500 * state.level;
-        state.money += cashWin;
-        state.totalEarned += cashWin;
-        rewardText = `🎉 GEWINN: +${formatMoney(cashWin)} Kapital!`;
-      } else {
-        state.icash += 18;
-        rewardText = `💎 MEGA JACKPOT: +18 iCash!`;
-      }
-
-      if(resEl) resEl.innerText = rewardText;
-      updateUI();
-      saveGameLocally();
-    }
-
-    function checkWheelAvailability() {
-      const now = Date.now();
-      const oneDay = 24 * 60 * 60 * 1000;
-      const btn = document.getElementById('btn-spin-wheel');
-      const timerEl = document.getElementById('wheel-timer-text');
-      const countdownEl = document.getElementById('wheel-countdown');
-
-      if (!btn) return;
-
-      if (state.lastWheelSpinTime && (now - state.lastWheelSpinTime < oneDay)) {
-        const timeLeft = oneDay - (now - state.lastWheelSpinTime);
-        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-        const mins = Math.floor((timeLeft / (1000 * 60)) % 60);
-        const secs = Math.floor((timeLeft / 1000) % 60);
-
-        btn.disabled = true;
-        btn.className = "w-full py-2.5 bg-slate-800 text-slate-500 font-bold text-xs rounded-xl cursor-not-allowed";
-        if(timerEl) timerEl.classList.remove('hidden');
-        if(countdownEl) countdownEl.innerText = `${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-      } else {
-        btn.disabled = false;
-        btn.className = "w-full py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold text-xs rounded-xl shadow-lg hover:brightness-110 transition";
-        if(timerEl) timerEl.classList.add('hidden');
+        alert("Nicht genügend Kapital für dieses Gebäude!");
       }
     }
 
-    function spinLuckyWheel() {
-      const now = Date.now();
-      const oneDay = 24 * 60 * 60 * 1000;
-      if (state.lastWheelSpinTime && (now - state.lastWheelSpinTime < oneDay)) {
-        alert("Das Glücksrades kann nur 1x pro Tag gedreht werden!");
-        return;
-      }
+    function renderBuildingsPage() {
+      const listContainer = document.getElementById('owned-buildings-list');
+      const counterEl = document.getElementById('owned-buildings-counter');
+      const incomeEl = document.getElementById('total-buildings-income');
+      if (!listContainer) return;
 
-      state.lastWheelSpinTime = now;
-      const btn = document.getElementById('btn-spin-wheel');
-      const visual = document.getElementById('wheel-visual');
-      btn.disabled = true;
+      let totalOwnedCount = 0;
+      let totalBuildingsIncome = 0;
+      let htmlContent = '';
 
-      const randomDegree = 1440 + Math.floor(Math.random() * 360);
-      visual.style.transform = `rotate(${randomDegree}deg)`;
+      state.masterBuildings.forEach(b => {
+        const owned = state.userBuildings[b.id];
+        if (owned && owned.count > 0) {
+          totalOwnedCount += owned.count;
+          const inc = b.baseIncome * owned.count;
+          totalBuildingsIncome += inc;
 
-      setTimeout(() => {
-        const prizeRoll = Math.random();
-        if (prizeRoll < 0.3) {
-          state.icash += 5;
-          alert("🎰 GLÜCKSRAD: +💎 5 iCash gewonnen!");
-        } else if (prizeRoll < 0.7) {
-          const win = 1000 * state.level;
-          state.money += win;
-          alert(`🎰 GLÜCKSRAD: +${formatMoney(win)} Gewonnen!`);
-        } else {
-          state.icash += 12;
-          alert("🎰 GLÜCKSRAD: MEGA-GEWINN! +💎 12 iCash!");
+          htmlContent += `
+            <div class="holo-card p-4 flex justify-between items-center bg-gradient-to-r from-amber-950/20 via-[#0b101d] to-[#0b101d] border-amber-500/30">
+              <div>
+                <div class="font-bold text-sm text-white">${b.name}</div>
+                <div class="text-[11px] text-amber-300 font-mono">${b.type.toUpperCase()} - EIGENTUM</div>
+                <div class="text-xs text-emerald-400 font-mono mt-1">LVL ${owned.count} | +${formatMoney(inc)}/STUNDE</div>
+              </div>
+              <button onclick="openBuildingShop()" class="px-3 py-2 bg-amber-600/30 hover:bg-amber-600/50 border border-amber-500/40 text-amber-200 text-xs font-bold rounded-xl transition">
+                Ausbauen
+              </button>
+            </div>
+          `;
         }
-        updateQuestProgress('q2', 1);
-        checkWheelAvailability();
-        updateUI();
-        saveGameLocally();
-      }, 1000);
-    }
+      });
 
-    function checkDailyClaimAvailability() {
-      const now = Date.now();
-      const oneDay = 24 * 60 * 60 * 1000;
-      const btn = document.getElementById('btn-claim-daily');
-      const timerEl = document.getElementById('daily-claim-timer-text');
-      const countdownEl = document.getElementById('daily-claim-countdown');
+      if (counterEl) counterEl.innerText = `${totalOwnedCount} / 1000`;
+      if (incomeEl) incomeEl.innerText = `+${formatMoney(totalBuildingsIncome)}/STUNDE`;
 
-      if (!btn) return;
-
-      if (state.lastDailyClaimTime && (now - state.lastDailyClaimTime < oneDay)) {
-        const timeLeft = oneDay - (now - state.lastDailyClaimTime);
-        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-        const mins = Math.floor((timeLeft / (1000 * 60)) % 60);
-        const secs = Math.floor((timeLeft / 1000) % 60);
-
-        btn.disabled = true;
-        btn.className = "w-full py-3 bg-slate-800 text-slate-500 font-bold text-xs rounded-xl cursor-not-allowed";
-        if(timerEl) timerEl.classList.remove('hidden');
-        if(countdownEl) countdownEl.innerText = `${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+      if (totalOwnedCount === 0) {
+        listContainer.innerHTML = `
+          <div class="holo-card p-6 text-center text-slate-500 text-xs italic">
+            Noch keine Gebäude gekauft. Klicke oben auf „Ein Gebäude kaufen“, um deine Sammlung zu starten!
+          </div>
+        `;
       } else {
-        btn.disabled = false;
-        btn.className = "w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg hover:brightness-110 transition";
-        if(timerEl) timerEl.classList.add('hidden');
+        listContainer.innerHTML = htmlContent;
       }
-    }
-
-    function claimDailyReward() {
-      const now = Date.now();
-      const oneDay = 24 * 60 * 60 * 1000;
-      if (state.lastDailyClaimTime && (now - state.lastDailyClaimTime < oneDay)) {
-        alert("Tägliche Belohnung wurde heute bereits abgeholt!");
-        return;
-      }
-
-      state.lastDailyClaimTime = now;
-      state.icash += 5;
-      alert("🎁 Tägliche Belohnung abgeholt: +💎 5 iCash!");
-      checkDailyClaimAvailability();
-      updateUI();
-      saveGameLocally();
-    }
-
-    function updateQuestProgress(questId, val) {
-      checkDailyQuestsRefresh();
-      const q = state.dailyQuests.find(item => item.id === questId);
-      if (q && !q.claimed) {
-        q.current += val;
-        if (q.current > q.goal) q.current = q.goal;
-      }
-    }
-
-    function claimQuestReward(questId) {
-      const q = state.dailyQuests.find(item => item.id === questId);
-      if (q && q.current >= q.goal && !q.claimed) {
-        q.claimed = true;
-        state.icash += q.reward;
-        alert(`🏆 Quest erfüllt! +💎 ${q.reward} iCash erhalten.`);
-        checkDailyQuestsRefresh();
-        updateUI();
-        renderDailyRewards();
-        saveGameLocally();
-      }
-    }
-
-    function executeSeasonReset() {
-      state.money = 0;
-      state.totalEarned = 0;
-      state.clickPower = 0.01;
-      state.clickUpgLevel = 0;
-      state.clickUpgCost = 0.50;
-      state.level = 1;
-      state.exp = 0;
-      state.expNeeded = 200;
-
-      saveGameLocally();
-      updateUI();
     }
 
     function formatMoney(num) {
@@ -1329,8 +1060,18 @@
     }
 
     function getPassiveIncome() {
-      let incomePerMinute = 1.0; // Minimales Grundeinkommen, da Sektoren entfernt wurden
+      let incomePerMinute = 1.0;
       
+      // Einnahmen aus den gekauften Gebäuden hinzurechnen
+      if (state.userBuildings) {
+        state.masterBuildings.forEach(b => {
+          const owned = state.userBuildings[b.id];
+          if (owned && owned.count > 0) {
+            incomePerMinute += (b.baseIncome * owned.count);
+          }
+        });
+      }
+
       const sq1 = state.singularityUpgrades.find(u => u.id === 'sq1');
       if (sq1 && sq1.level > 0 && state.matrixShards > 0) {
         incomePerMinute *= (1 + state.matrixShards * sq1.level * 0.20);
@@ -1346,20 +1087,10 @@
 
     function getClickPower() {
       let base = state.clickPower + (state.clickUpgLevel * 0.01);
-      
       const pi1 = state.permaUpgrades.find(u => u.id === 'pi1');
-      if (pi1 && pi1.level > 0) {
-        base *= Math.pow(2.0, pi1.level);
-      }
-
-      const sq2 = state.singularityUpgrades.find(u => u.id === 'sq2');
-      if (sq2 && sq2.level > 0) {
-        base *= (1 + sq2.level * 1.0);
-      }
-
+      if (pi1 && pi1.level > 0) base *= Math.pow(2.0, pi1.level);
       if (state.overclockActive && !state.isOverheated) base *= 4.0;
       if (state.comboMult) base *= state.comboMult;
-
       return base;
     }
 
@@ -1383,13 +1114,6 @@
 
       document.getElementById('exp-text').innerText = `${Math.floor(state.exp)} / ${state.expNeeded} EXP`;
       document.getElementById('exp-bar').style.width = Math.min(100, (state.exp / state.expNeeded) * 100) + '%';
-      
-      const myNameEl = document.getElementById('my-rank-name');
-      const myScoreEl = document.getElementById('my-rank-score');
-      const myAvatarEl = document.getElementById('my-rank-avatar');
-      if(myNameEl) myNameEl.innerText = state.companyName || 'Dein Imperium';
-      if(myScoreEl) myScoreEl.innerText = '★ ' + Math.floor(state.totalEarned);
-      if(myAvatarEl) myAvatarEl.innerText = state.selectedAvatar ? state.selectedAvatar.split(' ')[0] : '🤖';
     }
 
     function addExp(amount) {
@@ -1407,11 +1131,9 @@
     function checkOfflineEarnings(oldTimestamp) {
       const now = Date.now();
       const diffSeconds = Math.floor((now - (oldTimestamp || now)) / 1000);
-      
       if (diffSeconds > 10) {
         const passivePerSec = (getPassiveIncome() / 60) / 60;
         const earned = diffSeconds * passivePerSec;
-        
         if (earned > 0.01) {
           state.money += earned;
           state.totalEarned += earned;
@@ -1426,55 +1148,6 @@
       document.getElementById('offline-modal').classList.add('hidden');
       updateUI();
       saveGameLocally();
-    }
-
-    const dailyRewardsList = [
-      { day: 1, label: '💎 +3 iCash' },
-      { day: 2, label: '💶 +€250 Kapital' },
-      { day: 3, label: '💎 +5 iCash' },
-      { day: 4, label: '💶 +€1.500 Kapital' },
-      { day: 5, label: '💎 +10 iCash' },
-      { day: 6, label: '💶 +€10.000 Kapital' },
-      { day: 7, label: '💎 +25 iCash' }
-    ];
-
-    function renderDailyRewards() {
-      checkDailyQuestsRefresh();
-      const container = document.getElementById('daily-rewards-container');
-      const questsContainer = document.getElementById('daily-quests-container');
-
-      if(questsContainer && state.dailyQuests) {
-        questsContainer.innerHTML = '';
-        state.dailyQuests.forEach(q => {
-          const ready = q.current >= q.goal && !q.claimed;
-          questsContainer.innerHTML += `
-            <div class="holo-card p-3 flex justify-between items-center text-xs">
-              <div>
-                <div class="font-bold text-white">${q.text}</div>
-                <div class="text-[10px] text-slate-400 font-mono mt-0.5 font-bold">Fortschritt: ${q.current}/${q.goal} (Belohnung: 💎 ${q.reward} iCash)</div>
-              </div>
-              <button onclick="claimQuestReward('${q.id}')" ${!ready ? 'disabled' : ''} class="px-3 py-1.5 ${q.claimed ? 'bg-[#0f172a] text-emerald-400 border border-emerald-500/30' : (ready ? 'icash-btn text-white' : 'bg-[#0f172a] text-slate-600 border border-blue-500/10 cursor-not-allowed')} rounded-lg font-bold">
-                ${q.claimed ? '✓ Erfüllt' : 'Belohnung'}
-              </button>
-            </div>
-          `;
-        });
-      }
-
-      if(!container) return;
-      container.innerHTML = '';
-      dailyRewardsList.forEach((rew) => {
-        container.innerHTML += `
-          <div class="holo-card p-3.5 flex justify-between items-center border border-blue-500/20 bg-[#0f172a]">
-            <div>
-              <div class="font-bold text-xs text-white">Belohnung #${rew.day}</div>
-              <div class="text-xs text-slate-300 font-mono mt-0.5 font-bold">${rew.label}</div>
-            </div>
-          </div>
-        `;
-      });
-      checkWheelAvailability();
-      checkDailyClaimAvailability();
     }
 
     function renderTabContent(tabId) {
@@ -1496,11 +1169,8 @@
           `;
         });
       }
-
       if (tabId === 'singularity') renderSingularityTab();
-      if (tabId === 'daily') renderDailyRewards();
-      if (tabId === 'fame') { fetchLeaderboard(); renderAvatarSelector(); }
-      if (tabId === 'settings') { renderLanguageTab(); }
+      if (tabId === 'buildings') renderBuildingsPage();
       lucide.createIcons();
     }
 
@@ -1569,6 +1239,9 @@
           if(parsed.version && parsed.version >= 3) {
             const oldTime = parsed.lastSaveTimestamp || parseInt(localStorage.getItem('empire_last_save_time') || Date.now());
             state = { ...state, ...parsed };
+            if (!state.masterBuildings || state.masterBuildings.length !== 1000) {
+              state.masterBuildings = generateMasterBuildings();
+            }
             window.state = state;
             checkDailyQuestsRefresh();
             checkOfflineEarnings(oldTime);
@@ -1580,11 +1253,6 @@
     checkDailyQuestsRefresh();
     loadGameLocally();
     updateUI();
-
-    setInterval(() => { 
-      checkWheelAvailability();
-      checkDailyClaimAvailability();
-    }, 1000);
 
     setInterval(() => {
       state.incomeTimerSeconds--;
