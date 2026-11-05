@@ -180,13 +180,6 @@
         <span class="text-xs font-bold text-white">Core Terminal</span>
       </button>
 
-      <button onclick="switchCategoryPage('buildings')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-amber-400 transition group bg-gradient-to-b from-amber-950/40 to-[#070b14]">
-        <div class="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-110 transition">
-          <i data-lucide="building" class="w-5 h-5"></i>
-        </div>
-        <span class="text-xs font-bold text-white">Meine Gebäude</span>
-      </button>
-
       <button onclick="switchCategoryPage('icash')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-purple-400 transition group bg-gradient-to-b from-purple-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:scale-110 transition">
           <i data-lucide="gem" class="w-5 h-5"></i>
@@ -236,9 +229,7 @@
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
-      <div id="building-shop-list" class="flex-1 overflow-y-auto space-y-2 pr-1">
-        <!-- Wird dynamisch mit 1000 Gebäuden befüllt -->
-      </div>
+      <div id="building-shop-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
     </div>
   </div>
 
@@ -452,7 +443,7 @@
       </div>
     </div>
 
-    <!-- CATEGORY PAGE: MEINE GEBÄUDE (NEU GEFÄßT WIE AUF DEM SCREENSHOT) -->
+    <!-- CATEGORY PAGE: MEINE GEBÄUDE -->
     <div id="page-buildings" class="category-page space-y-4">
       <div class="holo-card p-6 text-center space-y-4 bg-gradient-to-b from-amber-950/20 to-[#0b101d] border-amber-500/40 shadow-xl">
         <h2 class="font-extrabold text-xl text-amber-400 tracking-wider uppercase">MEINE GEBÄUDE</h2>
@@ -468,7 +459,6 @@
         <span id="total-buildings-income" class="text-xs text-emerald-400 font-mono font-bold">+€0.00/STUNDE</span>
       </div>
 
-      <!-- Liste der gekauften Gebäude (zu Beginn leer) -->
       <div id="owned-buildings-list" class="space-y-3">
         <div class="holo-card p-6 text-center text-slate-500 text-xs italic">
           Noch keine Gebäude gekauft. Klicke oben auf „Ein Gebäude kaufen“, um deine Sammlung zu starten!
@@ -647,11 +637,17 @@
 
   </main>
 
-  <!-- UNTERE FOOTER NAVIGATION -->
+  <!-- UNTERE FOOTER NAVIGATION (MIT GEBÄUDE-KATEGORIE NEBEN DEM GT-LOGO) -->
   <nav class="fixed bottom-0 left-0 right-0 bg-[#070b14]/95 backdrop-blur-2xl border-t border-cyan-500/20 py-2.5 px-6 flex items-center justify-between z-50">
     <button onclick="switchCategoryPage('clicker')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-cyan-400 transition">
       <i data-lucide="cpu" class="w-5 h-5"></i>
       <span class="text-[9px] font-mono font-bold">TERMINAL</span>
+    </button>
+
+    <!-- NEU: Gebäude-Button links neben dem GT-Logo -->
+    <button onclick="switchCategoryPage('buildings')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-amber-400 transition">
+      <i data-lucide="building" class="w-5 h-5"></i>
+      <span class="text-[9px] font-mono font-bold">GEBÄUDE</span>
     </button>
 
     <div class="relative -top-5">
@@ -676,7 +672,7 @@
     </button>
   </nav>
 
-  <!-- SPIEL-LOGIK MIT 1000 GEBÄUDEN -->
+  <!-- SPIEL-LOGIK -->
   <script>
     let audioCtx = null;
     function initAudioContext() {
@@ -856,7 +852,6 @@
     function adminAddIcash() { state.icash += 50; updateUI(); saveGameLocally(); alert("💎 +50 Admin iCash hinzugefügt!"); }
     function adminTimeJump() { const earned = getPassiveIncome() * 24; state.money += earned; state.totalEarned += earned; updateUI(); saveGameLocally(); alert(`⚡ 24 Stunden Zeitraffer ausgeführt! +${formatMoney(earned)} gutgeschrieben.`); }
 
-    // Generierung der 1000 Gebäude beim Start falls nicht vorhanden
     function generateMasterBuildings() {
       if (state.masterBuildings && state.masterBuildings.length === 1000) return state.masterBuildings;
       const list = [];
@@ -874,7 +869,7 @@
     }
 
     let state = {
-      version: 24,
+      version: 25,
       companyName: '',
       language: 'de',
       money: 1000,
@@ -900,9 +895,8 @@
       lastDailyClaimTime: 0,
       lastQuestRefreshDate: '',
       
-      // Gebäude-System
       masterBuildings: [],
-      userBuildings: {}, // Speichert { buildingId: { count: X, level: Y } }
+      userBuildings: {},
 
       legends: [
         { name: "JeanValjean", gold: 1, silver: 0, bronze: 0, avatar: "🤵🏾" }
@@ -947,7 +941,6 @@
       }
     }
 
-    // Gebäude Shop Steuerung
     function openBuildingShop() {
       document.getElementById('building-shop-modal').classList.remove('hidden');
       renderBuildingShopList();
@@ -965,7 +958,6 @@
 
       state.masterBuildings.forEach(b => {
         const ownedData = state.userBuildings[b.id] || { count: 0, level: 1 };
-        // Jedes weitere Gebäude wird teurer (15% Steigerung pro Stück)
         const currentCost = b.baseCost * Math.pow(1.15, ownedData.count);
         const currentIncome = b.baseIncome * ownedData.count;
 
@@ -1062,7 +1054,6 @@
     function getPassiveIncome() {
       let incomePerMinute = 1.0;
       
-      // Einnahmen aus den gekauften Gebäuden hinzurechnen
       if (state.userBuildings) {
         state.masterBuildings.forEach(b => {
           const owned = state.userBuildings[b.id];
