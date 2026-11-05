@@ -175,7 +175,6 @@
     }
     .gt-logo-anim { animation: neon-glow 3s ease-in-out infinite; }
 
-    /* Hacking Event Animation */
     @keyframes pulseRed {
       0% { transform: scale(1); box-shadow: 0 0 10px red; border-color: rgba(255,0,0,0.5); }
       50% { transform: scale(1.02); box-shadow: 0 0 30px red; border-color: red; }
@@ -288,7 +287,6 @@
 
       <div id="overlay-auth-error" class="text-xs font-mono text-rose-400 text-center hidden"></div>
       
-      <!-- Der wichtige Offline-Button! -->
       <button onclick="skipLoginOffline()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold rounded-xl border border-slate-700 transition">
         ⚡ Offline / Ohne Account spielen
       </button>
@@ -330,7 +328,6 @@
   <!-- HEADER -->
   <header class="bg-[#070b14]/95 backdrop-blur-2xl border-b border-blue-500/10 px-4 py-3 sticky top-0 z-30 flex items-center justify-between">
     <div class="flex items-center space-x-2">
-      <!-- Musik-Player -->
       <audio id="bg-music" loop>
         <source src="https://n11a-eu.rcs.revma.com/1z19ak79n98uv" type="audio/mpeg">
       </audio>
@@ -407,11 +404,10 @@
         <h3 class="font-bold text-base text-white tracking-wide relative z-10">0. Core Terminal Overdrive</h3>
         <p class="text-xs text-slate-400 mt-0.5 mb-4 relative z-10">Generiere Datenimpulse, um das Imperium zu skalieren.</p>
 
-        <!-- Klick Button (Neu mit dynamischen Icons) -->
+        <!-- Klick Button -->
         <button id="click-btn" class="w-36 h-36 rounded-2xl bg-[#0f172a]/90 border-2 border-cyan-500/40 hover:border-cyan-400 flex flex-col items-center justify-center shadow-2xl active:scale-95 transition-all group my-2 cursor-pointer relative z-10 backdrop-blur-md">
           <div class="absolute inset-0 bg-cyan-500/5 rounded-2xl group-hover:bg-cyan-500/15 transition"></div>
           
-          <!-- Icon Swap Container -->
           <div class="mb-2 group-hover:scale-110 transition-transform">
             <i id="icon-cpu" data-lucide="cpu" class="w-8 h-8 text-cyan-400"></i>
             <i id="icon-server" data-lucide="server" class="w-8 h-8 text-pink-400 hidden"></i>
@@ -424,7 +420,6 @@
 
         <!-- Upgrades -->
         <div class="w-full space-y-2 relative z-10 mt-4">
-          <!-- Quanten-Prozessor -->
           <div class="w-full bg-[#0f172a]/80 border border-blue-500/20 rounded-xl p-3 flex justify-between items-center text-left backdrop-blur-md">
             <div>
               <div class="font-bold text-xs text-white">Quanten-Prozessor (Lvl <span id="click-upgrade-level">0</span>)</div>
@@ -432,7 +427,6 @@
             </div>
             <button onclick="buyClickUpgrade()" id="btn-buy-click-upg" class="px-3.5 py-2 holo-btn text-xs rounded-lg font-semibold">Kaufen (<span id="click-upgrade-cost">€0.50</span>)</button>
           </div>
-          <!-- Auto-Drohne -->
           <div class="w-full bg-[#0f172a]/80 border border-purple-500/20 rounded-xl p-3 flex justify-between items-center text-left backdrop-blur-md">
             <div>
               <div class="font-bold text-xs text-white">Auto-Drohne (Lvl <span id="drone-upgrade-level">0</span>)</div>
@@ -466,7 +460,6 @@
         <button onclick="buyNewBuilding()" class="w-full py-3.5 building-buy-btn text-xs font-bold rounded-2xl flex items-center justify-center gap-2">Ein Gebäude kaufen (<span id="next-building-cost" class="font-mono">€50,000.00</span>)</button>
       </div>
 
-      <!-- VIP POPUP (Erscheint zufällig) -->
       <div id="vip-popup" class="hidden holo-card p-4 border-amber-500/50 bg-amber-950/30 flex justify-between items-center animate-pulse">
         <div>
           <div class="font-bold text-xs text-amber-400">VIP-Gast im Gebäude!</div>
@@ -495,7 +488,6 @@
           <button onclick="upgradeBuildingDetail(10)" class="holo-card p-3 flex flex-col items-center justify-center"><div class="font-mono text-xs text-amber-300" id="cost-detail-10">0</div><div class="text-[9px] mt-0.5">10 LVL</div></button>
           <button onclick="upgradeBuildingDetail(500)" class="holo-card p-3 flex flex-col items-center justify-center"><div class="font-mono text-xs text-amber-300" id="cost-detail-500">0</div><div class="text-[9px] mt-0.5">500 LVL</div></button>
         </div>
-        <!-- Mitarbeiter Slots -->
         <div class="mt-6"><button onclick="openWorkerShopModal()" class="w-full py-3.5 purple-pink-btn text-xs font-extrabold rounded-2xl text-white">Mitarbeiter verwalten</button></div>
         <div id="worker-slots-container" class="grid grid-cols-2 gap-3 mt-4"></div>
       </div>
@@ -519,15 +511,11 @@
     <div id="page-icash" class="category-page space-y-4">
       <div class="flex justify-between items-center"><h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="gem" class="w-4 h-4 text-purple-400"></i> iCash Zentrale</h3></div>
 
-      <!-- Daily Deals -->
       <div class="holo-card p-4 border-blue-500/30 bg-blue-950/20 space-y-3">
         <div class="font-bold text-xs text-white uppercase">Daily Deals (Angebote)</div>
-        <div class="grid grid-cols-1 gap-2" id="daily-deals-container">
-          <!-- Rendered via JS -->
-        </div>
+        <div class="grid grid-cols-1 gap-2" id="daily-deals-container"></div>
       </div>
 
-      <!-- Cyber Bank Staking -->
       <div class="holo-card p-4 border-emerald-500/30 bg-emerald-950/20 space-y-3">
         <div class="font-bold text-xs text-white uppercase">Cyber-Bank (Staking)</div>
         <p class="text-[11px] text-slate-300">Sperre 50 iCash für 7 Tage ein und erhalte 65 iCash zurück.</p>
@@ -535,7 +523,6 @@
         <button id="btn-stake" onclick="toggleStaking()" class="w-full py-2.5 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-lg">50 iCash Staken</button>
       </div>
 
-      <!-- Holo Cube -->
       <div class="holo-card p-4 border-purple-500/50 bg-gradient-to-b from-purple-950/30 to-[#0b101d] space-y-3">
         <div class="font-bold text-xs text-white flex items-center gap-1.5"><i data-lucide="box" class="w-4 h-4 text-purple-400"></i> Holo-Cube (Lootbox)</div>
         <button onclick="openHoloCube()" class="w-full py-2.5 icash-btn text-xs font-bold rounded-xl shadow-lg">Öffnen (💎 10 iCash)</button>
@@ -550,7 +537,6 @@
     <div id="page-daily" class="category-page space-y-4">
       <div class="flex justify-between items-center"><h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i> Quests & Rad</h3></div>
 
-      <!-- Cyber Pass -->
       <div class="holo-card p-4 border-indigo-500/30 bg-indigo-950/20 space-y-2">
         <div class="flex justify-between items-center">
           <div class="font-bold text-xs text-white uppercase">🎟️ Cyber Pass (Monatlich)</div>
@@ -562,7 +548,6 @@
         <p class="text-[10px] text-slate-400">Sammle Punkte durch Quests, um Titel freizuschalten. Reset am 1. jeden Monats.</p>
       </div>
 
-      <!-- Glücksrad -->
       <div class="holo-card p-4 border-amber-500/30 bg-gradient-to-b from-amber-950/20 to-[#0b101d] text-center space-y-3">
         <div class="font-bold text-xs text-amber-400 flex items-center justify-center gap-1.5"><i data-lucide="disc" class="w-4 h-4"></i> CYBER HOLO-WHEEL</div>
         <div id="wheel-visual" class="w-24 h-24 rounded-full border-4 border-amber-500/40 border-t-amber-400 mx-auto flex items-center justify-center font-bold text-xs text-white transition-transform duration-1000 shadow-[0_0_15px_rgba(245,158,11,0.2)]">SPIN</div>
@@ -586,7 +571,6 @@
         <div class="flex justify-between items-center mb-2">
           <span class="font-bold text-xs text-white">Imperium Titel & Avatar</span>
         </div>
-        <!-- Title Selector -->
         <div class="flex justify-between items-center text-xs">
           <span class="text-slate-400">Aktueller Titel:</span>
           <select id="title-selector" onchange="changeTitle(this.value)" class="bg-[#0f172a] text-purple-300 border border-purple-500/30 rounded p-1 text-[10px] font-mono outline-none"></select>
@@ -607,7 +591,6 @@
     <div id="page-settings" class="category-page space-y-4">
       <div class="flex justify-between items-center"><h3 class="font-bold text-sm text-white">System & Stats</h3></div>
       
-      <!-- Stats -->
       <div class="holo-card p-4 space-y-2 text-xs font-mono border-cyan-500/20 bg-cyan-950/10">
         <div class="font-bold text-white uppercase mb-2">Spieler-Statistiken</div>
         <div class="flex justify-between"><span class="text-slate-400">Klicks Gesamt:</span> <span id="stat-total-clicks" class="text-cyan-400">0</span></div>
@@ -616,7 +599,6 @@
         <div class="flex justify-between"><span class="text-slate-400">Hacks abgewehrt:</span> <span id="stat-hacks" class="text-red-400">0</span></div>
       </div>
 
-      <!-- Themes -->
       <div class="holo-card p-4 space-y-3">
         <div class="font-bold text-xs text-slate-200">System-Thema (Farben)</div>
         <div class="grid grid-cols-3 gap-2">
@@ -626,7 +608,6 @@
         </div>
       </div>
 
-      <!-- Language -->
       <div id="settings-content-box" class="holo-card p-4 space-y-3"></div>
     </div>
   </main>
@@ -648,9 +629,8 @@
     </button>
   </nav>
 
-  <!-- SPIEL-LOGIK (Vollständig & Ungekürzt) -->
+  <!-- SPIEL-LOGIK -->
   <script>
-    // --- Audio & Hilfs-Funktionen ---
     let audioCtx = null;
     function initAudioContext() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
     function playClickBeep() { 
@@ -697,7 +677,6 @@
       lucide.createIcons();
     }
 
-    // --- State & Initialisierung ---
     const masterBuildingsList = [];
     const buildingCategories = ['KULTUR', 'BAR', 'GESCHÄFT', 'TECH-HUB', 'INDUSTRIE'];
     const buildingNames = ['Bloc Session', "Paxton's Head", 'Cyber Node Alpha', 'Neon Lounge', 'Quantum Tower', 'Holo Diner', 'Synthetica Hub', 'DarkNet Bar', 'Mega Store', 'Titan Forge'];
@@ -731,7 +710,6 @@
     };
     window.state = state;
 
-    // --- Zeit & Formatierung ---
     function getGermanDateString() { return new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Berlin' }); }
     function getGermanMonthString() { return new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Berlin' }).slice(0, 7); }
     function getMillisecondsUntilMidnightBerlin() {
@@ -761,7 +739,6 @@
       return `${d}d ${h}h ${m}m`;
     }
 
-    // --- Login / Auth Overlay ---
     function switchAuthMode(mode) {
       const formLogin = document.getElementById('form-overlay-login'); const formReg = document.getElementById('form-overlay-reg');
       const btnLogin = document.getElementById('tab-btn-login'); const btnReg = document.getElementById('tab-btn-reg');
@@ -815,7 +792,6 @@
       document.getElementById('auth-overlay').classList.remove('hidden');
     }
 
-    // --- Admin Modal ---
     let secretClickCount = 0; let secretClickTimer = null;
     function handleSecretAdminClick() {
       secretClickCount++; if (secretClickTimer) clearTimeout(secretClickTimer);
@@ -829,7 +805,6 @@
     function adminAddIcash() { state.icash += 50; updateUI(); saveGameLocally(); alert("💎 +50 iCash"); }
     function adminTimeJump() { const e = getPassiveIncome() * 24; state.money += e; state.totalEarned += e; updateUI(); saveGameLocally(); alert(`⚡ +${formatMoney(e)}`); }
 
-    // --- Navigation & UI ---
     function toggleTopMenu() { document.getElementById('top-dropdown-menu').classList.toggle('open'); }
     function switchCategoryPage(catId) {
       document.getElementById('top-dropdown-menu').classList.remove('open');
@@ -855,7 +830,6 @@
         </div>`;
     }
 
-    // --- Resets & Cloud ---
     function checkDailyMidnightReset() {
       const todayStr = getGermanDateString();
       if (state.lastQuestRefreshDate !== todayStr) {
@@ -890,7 +864,6 @@
     }
     async function saveGameToCloudManual() { if (!window.FB) return; await saveGameToCloudAuto(); alert('Cloud-Sync erfolgreich!'); }
 
-    // --- Gebäude Logik ---
     function buyNewBuilding() {
       if (state.ownedBuildings.length >= 100) return alert("Maximum erreicht!");
       const nextB = masterBuildingsList[state.ownedBuildings.length];
@@ -964,7 +937,6 @@
       }
     }
 
-    // --- Klicker & Events ---
     function buyClickUpgrade() { if(state.money >= state.clickUpgCost) { state.money -= state.clickUpgCost; state.clickUpgLevel++; state.clickUpgCost *= 1.35; updateUI(); saveGameLocally(); } }
     function buyDroneUpgrade() { if(state.money >= state.droneUpgCost) { state.money -= state.droneUpgCost; state.droneUpgLevel++; state.droneUpgCost *= 1.8; updateUI(); saveGameLocally(); } }
     
@@ -996,7 +968,6 @@
         if (state.exp >= state.expNeeded) { state.level++; state.exp = 0; state.expNeeded = Math.floor(state.expNeeded * 1.3); state.icash += 2; }
         updateQuestProgress('q1', 1); updateUI();
         
-        // Dynamischer Icon-Tausch ohne Lucide Crash
         document.getElementById('icon-cpu').classList.add('hidden');
         document.getElementById('icon-server').classList.add('hidden');
         document.getElementById('icon-brain').classList.add('hidden');
@@ -1006,7 +977,6 @@
       });
     }
 
-    // --- iCash & Quests ---
     function openHoloCube() {
       if (state.icash < 10) return alert("💎 10 iCash benötigt!");
       state.icash -= 10; state.stats.openedCubes++; const r = Math.random();
@@ -1071,7 +1041,6 @@
       if (monthlyDisp) monthlyDisp.innerText = formatMonthlyCountdown(getMillisecondsUntilNextMonthBerlin());
     }
 
-    // --- Rendering ---
     function renderTabContent(tabId) {
       if (tabId === 'icash') {
         const c = document.getElementById('daily-deals-container'); if(c) c.innerHTML = `<div class="flex justify-between items-center bg-[#0f172a] p-2 rounded"><span class="text-[10px] text-white">Super-Mitarbeiter (-33%)</span><button onclick="if(state.icash>=10){state.icash-=10; alert('Gekauft!'); updateUI();} else alert('Zu wenig iCash');" class="bg-blue-600 text-[10px] px-2 py-1 rounded text-white font-bold">💎 10</button></div>`;
@@ -1117,7 +1086,6 @@
       if (tabId === 'buildings') renderBuildingsTab();
     }
 
-    // --- Kalkulation ---
     function formatMoney(num) {
       if (num >= 1e12) return '€' + (num / 1e12).toFixed(2) + ' T';
       if (num >= 1e9) return '€' + (num / 1e9).toFixed(2) + ' B';
@@ -1173,7 +1141,6 @@
       setTheme(state.theme || 'default'); checkDailyMidnightReset(); checkMonthlyReset();
     }
 
-    // --- Game Loops ---
     setInterval(() => {
       const incPerSec = getPassiveIncome() / 3600;
       if (incPerSec > 0) { state.money += incPerSec; state.totalEarned += incPerSec; }
@@ -1203,7 +1170,6 @@
       }
     }, 20000);
 
-    // Bootstrap
     loadGameLocally(); updateUI(); updateTimersDisplay(); lucide.createIcons();
   </script>
 </body>
