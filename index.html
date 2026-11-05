@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Cyber Tycoon // HOLO-EDITION 2026</title>
+  <title>Cyber Tycoon // APP-EDITION 2026</title>
   <link rel="manifest" href="./manifest.json">
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -100,7 +100,6 @@
     .holo-card:hover {
       border-color: rgba(59, 130, 246, 0.5);
       box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.2);
-      transform: translateY(-2px);
     }
 
     .holo-btn {
@@ -114,7 +113,6 @@
     .holo-btn:hover:not(:disabled) {
       background: linear-gradient(135deg, #2563eb, #60a5fa);
       box-shadow: 0 6px 22px rgba(59, 130, 246, 0.5);
-      transform: translateY(-1px);
     }
 
     .icash-btn {
@@ -125,15 +123,26 @@
       box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
     }
 
-    .icash-btn:hover:not(:disabled) {
-      background: linear-gradient(135deg, #6d28d9, #c084fc);
-      box-shadow: 0 6px 22px rgba(168, 85, 247, 0.6);
-      transform: translateY(-1px);
+    /* Top Dropdown Animation */
+    #top-dropdown-menu {
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
     }
 
-    .menu-drawer {
-      transition: transform 0.35s cubic-bezier(0.1, 1, 0.1, 1);
-      box-shadow: 40px 0 80px rgba(0, 0, 0, 0.95);
+    #top-dropdown-menu.open {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Category Fullscreen Panels */
+    .category-page {
+      display: none;
+    }
+    .category-page.active {
+      display: block;
     }
 
     body.theme-neon { background-color: #0d021a; }
@@ -156,13 +165,136 @@
       100% { transform: translateY(0px) rotate(0deg); }
     }
     .floating-companion { animation: float-companion 4s ease-in-out infinite; }
+
+    @keyframes neon-glow {
+      0%, 100% { filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 15px rgba(236, 72, 153, 0.6)); }
+      50% { filter: drop-shadow(0 0 14px rgba(6, 182, 212, 1)) drop-shadow(0 0 25px rgba(236, 72, 153, 0.9)); }
+    }
+    .gt-logo-anim { animation: neon-glow 3s ease-in-out infinite; }
   </style>
 </head>
 <body class="bg-[#020408] text-slate-300 min-h-screen flex flex-col relative overflow-x-hidden">
 
   <div id="space-event-container" class="fixed inset-0 pointer-events-none z-50"></div>
-  <div id="companion-drone-container" class="fixed bottom-6 right-6 z-40 cursor-pointer pointer-events-auto"></div>
+  <div id="companion-drone-container" class="fixed bottom-24 right-6 z-40 cursor-pointer pointer-events-auto"></div>
 
+  <!-- TOP DROPDOWN MENU (ALLE 14 GAMING KATEGORIEN) -->
+  <div id="top-dropdown-menu" class="fixed inset-0 bg-[#050810]/98 backdrop-blur-3xl z-[100] flex flex-col p-4 sm:p-6 overflow-y-auto">
+    <div class="flex justify-between items-center pb-4 border-b border-cyan-500/20 mb-4 sticky top-0 bg-[#050810] z-10 pt-2">
+      <div class="flex items-center space-x-2 text-white font-extrabold text-sm tracking-widest uppercase">
+        <i data-lucide="layout-grid" class="w-5 h-5 text-cyan-400"></i>
+        <span>CYBER SYSTEM DIRECTORY</span>
+      </div>
+      <button onclick="toggleTopMenu()" class="w-9 h-9 rounded-full bg-rose-950/80 border border-rose-500/40 text-rose-300 flex items-center justify-center hover:scale-105 transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- 14 Kategorien Raster -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-w-2xl mx-auto w-full pb-24">
+      
+      <button onclick="switchCategoryPage('clicker')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-cyan-400 transition group bg-gradient-to-b from-blue-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition">
+          <i data-lucide="cpu" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">0. Core Terminal</span>
+      </button>
+
+      <button onclick="switchCategoryPage('icash')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-purple-400 transition group bg-gradient-to-b from-purple-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:scale-110 transition">
+          <i data-lucide="gem" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">0.5. iCash Zentrale</span>
+      </button>
+
+      <button onclick="switchCategoryPage('singularity')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-cyan-400 transition group bg-gradient-to-b from-cyan-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-300 group-hover:scale-110 transition">
+          <i data-lucide="atom" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">0.8. Singularität</span>
+      </button>
+
+      <button onclick="switchCategoryPage('daily')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-emerald-400 transition group bg-gradient-to-b from-emerald-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition">
+          <i data-lucide="gift" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">11. Quests & Rad</span>
+      </button>
+
+      <button onclick="switchCategoryPage('depts')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-blue-400 transition group bg-gradient-to-b from-blue-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 group-hover:scale-110 transition">
+          <i data-lucide="layers" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">1. Megastrukturen</span>
+      </button>
+
+      <button onclick="switchCategoryPage('upgrades')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-amber-400 transition group bg-gradient-to-b from-amber-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-110 transition">
+          <i data-lucide="zap" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">2. Quanten-Tech Tree</span>
+      </button>
+
+      <button onclick="switchCategoryPage('market')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-emerald-400 transition group bg-gradient-to-b from-emerald-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition">
+          <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">3. Börse & Wetter</span>
+      </button>
+
+      <button onclick="switchCategoryPage('lab')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-indigo-400 transition group bg-gradient-to-b from-indigo-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition">
+          <i data-lucide="flask-conical" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">4. Prototyp-Lab</span>
+      </button>
+
+      <button onclick="switchCategoryPage('staff')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-purple-400 transition group bg-gradient-to-b from-purple-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-300 group-hover:scale-110 transition">
+          <i data-lucide="users-round" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">5. Vorstand</span>
+      </button>
+
+      <button onclick="switchCategoryPage('hack')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-rose-400 transition group bg-gradient-to-b from-rose-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 group-hover:scale-110 transition">
+          <i data-lucide="shield-alert" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">6. Memory & PvP</span>
+      </button>
+
+      <button onclick="switchCategoryPage('hq')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-cyan-400 transition group bg-gradient-to-b from-cyan-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition">
+          <i data-lucide="building-2" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">7. HQ & Raumausbau</span>
+      </button>
+
+      <button onclick="switchCategoryPage('orbit')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-indigo-400 transition group bg-gradient-to-b from-indigo-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition">
+          <i data-lucide="orbit" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">8. Orbital-Drohnen</span>
+      </button>
+
+      <button onclick="switchCategoryPage('fame')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-blue-400 transition group bg-gradient-to-b from-blue-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-300 group-hover:scale-110 transition">
+          <i data-lucide="globe" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">9. Weltrangliste</span>
+      </button>
+
+      <button onclick="switchCategoryPage('settings')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-slate-400 transition group bg-gradient-to-b from-slate-900/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-slate-500/10 border border-slate-500/30 flex items-center justify-center text-slate-300 group-hover:scale-110 transition">
+          <i data-lucide="sliders" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">10. Einstellungen</span>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- STORY EVENT MODAL -->
   <div id="story-event-modal" class="fixed inset-0 bg-black/90 backdrop-blur-xl z-[110] flex items-center justify-center p-4 hidden">
     <div class="holo-card p-6 max-w-md w-full border-blue-500/50 bg-[#070b14] space-y-4 shadow-2xl text-center">
       <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mx-auto text-blue-400">
@@ -177,6 +309,7 @@
     </div>
   </div>
 
+  <!-- AUTH OVERLAY -->
   <div id="auth-overlay" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] flex items-center justify-center p-4">
     <div class="holo-card p-6 max-w-md w-full border-blue-500/50 bg-[#070b14] space-y-5 shadow-2xl relative">
       <div class="text-center space-y-1.5">
@@ -184,7 +317,7 @@
           <i data-lucide="shield-lock" class="w-6 h-6"></i>
         </div>
         <h2 class="font-extrabold text-base text-white tracking-widest uppercase">CYBER TYCOON // ACCESS CORE</h2>
-        <p class="text-xs text-slate-400">Erstelle einen Account mit Benutzernamen oder melde dich an, um das Imperium zu starten.</p>
+        <p class="text-xs text-slate-400">Erstelle einen Account oder melde dich an, um das Imperium zu starten.</p>
       </div>
 
       <div class="flex border-b border-blue-500/20 text-xs font-semibold">
@@ -228,6 +361,7 @@
     </div>
   </div>
 
+  <!-- ADMIN OVERRIDE MODAL -->
   <div id="admin-modal" class="fixed inset-0 bg-black/90 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
     <div class="holo-card p-6 max-w-md w-full border-rose-500/50 bg-[#070b14] space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-rose-500/20 pb-3">
@@ -269,6 +403,7 @@
     </div>
   </div>
 
+  <!-- OFFLINE EARNINGS MODAL -->
   <div id="offline-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="holo-card p-6 max-w-sm w-full border-blue-500/50 bg-[#070b14] text-center space-y-4 shadow-2xl">
       <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mx-auto text-blue-400">
@@ -288,31 +423,28 @@
     </div>
   </div>
 
-  <header class="bg-[#070b14]/90 backdrop-blur-2xl border-b border-blue-500/10 px-4 py-3.5 sticky top-0 z-30 flex items-center justify-between">
-    <div class="flex items-center space-x-2.5">
-      <button id="btn-toggle-menu" onclick="toggleMenu()" class="p-2.5 bg-[#0f172a] hover:bg-[#1e293b] text-blue-400 rounded-xl border border-blue-500/20 transition shadow-lg">
-        <i data-lucide="menu" class="w-5 h-5"></i>
-      </button>
-      
+  <!-- HEADER -->
+  <header class="bg-[#070b14]/95 backdrop-blur-2xl border-b border-blue-500/10 px-4 py-3 sticky top-0 z-30 flex items-center justify-between">
+    <div class="flex items-center space-x-2">
       <audio id="bg-music" loop>
         <source src="https://n11a-eu.rcs.revma.com/1z19ak79n98uv" type="audio/mpeg">
       </audio>
       
-      <button onclick="toggleMusic()" id="music-btn" class="p-2.5 bg-[#0f172a] hover:bg-[#1e293b] text-slate-400 rounded-xl border border-blue-500/20 transition shadow-lg flex items-center gap-1.5">
-        <i data-lucide="volume-x" id="music-icon" class="w-5 h-5"></i>
+      <button onclick="toggleMusic()" id="music-btn" class="p-2 bg-[#0f172a] hover:bg-[#1e293b] text-slate-400 rounded-xl border border-blue-500/20 transition flex items-center gap-1.5">
+        <i data-lucide="volume-x" id="music-icon" class="w-4 h-4"></i>
         <span class="text-[10px] font-mono text-slate-400 hidden sm:inline" id="music-label">MUSIC OFF</span>
       </button>
     </div>
 
     <div class="text-center cursor-pointer select-none" onclick="handleSecretAdminClick()" title="Admin Shortcut">
-      <h1 class="font-extrabold text-[11px] tracking-widest uppercase text-white flex items-center justify-center gap-1.5">
+      <h1 class="font-extrabold text-xs tracking-widest uppercase text-white flex items-center justify-center gap-1">
         CYBER TYCOON
       </h1>
       <span id="weather-tag" class="text-[9px] text-blue-400 font-mono tracking-wider">WETTER: NORMALES NETZ</span>
     </div>
 
     <div class="flex items-center space-x-2 text-xs font-semibold">
-      <div class="px-2.5 py-1 rounded-lg bg-[#0f172a] border border-blue-500/20 text-slate-300 font-mono text-[11px] shadow-lg">
+      <div class="px-2 py-1 rounded-lg bg-[#0f172a] border border-blue-500/20 text-slate-300 font-mono text-[11px]">
         LVL <span id="stat-level" class="text-white font-bold">1</span>
       </div>
       <div class="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[#0f172a] border border-emerald-500/20 text-emerald-400 text-[11px] font-mono shadow-lg">
@@ -322,90 +454,14 @@
     </div>
   </header>
   
-  <div id="save-status" class="absolute top-16 right-4 text-[10px] text-blue-400 font-mono transition-opacity duration-300 opacity-0 z-40 bg-[#0f172a] border border-blue-500/30 px-3 py-1 rounded-lg shadow-2xl">
+  <div id="save-status" class="fixed top-14 right-4 text-[10px] text-blue-400 font-mono transition-opacity duration-300 opacity-0 z-40 bg-[#0f172a] border border-blue-500/30 px-3 py-1 rounded-lg shadow-2xl">
     [ HOLO-SYNC GESPEICHERT ]
   </div>
 
-  <div id="menu-backdrop" onclick="toggleMenu()" class="fixed inset-0 bg-black/80 backdrop-blur-md z-40 hidden transition-opacity"></div>
-
-  <aside id="menu-drawer" class="menu-drawer fixed top-0 left-0 bottom-0 w-72 bg-[#050810] border-r border-blue-500/20 z-50 transform -translate-x-full flex flex-col justify-between">
-    <div class="overflow-y-auto p-4 space-y-1.5">
-      <div class="flex justify-between items-center pb-3 border-b border-blue-500/15 mb-3">
-        <div class="flex items-center space-x-2 text-white font-bold text-xs tracking-wide">
-          <i data-lucide="command" class="w-4 h-4 text-blue-500"></i>
-          <span>CYBER DIRECTORY</span>
-        </div>
-        <button onclick="toggleMenu()" class="text-slate-400 p-1 hover:text-white rounded-lg">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <button onclick="switchTab('clicker')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-white bg-blue-600/20 border border-blue-500/40 shadow-lg">
-        <i data-lucide="cpu" class="w-4 h-4 text-blue-400"></i>
-        <span>0. Core Terminal</span>
-      </button>
-      <button onclick="switchTab('icash')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
-        <i data-lucide="gem" class="w-4 h-4 text-purple-400"></i>
-        <span>0.5. iCash Cyber-Zentrale</span>
-      </button>
-      <button onclick="switchTab('singularity')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
-        <i data-lucide="atom" class="w-4 h-4 text-cyan-400"></i>
-        <span>0.8. Singularitäts-Protokoll (Prestige)</span>
-      </button>
-      <button onclick="switchTab('daily')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
-        <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i>
-        <span>11. Quests & Glücksrad</span>
-      </button>
-      <button onclick="switchTab('depts')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
-        <i data-lucide="layers" class="w-4 h-4 text-slate-500"></i>
-        <span>1. Megastrukturen & Synergien</span>
-      </button>
-      <button onclick="switchTab('upgrades')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
-        <i data-lucide="zap" class="w-4 h-4 text-slate-500"></i>
-        <span>2. Quanten-Tech Tree</span>
-      </button>
-      <button onclick="switchTab('market')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
-        <i data-lucide="bar-chart-3" class="w-4 h-4 text-slate-500"></i>
-        <span>3. Börse, Shorting & Wetter</span>
-      </button>
-      <button onclick="switchTab('lab')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
-        <i data-lucide="flask-conical" class="w-4 h-4 text-slate-500"></i>
-        <span>4. Prototyp-Lab & Patente</span>
-      </button>
-      <button onclick="switchTab('staff')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
-        <i data-lucide="users-round" class="w-4 h-4 text-slate-500"></i>
-        <span>5. Vorstand & Experten</span>
-      </button>
-      <button onclick="switchTab('hack')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
-        <i data-lucide="shield-alert" class="w-4 h-4 text-slate-500"></i>
-        <span>6. Memory & Netrunner PvP</span>
-      </button>
-      <button onclick="switchTab('hq')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
-        <i data-lucide="building-2" class="w-4 h-4 text-slate-500"></i>
-        <span>7. HQ & Raumausbau</span>
-      </button>
-      <button onclick="switchTab('orbit')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
-        <i data-lucide="orbit" class="w-4 h-4 text-indigo-400"></i>
-        <span>8. Orbital-Drohnen & Raumstation</span>
-      </button>
-      <button onclick="switchTab('fame')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
-        <i data-lucide="globe" class="w-4 h-4 text-slate-500"></i>
-        <span>9. Cloud-Sync & Weltrangliste</span>
-      </button>
-      <button onclick="switchTab('settings')" class="nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-[#0f172a] hover:text-white transition">
-        <i data-lucide="sliders" class="w-4 h-4 text-slate-500"></i>
-        <span>10. System-Einstellungen</span>
-      </button>
-    </div>
-
-    <div class="p-4 border-t border-blue-500/15 bg-[#020408]">
-      <div class="text-[10px] text-slate-500 font-mono uppercase tracking-wider">Saison-Reset in:</div>
-      <div id="season-countdown" class="text-xs text-slate-200 font-bold font-mono mt-0.5">00d 00h 00m 00s</div>
-    </div>
-  </aside>
-
-  <main class="flex-1 max-w-2xl w-full mx-auto p-4 flex flex-col">
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-2xl w-full mx-auto p-4 flex flex-col pb-28">
     
+    <!-- STATS OVERVIEW -->
     <div class="grid grid-cols-3 gap-2 mb-4">
       <div class="holo-card p-3 relative overflow-hidden">
         <div class="text-[9px] text-slate-400 font-mono uppercase tracking-wider">PASSIV / STUNDE</div>
@@ -421,8 +477,8 @@
       </div>
     </div>
 
-    <!-- TAB 0: TERMINAL -->
-    <div id="tab-clicker" class="tab-panel space-y-4">
+    <!-- CATEGORY PAGE 0: CORE TERMINAL (HAUPTSEITE) -->
+    <div id="page-clicker" class="category-page active space-y-4">
       <div class="holo-card p-6 flex flex-col items-center justify-center relative overflow-hidden text-center" id="clicker-card-container">
         <div class="absolute inset-0 h-32 opacity-30 pointer-events-none overflow-hidden">
           <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover">
@@ -442,9 +498,9 @@
         <h3 id="tab0-title" class="font-bold text-base text-white tracking-wide relative z-10">0. Core Terminal Overdrive</h3>
         <p id="tab0-desc" class="text-xs text-slate-400 mt-0.5 mb-4 relative z-10">Generiere Datenimpulse, um das Imperium zu skalieren.</p>
 
-        <button id="click-btn" class="w-36 h-36 rounded-2xl bg-[#0f172a]/90 border-2 border-blue-500/40 hover:border-blue-400 flex flex-col items-center justify-center shadow-2xl active:scale-95 transition-all group my-2 cursor-pointer relative z-10 backdrop-blur-md">
-          <div class="absolute inset-0 bg-blue-500/5 rounded-2xl group-hover:bg-blue-500/15 transition"></div>
-          <i data-lucide="cpu" class="w-8 h-8 text-blue-400 mb-2 group-hover:scale-110 transition-transform"></i>
+        <button id="click-btn" class="w-36 h-36 rounded-2xl bg-[#0f172a]/90 border-2 border-cyan-500/40 hover:border-cyan-400 flex flex-col items-center justify-center shadow-2xl active:scale-95 transition-all group my-2 cursor-pointer relative z-10 backdrop-blur-md">
+          <div class="absolute inset-0 bg-cyan-500/5 rounded-2xl group-hover:bg-cyan-500/15 transition"></div>
+          <i data-lucide="cpu" class="w-8 h-8 text-cyan-400 mb-2 group-hover:scale-110 transition-transform"></i>
           <span id="tab0-btn" class="font-bold text-[11px] text-white tracking-wider">IMPULS SENDEN</span>
           <span id="click-power-text" class="text-[10px] font-mono text-emerald-400 mt-1">+€0.01 / Klick</span>
         </button>
@@ -467,19 +523,19 @@
             <span id="exp-text" class="text-blue-400">0 / 200 EXP</span>
           </div>
           <div class="w-full h-2 bg-[#0f172a] rounded-full overflow-hidden border border-blue-500/20">
-            <div id="exp-bar" class="h-full bg-blue-500 rounded-full transition-all duration-300 shadow-[0_0_10px_#3b82f6]" style="width: 0%"></div>
+            <div id="exp-bar" class="h-full bg-cyan-500 rounded-full transition-all duration-300 shadow-[0_0_10px_#06b6d4]" style="width: 0%"></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- TAB 0.5: iCash Cyber-Zentrale -->
-    <div id="tab-icash" class="tab-panel space-y-4 hidden">
-      <div class="holo-card p-4 bg-gradient-to-r from-purple-950/40 via-[#0b101d] to-[#0b101d] border-purple-500/30">
+    <!-- CATEGORY PAGE 0.5: ICASH ZENTRALE -->
+    <div id="page-icash" class="category-page space-y-4">
+      <div class="flex justify-between items-center">
         <h3 class="font-bold text-sm text-white flex items-center gap-2">
-          <i data-lucide="gem" class="w-4 h-4 text-purple-400"></i> iCash Cyber-Zentrale & Holo-Cubes
+          <i data-lucide="gem" class="w-4 h-4 text-purple-400"></i> 0.5. iCash Cyber-Zentrale
         </h3>
-        <p class="text-xs text-slate-400 mt-1">Öffne Holo-Cubes für seltene Belohnungen, spende in den Syndicate Fund oder aktiviere den VIP Pass!</p>
+        <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold flex items-center gap-1">&larr; Terminal</button>
       </div>
 
       <div class="holo-card p-4 border-purple-500/50 bg-gradient-to-b from-purple-950/30 to-[#0b101d] space-y-3">
@@ -503,11 +559,9 @@
           <span id="syndicate-level-badge" class="text-[10px] font-mono text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded">Stufe 0</span>
         </div>
         <p class="text-[11px] text-slate-300">Spende iCash in den Gemeinschaftstopf für weltweite Permanent-Buffs.</p>
-        <div class="flex gap-2">
-          <button onclick="donateToSyndicate(5)" class="w-full py-2 bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-700 text-indigo-200 text-xs font-bold rounded-xl transition">
-            💎 5 iCash spenden (+1% Globaler Buff)
-          </button>
-        </div>
+        <button onclick="donateToSyndicate(5)" class="w-full py-2 bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-700 text-indigo-200 text-xs font-bold rounded-xl transition">
+          💎 5 iCash spenden (+1% Globaler Buff)
+        </button>
       </div>
 
       <div class="holo-card p-4 border-amber-500/40 bg-gradient-to-r from-amber-950/30 via-[#0b101d] to-[#0b101d]">
@@ -515,25 +569,25 @@
           <div class="font-bold text-xs text-white flex items-center gap-1.5">
             <i data-lucide="crown" class="w-4 h-4 text-amber-400"></i> CYBER MONATS-PASS (VIP)
           </div>
-          <span id="pass-status-badge" class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">Aktiv (30 Tage)</span>
+          <span id="pass-status-badge" class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">Aktiv</span>
         </div>
-        <p class="text-[11px] text-slate-300 mb-3">Verdoppelt passives Einkommen, verdoppelt Klick-Power & schaltet <strong class="text-amber-300">Cyber-Emperor</strong> frei!</p>
+        <p class="text-[11px] text-slate-300 mb-3">Verdoppelt passives Einkommen, verdoppelt Klick-Power & schaltet VIP frei!</p>
         <button onclick="buyMonthlyPass()" id="btn-buy-pass" class="w-full py-2 bg-gradient-to-r from-amber-600 to-amber-500 text-white text-xs font-bold rounded-xl shadow-lg hover:brightness-110 transition">
           Pass verlängern (💎 50 iCash)
         </button>
       </div>
 
-      <div class="text-xs font-bold text-white uppercase tracking-wider mt-2">Permanente Boni & Euro-Exchange</div>
+      <div class="text-xs font-bold text-white uppercase tracking-wider mt-2">Permanente Boni & Exchange</div>
       <div id="list-icash-features" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 0.8: SINGULARITÄTS-PROTOKOLL -->
-    <div id="tab-singularity" class="tab-panel space-y-4 hidden">
-      <div class="holo-card p-4 bg-gradient-to-r from-cyan-950/40 via-[#0b101d] to-[#0b101d] border-cyan-500/30">
+    <!-- CATEGORY PAGE 0.8: SINGULARITÄTS-PROTOKOLL -->
+    <div id="page-singularity" class="category-page space-y-4">
+      <div class="flex justify-between items-center">
         <h3 class="font-bold text-sm text-white flex items-center gap-2">
-          <i data-lucide="atom" class="w-4 h-4 text-cyan-400"></i> Das Singularitäts-Protokoll (Prestige)
+          <i data-lucide="atom" class="w-4 h-4 text-cyan-400"></i> 0.8. Singularitäts-Protokoll (Prestige)
         </h3>
-        <p class="text-xs text-slate-400 mt-1">Zünde die Quanten-Singularität, setze das Imperium zurück und erhalte seltene 🌀 Matrix-Splitter für mächtige Dauer-Buffs!</p>
+        <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
 
       <div class="holo-card p-4 border-cyan-500/40 bg-gradient-to-b from-cyan-950/20 to-[#0b101d] text-center space-y-3">
@@ -549,16 +603,15 @@
       <div id="singularity-upgrades-list" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 11: TÄGLICHE BELOHNUNG, QUESTS & GLÜCKSRAD -->
-    <div id="tab-daily" class="tab-panel space-y-4 hidden">
-      <div class="holo-card p-4 bg-gradient-to-r from-emerald-950/40 via-[#0b101d] to-[#0b101d] border-emerald-500/30">
+    <!-- CATEGORY PAGE 11: QUESTS & GLÜCKSRAD -->
+    <div id="page-daily" class="category-page space-y-4">
+      <div class="flex justify-between items-center">
         <h3 class="font-bold text-sm text-white flex items-center gap-2">
-          <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i> Quests, Glücksrad & Tagesbelohnungen
+          <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i> 11. Quests & Glücksrad
         </h3>
-        <p class="text-xs text-slate-400 mt-1">Schließe tägliche Verträge ab und drehe täglich am Holo-Rad!</p>
+        <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
 
-      <!-- LUCKY WHEEL (1x TÄGLICH MIT TIMER) -->
       <div class="holo-card p-4 border-amber-500/30 bg-gradient-to-b from-amber-950/20 to-[#0b101d] text-center space-y-3">
         <div class="font-bold text-xs text-amber-400 flex items-center justify-center gap-1.5">
           <i data-lucide="disc" class="w-4 h-4"></i> CYBER HOLO-WHEEL (GLÜCKSRAD)
@@ -566,7 +619,7 @@
         <div id="wheel-visual" class="w-24 h-24 rounded-full border-4 border-amber-500/40 border-t-amber-400 mx-auto flex items-center justify-center font-bold text-xs text-white transition-transform duration-1000 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
           SPIN
         </div>
-        <button onclick="spinLuckyWheel()" id="btn-spin-wheel" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold text-xs rounded-xl shadow-lg hover:brightness-110 transition">
+        <button onclick="spinLuckyWheel()" id="btn-spin-wheel" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold text-xs rounded-xl shadow-lg transition">
           Holo-Rad Drehen! (1x Täglich)
         </button>
         <div id="wheel-timer-text" class="text-[11px] font-mono text-slate-400 hidden">Nächster Dreh in: <span class="text-amber-400 font-bold" id="wheel-countdown">24:00:00</span></div>
@@ -582,30 +635,30 @@
         <div id="daily-rewards-container" class="grid grid-cols-1 gap-2.5"></div>
       </div>
 
-      <!-- TÄGLICHER CLAIM BUTTON MIT 24H TIMER -->
-      <button onclick="claimDailyReward()" id="btn-claim-daily" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg hover:brightness-110 transition">
+      <button onclick="claimDailyReward()" id="btn-claim-daily" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg transition">
         Tägliche Belohnung abholen!
       </button>
       <div id="daily-claim-timer-text" class="text-[11px] font-mono text-slate-400 text-center hidden">Nächste Belohnung in: <span class="text-emerald-400 font-bold" id="daily-claim-countdown">24:00:00</span></div>
     </div>
 
-    <!-- TAB 1: SEKTOREN -->
-    <div id="tab-depts" class="tab-panel space-y-3 hidden">
+    <!-- CATEGORY PAGE 1: MEGASTRUKTUREN -->
+    <div id="page-depts" class="category-page space-y-3">
+      <div class="flex justify-between items-center mb-1">
+        <h3 class="font-bold text-sm text-white">1. Megastrukturen & Synergien</h3>
+        <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
+      </div>
       <div id="sector-synergy-banner" class="holo-card p-3 border-emerald-500/30 bg-emerald-950/20 text-xs text-emerald-300 font-mono">
         ⚡ Sektor-Synergien aktiv: Paarweise Ausbauten gewähren +25% Zusatzbonus!
       </div>
       <div id="list-depts" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 2: FORSCHUNG & TECH-TREE -->
-    <div id="tab-upgrades" class="tab-panel space-y-4 hidden">
-      <div class="holo-card p-4 bg-gradient-to-r from-blue-950/40 via-[#0b101d] to-[#0b101d] border-blue-500/30">
-        <h3 class="font-bold text-sm text-white flex items-center gap-2">
-          <i data-lucide="git-branch" class="w-4 h-4 text-blue-400"></i> Quanten-Forschungsbaum (Tech-Tree)
-        </h3>
-        <p class="text-xs text-slate-400 mt-1">Wähle deinen Spezialisierungspfad: Krypto-Mining oder Corporate-Imperium!</p>
+    <!-- CATEGORY PAGE 2: TECH TREE -->
+    <div id="page-upgrades" class="category-page space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-sm text-white">2. Quanten-Tech Tree</h3>
+        <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
-
       <div class="flex gap-2">
         <button onclick="switchTechBranch('krypto')" id="btn-branch-krypto" class="flex-1 py-2 text-xs font-bold rounded-xl border border-purple-500/40 bg-purple-950/30 text-purple-300">
           🪙 Krypto-Pfad
@@ -614,13 +667,16 @@
           🏢 Corporate-Pfad
         </button>
       </div>
-
       <div id="list-upgrades" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 3: BÖRSE, SHORTING & WETTER -->
-    <div id="tab-market" class="tab-panel space-y-4 hidden">
-      
+    <!-- CATEGORY PAGE 3: BÖRSE & WETTER -->
+    <div id="page-market" class="category-page space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-sm text-white">3. Börse, Shorting & Wetter</h3>
+        <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
+      </div>
+
       <div id="weather-banner" class="holo-card p-3 border-cyan-500/40 bg-cyan-950/20 flex items-center gap-2.5">
         <i data-lucide="cloud-lightning" class="w-5 h-5 text-cyan-400 animate-pulse"></i>
         <div class="text-xs">
@@ -647,34 +703,32 @@
         </div>
       </div>
 
-      <div class="holo-card p-4 bg-gradient-to-r from-blue-950/40 via-[#0b101d] to-[#0b101d] border-blue-500/30 flex justify-between items-center">
-        <div>
-          <h3 class="font-bold text-sm text-white flex items-center gap-1.5"><i data-lucide="bar-chart-3" class="w-4 h-4 text-blue-400"></i> Wall Street, Short-Trading & Holo-Mining</h3>
-          <p class="text-xs text-slate-400 mt-0.5">Handle Aktien Long/Short oder betreibe Rig-Mining.</p>
-        </div>
-        <div class="text-xs text-blue-400 font-mono bg-[#0f172a] px-3 py-1.5 rounded-xl border border-blue-500/20 shadow-lg text-right">
-          <div class="text-[9px] text-slate-400 uppercase">Automatischer Drop</div>
-          <span id="mining-timer-display" class="font-bold text-white">60:00</span>
-        </div>
-      </div>
       <div id="list-market" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 4: LAB -->
-    <div id="tab-lab" class="tab-panel space-y-3 hidden">
+    <!-- CATEGORY PAGE 4: PROTOTYP-LAB -->
+    <div id="page-lab" class="category-page space-y-3">
+      <div class="flex justify-between items-center mb-1">
+        <h3 class="font-bold text-sm text-white">4. Prototyp-Lab & Patente</h3>
+        <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
+      </div>
       <div id="list-lab" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 5: PERSONAL -->
-    <div id="tab-staff" class="tab-panel space-y-3 hidden">
+    <!-- CATEGORY PAGE 5: VORSTAND -->
+    <div id="page-staff" class="category-page space-y-3">
+      <div class="flex justify-between items-center mb-1">
+        <h3 class="font-bold text-sm text-white">5. Vorstand & Experten</h3>
+        <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
+      </div>
       <div id="list-staff" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 6: HACK & NETRUNNER PVP -->
-    <div id="tab-hack" class="tab-panel space-y-4 hidden">
-      <div>
-        <h3 class="font-bold text-sm text-white">6. Memory-Hack & Netrunner PvP Sabotage</h3>
-        <p class="text-xs text-slate-400">Memory-Infiltration und Angriffe auf Cyber-Rivalen mit Firewall-Schutz!</p>
+    <!-- CATEGORY PAGE 6: MEMORY & PVP -->
+    <div id="page-hack" class="category-page space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-sm text-white">6. Memory & Netrunner PvP</h3>
+        <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
 
       <div class="holo-card p-4 border-rose-500/40 bg-gradient-to-b from-rose-950/20 to-[#0b101d] space-y-3">
@@ -684,7 +738,7 @@
           </div>
           <span id="shield-status-badge" class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">Firewall Aktiv</span>
         </div>
-        <p class="text-[11px] text-slate-300">Kaufe eine Quantum-Firewall, um dich vor gegnerischen Sabotage-Akteuren zu schützen, oder infiltriere echte Rivalen!</p>
+        <p class="text-[11px] text-slate-300">Kaufe eine Quantum-Firewall oder infiltriere echte Rivalen!</p>
         <div class="grid grid-cols-2 gap-2">
           <button onclick="buyNetrunnerShield()" class="py-2.5 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700 text-emerald-200 text-xs font-bold rounded-xl transition">
             🛡️ Schild Aktivieren (💎 5 iCash)
@@ -700,7 +754,6 @@
           <span class="font-mono text-xs font-bold text-purple-400 flex items-center gap-1">
             <i data-lucide="brain" class="w-4 h-4"></i> NEURAL MEMORY BYPASS
           </span>
-          <span id="memory-hack-level" class="text-[10px] font-mono text-slate-400">Sequenz-Länge: 3</span>
         </div>
         <p class="text-xs text-slate-300 mb-3" id="memory-hack-instruction">Merke dir die blinkende Zahlenfolge und wiederhole sie!</p>
         <div id="memory-sequence-display" class="h-10 bg-[#070b14] border border-purple-500/30 rounded-xl flex items-center justify-center font-mono font-bold text-lg text-purple-300 mb-3">
@@ -713,18 +766,21 @@
       <div id="list-hack" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 7: HQ -->
-    <div id="tab-hq" class="tab-panel space-y-3 hidden">
+    <!-- CATEGORY PAGE 7: HQ -->
+    <div id="page-hq" class="category-page space-y-3">
+      <div class="flex justify-between items-center mb-1">
+        <h3 class="font-bold text-sm text-white">7. HQ & Raumausbau</h3>
+        <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
+      </div>
       <div id="list-hq" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 8: ORBITAL DROHNEN -->
-    <div id="tab-orbit" class="tab-panel space-y-3 hidden">
-      <div>
+    <!-- CATEGORY PAGE 8: ORBITAL DROHNEN -->
+    <div id="page-orbit" class="category-page space-y-3">
+      <div class="flex justify-between items-center mb-1">
         <h3 class="font-bold text-sm text-white">8. Orbital-Drohnen & Raumstation</h3>
-        <p class="text-xs text-slate-400">Positioniere Drohnen und fusioniere sie zu Gigantischen Raumstationen.</p>
+        <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
       </div>
-      
       <div class="holo-card p-4 border-indigo-500/40 bg-gradient-to-r from-indigo-950/40 via-[#0b101d] to-[#0b101d] flex justify-between items-center">
         <div>
           <div class="font-bold text-xs text-white">Orbital-Fusionieren</div>
@@ -734,14 +790,16 @@
           🚀 Station Bauen
         </button>
       </div>
-
       <div id="list-orbit" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 9: CLOUD & LEADERBOARD -->
-    <div id="tab-fame" class="tab-panel space-y-4 hidden">
-      <h3 class="font-bold text-sm text-white">9. Cloud-Sync & Weltrangliste</h3>
-      
+    <!-- CATEGORY PAGE 9: WELTRANGLISTE -->
+    <div id="page-fame" class="category-page space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-sm text-white">9. Cloud-Sync & Weltrangliste</h3>
+        <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
+      </div>
+
       <div class="holo-card p-4 space-y-3 border-purple-500/30">
         <div class="flex justify-between items-center">
           <span class="font-bold text-xs text-white flex items-center gap-1.5">
@@ -749,50 +807,66 @@
           </span>
           <span id="current-avatar-display" class="text-xs font-mono text-purple-300 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded">🤖 Standard</span>
         </div>
-        <p class="text-[11px] text-slate-400">Wähle deinen Hologramm-Avatar für die Weltrangliste.</p>
         <div id="avatar-selection-grid" class="grid grid-cols-2 gap-2 pt-1"></div>
       </div>
 
       <div class="holo-card p-4 space-y-3">
         <div id="firebase-user-status" class="text-xs text-blue-400 font-mono font-medium">Verbinde mit Empire Core...</div>
-        
-        <div id="firebase-auth-forms" class="space-y-2">
-          <input type="text" id="auth-company-name" placeholder="Unternehmensname / Spielername" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
-          <input type="email" id="auth-email" placeholder="E-Mail" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
-          <input type="password" id="auth-password" placeholder="Passwort (min. 6 Zeichen)" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
-          <div class="flex gap-2 pt-1">
-            <button onclick="handleLogin()" class="flex-1 py-2 holo-btn text-xs rounded-xl font-semibold">Login</button>
-            <button onclick="handleRegister()" class="flex-1 py-2 bg-[#0f172a] hover:bg-[#1e293b] text-slate-200 border border-blue-500/20 text-xs rounded-xl font-semibold transition">Registrieren</button>
-          </div>
-        </div>
-
         <button id="firebase-logout-btn" onclick="handleLogout()" class="w-full py-2 bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-800 text-xs rounded-xl font-semibold transition hidden">Abmelden</button>
         <button onclick="saveGameToCloudManual()" class="w-full py-2 holo-btn text-xs rounded-xl font-semibold">Cloud-Sync erzwingen</button>
       </div>
 
-      <div class="flex justify-between items-center pt-2">
-        <h3 class="font-bold text-xs text-slate-300 uppercase tracking-wider">Globale Rangliste</h3>
-        <span class="text-[10px] text-slate-500 font-mono">Auto-Sync (30s)</span>
-      </div>
       <div id="leaderboard-list" class="space-y-2">
         <div class="text-xs text-slate-500 italic">Lade Rangliste...</div>
       </div>
     </div>
 
-    <!-- TAB 10: SETTINGS -->
-    <div id="tab-settings" class="tab-panel space-y-4 hidden">
-      <h3 class="font-bold text-sm text-white">10. System-Einstellungen</h3>
+    <!-- CATEGORY PAGE 10: EINSTELLUNGEN -->
+    <div id="page-settings" class="category-page space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-sm text-white">10. System-Einstellungen</h3>
+        <button onclick="switchCategoryPage('clicker')" class="text-xs text-cyan-400 font-semibold">&larr; Terminal</button>
+      </div>
       <div id="settings-content-box" class="holo-card p-4 space-y-3"></div>
     </div>
 
   </main>
 
+  <!-- UNTERE FOOTER NAVIGATION MIT NEON GT BUTTON -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-[#070b14]/95 backdrop-blur-2xl border-t border-cyan-500/20 py-2.5 px-6 flex items-center justify-between z-50">
+    <button onclick="switchCategoryPage('clicker')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-cyan-400 transition">
+      <i data-lucide="cpu" class="w-5 h-5"></i>
+      <span class="text-[9px] font-mono font-bold">TERMINAL</span>
+    </button>
+
+    <!-- ZENTRALER NEON GT LOGO BUTTON -->
+    <div class="relative -top-5">
+      <button onclick="toggleTopMenu()" class="w-16 h-16 rounded-full bg-gradient-to-tr from-cyan-600 via-purple-600 to-pink-500 p-1 shadow-[0_0_25px_rgba(6,182,212,0.6)] flex items-center justify-center hover:scale-105 active:scale-95 transition gt-logo-anim cursor-pointer">
+        <div class="w-full h-full rounded-full bg-[#030712] border-2 border-cyan-400/80 flex items-center justify-center relative overflow-hidden">
+          <svg class="w-full h-full absolute inset-0 opacity-40" viewBox="0 0 100 100" fill="none">
+            <path d="M10 20 H40 V40 H80" stroke="#06b6d4" stroke-width="2"/>
+            <path d="M90 80 H60 V60 H20" stroke="#ec4899" stroke-width="2"/>
+            <circle cx="80" cy="40" r="3" fill="#06b6d4"/>
+            <circle cx="20" cy="60" r="3" fill="#ec4899"/>
+          </svg>
+          <div class="relative z-10 flex items-center justify-center font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-pink-400 to-purple-300 text-lg tracking-tighter drop-shadow-[0_0_5px_rgba(6,182,212,0.8)] font-mono">
+            GT
+          </div>
+        </div>
+      </button>
+    </div>
+
+    <button onclick="switchCategoryPage('daily')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-emerald-400 transition">
+      <i data-lucide="gift" class="w-5 h-5"></i>
+      <span class="text-[9px] font-mono font-bold">QUESTS</span>
+    </button>
+  </nav>
+
+  <!-- GESAMTE SPIEL-LOGIK (VOLLSTÄNDIG) -->
   <script>
     let audioCtx = null;
     function initAudioContext() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     }
 
     function playClickBeep() {
@@ -831,9 +905,7 @@
       const music = document.getElementById('bg-music');
       const icon = document.getElementById('music-icon');
       const label = document.getElementById('music-label');
-      
       if (!music) return;
-      
       if (isMusicPlaying) {
         music.pause();
         isMusicPlaying = false;
@@ -845,14 +917,34 @@
           icon.setAttribute('data-lucide', 'volume-2');
           if(label) label.innerText = "LIVE STREAM";
           speakAI("Live Stream verbunden. Neuralnetz aktiv.");
-        }).catch(err => {
-          alert("Browser blockiert Autoplay. Bitte erneut klicken.");
-        });
+        }).catch(err => { alert("Browser blockiert Autoplay. Bitte erneut klicken."); });
       }
       lucide.createIcons();
     }
 
-    function switchAuthMode(mode) {
+    function toggleTopMenu() {
+      const menu = document.getElementById('top-dropdown-menu');
+      menu.classList.toggle('open');
+    }
+
+    function switchCategoryPage(catId) {
+      const menu = document.getElementById('top-dropdown-menu');
+      menu.classList.remove('open');
+      
+      document.querySelectorAll('.category-page').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById('page-' + catId);
+      if(target) target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      renderTabContent(catId);
+      if(catId === 'market') { drawAllCandleCharts(); updatePortfolioHeader(); }
+      if(catId === 'hack') initHackMiniGame();
+      if(catId === 'singularity') renderSingularityTab();
+      if(catId === 'fame') { fetchLeaderboard(); renderAvatarSelector(); }
+      if(catId === 'daily') { checkDailyQuestsRefresh(); checkWheelAvailability(); checkDailyClaimAvailability(); renderDailyRewards(); }
+    }
+
+    async function switchAuthMode(mode) {
       const formLogin = document.getElementById('form-overlay-login');
       const formReg = document.getElementById('form-overlay-reg');
       const btnLogin = document.getElementById('tab-btn-login');
@@ -923,7 +1015,6 @@
 
     let secretClickCount = 0;
     let secretClickTimer = null;
-
     function handleSecretAdminClick() {
       secretClickCount++;
       if (secretClickTimer) clearTimeout(secretClickTimer);
@@ -938,54 +1029,16 @@
           alert("❌ Falsches Passwort!");
         }
       } else {
-        secretClickTimer = setTimeout(() => {
-          secretClickCount = 0;
-        }, 1000);
+        secretClickTimer = setTimeout(() => { secretClickCount = 0; }, 1000);
       }
     }
 
-    function closeAdminModal() {
-      document.getElementById('admin-modal').classList.add('hidden');
-    }
-
-    function adminAddMoney() {
-      state.money += 1000000;
-      state.totalEarned += 1000000;
-      updateUI();
-      saveGameLocally();
-      alert("💰 +€1.000.000 Admin-Kapital hinzugefügt!");
-    }
-
-    function adminAddIcash() {
-      state.icash += 50;
-      updateUI();
-      saveGameLocally();
-      alert("💎 +50 Admin iCash hinzugefügt!");
-    }
-
-    function adminTimeJump() {
-      const earned = getPassiveIncome() * 24;
-      state.money += earned;
-      state.totalEarned += earned;
-      updateUI();
-      saveGameLocally();
-      alert(`⚡ 24 Stunden Zeitraffer ausgeführt! +${formatMoney(earned)} gutgeschrieben.`);
-    }
-
-    function adminUnlockAll() {
-      state.departments.forEach(d => { if(d.count === 0) d.count = 1; });
-      state.hqs.forEach(h => { h.bought = true; });
-      updateUI();
-      saveGameLocally();
-      alert("🔓 Alles Freigeschaltet!");
-    }
-
-    function adminForceSeasonReset() {
-      if(confirm("⚠️ WARNUNG: Möchtest du wirklich eine NEUE Saison starten?")) {
-        executeSeasonReset();
-        alert("🎉 SAISON RESET ERFOLGREICH DURCHGEFÜHRT!");
-      }
-    }
+    function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
+    function adminAddMoney() { state.money += 1000000; state.totalEarned += 1000000; updateUI(); saveGameLocally(); alert("💰 +€1.000.000 Admin-Kapital hinzugefügt!"); }
+    function adminAddIcash() { state.icash += 50; updateUI(); saveGameLocally(); alert("💎 +50 Admin iCash hinzugefügt!"); }
+    function adminTimeJump() { const earned = getPassiveIncome() * 24; state.money += earned; state.totalEarned += earned; updateUI(); saveGameLocally(); alert(`⚡ 24 Stunden Zeitraffer ausgeführt! +${formatMoney(earned)} gutgeschrieben.`); }
+    function adminUnlockAll() { state.departments.forEach(d => { if(d.count === 0) d.count = 1; }); state.hqs.forEach(h => { h.bought = true; }); updateUI(); saveGameLocally(); alert("🔓 Alles Freigeschaltet!"); }
+    function adminForceSeasonReset() { if(confirm("⚠️ WARNUNG: Möchtest du wirklich eine NEUE Saison starten?")) { executeSeasonReset(); alert("🎉 SAISON RESET ERFOLGREICH DURCHGEFÜHRT!"); } }
 
     const defaultProducts = [
       { id: 'p1', name: 'KI-Assistent v1', cost: 1000.00, launched: false, broken: false, bonus: 'Gibt +15% Boost auf passives Einkommen' },
@@ -1019,7 +1072,7 @@
     ];
 
     let state = {
-      version: 19,
+      version: 21,
       companyName: '',
       language: 'de',
       money: 0,
@@ -1070,7 +1123,7 @@
       ],
 
       permaUpgrades: [
-        { id: 'pi1', name: 'Quantum Click Matrix', desc: 'Verdoppelt dauerhaft die Klick-Leistung.', cost: 5, level: 3, maxLevel: 10, mult: 2.0 },
+        { id: 'pi1', name: 'Quantum Click Matrix', desc: 'Verdoppelt dauerhaft die Klick-Leistung.', cost: 5, level: 0, maxLevel: 10, mult: 2.0 },
         { id: 'pi2', name: 'Neural Income Booster', desc: 'Erhöht das gesamte passive Einkommen um +50% pro Stufe.', cost: 10, level: 0, maxLevel: 10, mult: 1.5 },
         { id: 'pi3', name: 'Auto-Impulse Core', desc: 'Generiert alle 10 Sekunden automatisch 1 Klick-Impuls.', cost: 25, level: 0, maxLevel: 1, mult: 1.0 },
         { id: 'pi4', name: 'Syndicate iCash Yield', desc: 'Erhöht iCash-Belohnungen bei Level-ups um +2.', cost: 30, level: 0, maxLevel: 5, mult: 1.0 }
@@ -1149,7 +1202,6 @@
       updateDynamicTexts();
       applyHQTheme();
       updateUI();
-      renderTabContent(activeCurrentTab);
     };
 
     function fixMissingNames() {
@@ -1174,33 +1226,17 @@
           m.name = defaults[idx] || `Asset #${idx+1}`;
         }
       });
-
-      if(!state.singularityUpgrades) state.singularityUpgrades = [
-        { id: 'sq1', name: 'Singularity Core Multiplier', desc: 'Erhöht passives Einkommen pro Matrix-Splitter um +20%.', cost: 2, level: 0, maxLevel: 10 },
-        { id: 'sq2', name: 'Matrix Overdrive', desc: 'Erhöht Klick-Power dauerhaft um +100% pro Stufe.', cost: 5, level: 0, maxLevel: 5 }
-      ];
-      if(!state.dailyQuests) {
-        state.dailyQuests = [
-          { id: 'q1', text: 'Führe 15 Klick-Impulse aus', goal: 15, current: 0, reward: 3, claimed: false },
-          { id: 'q2', text: 'Absolviere 2 Mini-Hacks', goal: 2, current: 0, reward: 5, claimed: false },
-          { id: 'q3', text: 'Erweitere 2 Sektoren', goal: 2, current: 0, reward: 6, claimed: false },
-          { id: 'q4', text: 'Kaufe 1 Krypto-Mining Rig', goal: 1, current: 0, reward: 5, claimed: false },
-          { id: 'q5', text: 'Investiere in 2 Aktien/Coins', goal: 2, current: 0, reward: 4, claimed: false }
-        ];
-      }
     }
 
     function checkDailyQuestsRefresh() {
       const todayStr = new Date().toISOString().slice(0, 10);
       const allClaimed = state.dailyQuests.every(q => q.claimed);
       if (state.lastQuestRefreshDate !== todayStr || allClaimed) {
-        if (state.lastQuestRefreshDate !== todayStr || allClaimed) {
-          state.lastQuestRefreshDate = todayStr;
-          state.dailyQuests.forEach(q => {
-            q.current = 0;
-            q.claimed = false;
-          });
-        }
+        state.lastQuestRefreshDate = todayStr;
+        state.dailyQuests.forEach(q => {
+          q.current = 0;
+          q.claimed = false;
+        });
       }
     }
 
@@ -1275,10 +1311,6 @@
 
     const translations = {
       de: {
-        season: "HOLO EDITION 2026",
-        passivLabel: "PASSIV / STUNDE",
-        companyValLabel: "GESAMT-ASSETS",
-        nav: ["0. Core Terminal", "0.5. iCash Cyber-Zentrale", "0.8. Singularität", "11. Quests & Glücksrad", "1. Megastrukturen", "2. Quanten-Tech Tree", "3. Börse & Wetter", "4. Advanced Lab", "5. Experten", "6. Memory & Netrunner PvP", "7. HQ & Raumausbau", "8. Satelliten", "9. Cloud & Rangliste", "10. Einstellungen"],
         departments: [
           { name: "Alpha Cyber-Grid" }, { name: "Nano-Assembler Plant" }, { name: "Quantum Node Array" },
           { name: "Synthetic Bio-Lab" }, { name: "Neural Matrix Hub" }, { name: "Holographic Forge" },
@@ -1288,7 +1320,6 @@
         ]
       }
     };
-    translations.en = translations.de;
 
     function applyHQTheme() {
       document.body.classList.remove('theme-neon', 'theme-cyan', 'theme-gold');
@@ -1303,19 +1334,9 @@
       saveGameLocally();
       updateDynamicTexts();
       updateUI();
-      renderTabContent(activeCurrentTab);
     }
 
-    function updateDynamicTexts() {
-      const lang = state.language || 'de';
-      const t = translations[lang] || translations['de'];
-      if(!t || !t.nav) return;
-
-      const navButtons = document.querySelectorAll('#menu-drawer button.nav-item span');
-      navButtons.forEach((span, idx) => {
-        if(t.nav[idx]) span.innerText = t.nav[idx];
-      });
-    }
+    function updateDynamicTexts() {}
 
     function renderLanguageTab() {
       const lang = state.language || 'de';
@@ -1333,36 +1354,6 @@
           </button>
         </div>
       `;
-    }
-
-    async function handleRegister() {
-      if (!window.FB) { alert('Firebase nicht initialisiert.'); return; }
-      const companyInput = document.getElementById('auth-company-name').value.trim();
-      const email = document.getElementById('auth-email').value;
-      const pass = document.getElementById('auth-password').value;
-
-      if (!companyInput) { alert('Bitte Benutzernamen eingeben!'); return; }
-      if (!email || !pass) { alert('E-Mail und Passwort eingeben!'); return; }
-
-      try {
-        state.companyName = companyInput;
-        const userCred = await window.FB.createUserWithEmailAndPassword(window.FB.auth, email, pass);
-        if(userCred && userCred.user) {
-          await window.FB.updateProfile(userCred.user, { displayName: companyInput });
-        }
-        await saveGameToCloudManual();
-        speakAI("Erfolgreich registriert.");
-      } catch (e) { alert('Fehler: ' + e.message); }
-    }
-
-    async function handleLogin() {
-      if (!window.FB) { alert('Firebase nicht initialisiert.'); return; }
-      const email = document.getElementById('auth-email').value;
-      const pass = document.getElementById('auth-password').value;
-      try {
-        await window.FB.signInWithEmailAndPassword(window.FB.auth, email, pass);
-        speakAI("Login erfolgreich.");
-      } catch (e) { alert('Login-Fehler: ' + e.message); }
     }
 
     async function handleLogout() {
@@ -1742,7 +1733,6 @@
       saveGameLocally();
     }
 
-    // GLÜCKSRAD 1X TÄGLICH MIT 24H TIMER
     function checkWheelAvailability() {
       const now = Date.now();
       const oneDay = 24 * 60 * 60 * 1000;
@@ -1804,7 +1794,6 @@
       }, 1000);
     }
 
-    // TÄGLICHE BELOHNUNG 1X TÄGLICH MIT 24H TIMER
     function checkDailyClaimAvailability() {
       const now = Date.now();
       const oneDay = 24 * 60 * 60 * 1000;
@@ -1855,7 +1844,6 @@
         q.current += val;
         if (q.current > q.goal) q.current = q.goal;
       }
-      if(activeCurrentTab === 'daily') renderDailyRewards();
     }
 
     function claimQuestReward(questId) {
@@ -1885,30 +1873,6 @@
       }
     }
 
-    function shortStock(idx) {
-      const item = state.market[idx];
-      const actualCost = item.price;
-      if (state.money >= actualCost) {
-        state.money -= actualCost;
-        item.shorted = (item.shorted || 0) + 1;
-        updateUI();
-        renderTabContent('market');
-        saveGameLocally();
-      }
-    }
-
-    function closeShortStock(idx) {
-      const item = state.market[idx];
-      if (item.shorted > 0) {
-        const revenue = item.price * 1.15;
-        state.money += revenue;
-        state.shorted -= 1;
-        updateUI();
-        renderTabContent('market');
-        saveGameLocally();
-      }
-    }
-
     function triggerRandomMarketNews() {
       const news = [
         { text: "🚨 HACKER-ANGRIFF: Krypto-Kurse brechen ein!", impact: -12, target: 'crypto' },
@@ -1922,32 +1886,6 @@
         if (chosen.target === 'crypto' && m.type === 'crypto') m.price *= (1 + chosen.impact / 100);
         else if (chosen.target === 'stock' && m.type === 'stock') m.price *= (1 + chosen.impact / 100);
       });
-      if(activeCurrentTab === 'market') renderTabContent('market');
-    }
-
-    function sellPatent(idx) {
-      const p = state.products[idx];
-      if (p.launched && !p.broken) {
-        p.launched = false;
-        state.icash += 15;
-        alert(`📜 Patent für "${p.name}" verkauft! +💎 15 iCash erhalten.`);
-        updateUI();
-        renderTabContent('lab');
-        saveGameLocally();
-      }
-    }
-
-    function repairPrototype(idx) {
-      const p = state.products[idx];
-      const repairCost = p.cost * 0.4;
-      if (state.money >= repairCost) {
-        state.money -= repairCost;
-        p.broken = false;
-        alert(`🛠️ Prototyp repariert!`);
-        updateUI();
-        renderTabContent('lab');
-        saveGameLocally();
-      }
     }
 
     let memorySequence = [];
@@ -2014,20 +1952,6 @@
       saveGameLocally();
     }
 
-    function buildHQRoom(idx) {
-      const hq = state.hqs[idx];
-      const roomCost = hq.cost * 0.5 || 2500;
-      if (state.money >= roomCost) {
-        state.money -= roomCost;
-        hq.roomBuilt = true;
-        hq.mult += 0.25;
-        alert(`🏛️ Saal gebaut!`);
-        updateUI();
-        renderTabContent('hq');
-        saveGameLocally();
-      }
-    }
-
     function fuseSpaceStation() {
       const drohne = state.orbitals[0];
       if (drohne.count >= 5) {
@@ -2040,29 +1964,6 @@
       } else {
         alert("Mindestens 5 Scout-Drohnen nötig!");
       }
-    }
-
-    function spawnSpaceEventMeteor() {
-      const container = document.getElementById('space-event-container');
-      if(!container) return;
-
-      const meteor = document.createElement('div');
-      meteor.className = "pointer-events-auto absolute cursor-pointer bg-gradient-to-r from-amber-500 to-rose-500 rounded-full w-8 h-8 flex items-center justify-center text-white shadow-lg animate-bounce border border-amber-300";
-      meteor.style.top = Math.floor(20 + Math.random() * 60) + "%";
-      meteor.style.left = Math.floor(10 + Math.random() * 80) + "%";
-      meteor.innerHTML = "☄️";
-
-      meteor.onclick = () => {
-        const bonus = 5000 * state.level;
-        state.money += bonus;
-        alert(`☄️ METEORIT ABGEFANGEN! +${formatMoney(bonus)} erhalten!`);
-        meteor.remove();
-        updateUI();
-        saveGameLocally();
-      };
-
-      container.appendChild(meteor);
-      setTimeout(() => { if(meteor.parentNode) meteor.remove(); }, 8000);
     }
 
     function getMonthKey() {
@@ -2100,7 +2001,6 @@
       localStorage.setItem('empire_season_key', getMonthKey());
       saveGameLocally();
       updateUI();
-      if(activeCurrentTab === 'market') renderTabContent('market');
     }
 
     function checkSeasonReset() {
@@ -2110,57 +2010,6 @@
         executeSeasonReset();
       }
       localStorage.setItem('empire_season_key', currentKey);
-    }
-
-    function updateSeasonCountdown() {
-      const now = new Date();
-      const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0);
-      const diff = nextMonth - now;
-      if (diff <= 0) return;
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const mins = Math.floor((diff / (1000 * 60)) % 60);
-      const secs = Math.floor((diff / 1000) % 60);
-
-      const el = document.getElementById('season-countdown');
-      if (el) el.innerText = `${String(days).padStart(2, '0')}d ${String(hours).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
-    }
-
-    function updateMiningTimerDisplay() {
-      const m = Math.floor(state.miningSecondsLeft / 60);
-      const s = state.miningSecondsLeft % 60;
-      const el = document.getElementById('mining-timer-display');
-      if (el) el.innerText = `Drop: ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    }
-
-    let activeCurrentTab = 'clicker';
-
-    function toggleMenu() {
-      const drawer = document.getElementById('menu-drawer');
-      const backdrop = document.getElementById('menu-backdrop');
-      const isHidden = drawer.classList.contains('-translate-x-full');
-      if (isHidden) {
-        drawer.classList.remove('-translate-x-full');
-        backdrop.classList.remove('hidden');
-      } else {
-        drawer.classList.add('-translate-x-full');
-        backdrop.classList.add('hidden');
-      }
-    }
-
-    function switchTab(tabId) {
-      activeCurrentTab = tabId;
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
-      document.getElementById('tab-' + tabId).classList.remove('hidden');
-      toggleMenu();
-      
-      renderTabContent(tabId);
-      if(tabId === 'market') { drawAllCandleCharts(); updatePortfolioHeader(); }
-      if(tabId === 'hack') initHackMiniGame();
-      if(tabId === 'singularity') renderSingularityTab();
-      if(tabId === 'fame') { fetchLeaderboard(); renderAvatarSelector(); }
-      if(tabId === 'daily') { checkDailyQuestsRefresh(); checkWheelAvailability(); checkDailyClaimAvailability(); renderDailyRewards(); }
     }
 
     function formatMoney(num) {
@@ -2299,8 +2148,6 @@
 
       document.getElementById('exp-text').innerText = `${Math.floor(state.exp)} / ${state.expNeeded} EXP`;
       document.getElementById('exp-bar').style.width = Math.min(100, (state.exp / state.expNeeded) * 100) + '%';
-      updateMiningTimerDisplay();
-      if(activeCurrentTab === 'market') updatePortfolioHeader();
     }
 
     function addExp(amount) {
@@ -2351,22 +2198,6 @@
       }
     }
 
-    function buyIcashStoreItem(idx) {
-      const item = state.icashStore[idx];
-      if (state.icash >= item.cost) {
-        state.icash -= item.cost;
-        if (item.type === 'cash') {
-          state.money += item.value;
-          state.totalEarned += item.value;
-        }
-        updateUI();
-        renderTabContent('icash');
-        saveGameLocally();
-      } else {
-        alert("Nicht genügend iCash!");
-      }
-    }
-
     const dailyRewardsList = [
       { day: 1, type: 'icash', val: 3, label: '💎 +3 iCash' },
       { day: 2, type: 'cash', val: 250, label: '💶 +€250 Kapital' },
@@ -2402,7 +2233,7 @@
 
       if(!container) return;
       container.innerHTML = '';
-      dailyRewardsList.forEach((rew, idx) => {
+      dailyRewardsList.forEach((rew) => {
         container.innerHTML += `
           <div class="holo-card p-3.5 flex justify-between items-center border border-blue-500/20 bg-[#0f172a]">
             <div>
@@ -2529,13 +2360,8 @@
         lucide.createIcons();
       }
 
-      if (tabId === 'singularity') {
-        renderSingularityTab();
-      }
-
-      if (tabId === 'daily') {
-        renderDailyRewards();
-      }
+      if (tabId === 'singularity') renderSingularityTab();
+      if (tabId === 'daily') renderDailyRewards();
 
       if (tabId === 'depts') {
         const list = document.getElementById('list-depts');
@@ -2982,14 +2808,11 @@
 
     checkDailyQuestsRefresh();
     checkSeasonReset();
-    updateSeasonCountdown();
     loadGameLocally();
-    updateDynamicTexts();
     updateUI();
     spawnCompanionDrone();
 
     setInterval(() => { 
-      updateSeasonCountdown(); 
       checkWheelAvailability();
       checkDailyClaimAvailability();
     }, 1000);
@@ -3009,7 +2832,6 @@
           state.totalEarned += incPerMinute;
         }
 
-        // Krypto-Rig Mining Einnahmen Erzeugung
         state.market.forEach(m => {
           if (m.type === 'crypto' && m.rigs && m.rigs > 0) {
             let producedCoins = m.rigs * 0.1;
