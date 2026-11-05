@@ -577,10 +577,16 @@
         <div id="daily-quests-container" class="space-y-2"></div>
       </div>
 
-      <div id="daily-rewards-container" class="grid grid-cols-1 gap-2.5"></div>
+      <div class="space-y-2">
+        <div class="text-xs font-bold text-white uppercase tracking-wider">Tägliche Belohnungs-Leiter</div>
+        <div id="daily-rewards-container" class="grid grid-cols-1 gap-2.5"></div>
+      </div>
+
+      <!-- TÄGLICHER CLAIM BUTTON MIT 24H TIMER -->
       <button onclick="claimDailyReward()" id="btn-claim-daily" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg hover:brightness-110 transition">
         Tägliche Belohnung abholen!
       </button>
+      <div id="daily-claim-timer-text" class="text-[11px] font-mono text-slate-400 text-center hidden">Nächste Belohnung in: <span class="text-emerald-400 font-bold" id="daily-claim-countdown">24:00:00</span></div>
     </div>
 
     <!-- TAB 1: SEKTOREN -->
@@ -1013,7 +1019,7 @@
     ];
 
     let state = {
-      version: 18,
+      version: 19,
       companyName: '',
       language: 'de',
       money: 0,
@@ -1047,14 +1053,15 @@
       netrunnerShieldActive: false,
       serverWeather: 'STABIL',
       lastWheelSpinTime: 0,
+      lastDailyClaimTime: 0,
       lastQuestRefreshDate: '',
 
       dailyQuests: [
-        { id: 'q1', text: 'Führe 10 Klick-Impulse aus', goal: 10, current: 0, reward: 3, claimed: false },
+        { id: 'q1', text: 'Führe 15 Klick-Impulse aus', goal: 15, current: 0, reward: 3, claimed: false },
         { id: 'q2', text: 'Absolviere 2 Mini-Hacks', goal: 2, current: 0, reward: 5, claimed: false },
         { id: 'q3', text: 'Erweitere 2 Sektoren', goal: 2, current: 0, reward: 6, claimed: false },
         { id: 'q4', text: 'Kaufe 1 Krypto-Mining Rig', goal: 1, current: 0, reward: 5, claimed: false },
-        { id: 'q5', text: 'Investiere in 1 Aktie', goal: 1, current: 0, reward: 4, claimed: false }
+        { id: 'q5', text: 'Investiere in 2 Aktien/Coins', goal: 2, current: 0, reward: 4, claimed: false }
       ],
 
       singularityUpgrades: [
@@ -1150,29 +1157,50 @@
       if(!state.staff) state.staff = JSON.parse(JSON.stringify(defaultStaff));
       if(!state.hqs) state.hqs = JSON.parse(JSON.stringify(defaultHqs));
       if(!state.orbitals) state.orbitals = JSON.parse(JSON.stringify(defaultOrbitals));
+      if(!state.market) {
+        state.market = [
+          { id: 'm1', type: 'stock', name: 'CyberCorp Aktien', price: 15.00, change: 1.2, owned: 0, shorted: 0, leverage: 1, candles: [{o:14, h:15, l:13.8, c:15}] },
+          { id: 'm2', type: 'stock', name: 'NanoTech Dynamics', price: 5.00, change: -0.4, owned: 0, shorted: 0, leverage: 1, candles: [{o:5.2, h:5.4, l:5.1, c:5.2}] },
+          { id: 'm3', type: 'stock', name: 'NeuralNet Systems', price: 45.00, change: 0.8, owned: 0, shorted: 0, leverage: 1, candles: [{o:43, h:44, l:42.5, c:43.5}] },
+          { id: 'm4', type: 'stock', name: 'OmniDrive Inc.', price: 180.00, change: 2.1, owned: 0, shorted: 0, leverage: 1, candles: [{o:170, h:173, l:169, c:172}] },
+          { id: 'm5', type: 'crypto', name: 'NeoCoin (Krypto)', price: 1200.00, change: 3.5, owned: 0, shorted: 0, rigs: 0, rigCost: 500.00, candles: [{o:1150, h:1170, l:1140, c:1160}] },
+          { id: 'm6', type: 'crypto', name: 'HoloToken', price: 150.00, change: -1.1, owned: 0, shorted: 0, rigs: 0, rigCost: 80.00, candles: [{o:155, h:157, l:153, c:154}] },
+          { id: 'm7', type: 'crypto', name: 'DarkByte Cash', price: 12.00, change: 0.2, owned: 0, shorted: 0, rigs: 0, rigCost: 20.00, candles: [{o:11.8, h:12.1, l:11.7, c:11.9}] }
+        ];
+      }
+      state.market.forEach((m, idx) => {
+        if(!m.name) {
+          const defaults = ['CyberCorp Aktien', 'NanoTech Dynamics', 'NeuralNet Systems', 'OmniDrive Inc.', 'NeoCoin (Krypto)', 'HoloToken', 'DarkByte Cash'];
+          m.name = defaults[idx] || `Asset #${idx+1}`;
+        }
+      });
+
       if(!state.singularityUpgrades) state.singularityUpgrades = [
         { id: 'sq1', name: 'Singularity Core Multiplier', desc: 'Erhöht passives Einkommen pro Matrix-Splitter um +20%.', cost: 2, level: 0, maxLevel: 10 },
         { id: 'sq2', name: 'Matrix Overdrive', desc: 'Erhöht Klick-Power dauerhaft um +100% pro Stufe.', cost: 5, level: 0, maxLevel: 5 }
       ];
       if(!state.dailyQuests) {
         state.dailyQuests = [
-          { id: 'q1', text: 'Führe 10 Klick-Impulse aus', goal: 10, current: 0, reward: 3, claimed: false },
+          { id: 'q1', text: 'Führe 15 Klick-Impulse aus', goal: 15, current: 0, reward: 3, claimed: false },
           { id: 'q2', text: 'Absolviere 2 Mini-Hacks', goal: 2, current: 0, reward: 5, claimed: false },
           { id: 'q3', text: 'Erweitere 2 Sektoren', goal: 2, current: 0, reward: 6, claimed: false },
           { id: 'q4', text: 'Kaufe 1 Krypto-Mining Rig', goal: 1, current: 0, reward: 5, claimed: false },
-          { id: 'q5', text: 'Investiere in 1 Aktie', goal: 1, current: 0, reward: 4, claimed: false }
+          { id: 'q5', text: 'Investiere in 2 Aktien/Coins', goal: 2, current: 0, reward: 4, claimed: false }
         ];
       }
     }
 
     function checkDailyQuestsRefresh() {
       const todayStr = new Date().toISOString().slice(0, 10);
-      if (state.lastQuestRefreshDate !== todayStr) {
-        state.lastQuestRefreshDate = todayStr;
-        state.dailyQuests.forEach(q => {
-          q.current = 0;
-          q.claimed = false;
-        });
+      const allClaimed = state.dailyQuests.every(q => q.claimed);
+      if (state.lastQuestRefreshDate !== todayStr || allClaimed) {
+        if (state.lastQuestRefreshDate !== todayStr || allClaimed) {
+          state.lastQuestRefreshDate = todayStr;
+          state.dailyQuests.forEach(q => {
+            q.current = 0;
+            q.claimed = false;
+          });
+        }
       }
     }
 
@@ -1776,6 +1804,50 @@
       }, 1000);
     }
 
+    // TÄGLICHE BELOHNUNG 1X TÄGLICH MIT 24H TIMER
+    function checkDailyClaimAvailability() {
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+      const btn = document.getElementById('btn-claim-daily');
+      const timerEl = document.getElementById('daily-claim-timer-text');
+      const countdownEl = document.getElementById('daily-claim-countdown');
+
+      if (!btn) return;
+
+      if (state.lastDailyClaimTime && (now - state.lastDailyClaimTime < oneDay)) {
+        const timeLeft = oneDay - (now - state.lastDailyClaimTime);
+        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        const mins = Math.floor((timeLeft / (1000 * 60)) % 60);
+        const secs = Math.floor((timeLeft / 1000) % 60);
+
+        btn.disabled = true;
+        btn.className = "w-full py-3 bg-slate-800 text-slate-500 font-bold text-xs rounded-xl cursor-not-allowed";
+        if(timerEl) timerEl.classList.remove('hidden');
+        if(countdownEl) countdownEl.innerText = `${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+      } else {
+        btn.disabled = false;
+        btn.className = "w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg hover:brightness-110 transition";
+        if(timerEl) timerEl.classList.add('hidden');
+      }
+    }
+
+    function claimDailyReward() {
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+      if (state.lastDailyClaimTime && (now - state.lastDailyClaimTime < oneDay)) {
+        alert("Tägliche Belohnung wurde heute bereits abgeholt! Komm morgen wieder.");
+        return;
+      }
+
+      state.lastDailyClaimTime = now;
+      state.icash += 5;
+      alert("🎁 Tägliche Belohnung abgeholt: +💎 5 iCash!");
+      checkDailyClaimAvailability();
+      updateUI();
+      renderDailyRewards();
+      saveGameLocally();
+    }
+
     function updateQuestProgress(questId, val) {
       checkDailyQuestsRefresh();
       const q = state.dailyQuests.find(item => item.id === questId);
@@ -1792,6 +1864,7 @@
         q.claimed = true;
         state.icash += q.reward;
         alert(`🏆 Quest erfüllt! +💎 ${q.reward} iCash erhalten.`);
+        checkDailyQuestsRefresh();
         updateUI();
         renderDailyRewards();
         saveGameLocally();
@@ -2087,7 +2160,7 @@
       if(tabId === 'hack') initHackMiniGame();
       if(tabId === 'singularity') renderSingularityTab();
       if(tabId === 'fame') { fetchLeaderboard(); renderAvatarSelector(); }
-      if(tabId === 'daily') { checkDailyQuestsRefresh(); checkWheelAvailability(); renderDailyRewards(); }
+      if(tabId === 'daily') { checkDailyQuestsRefresh(); checkWheelAvailability(); checkDailyClaimAvailability(); renderDailyRewards(); }
     }
 
     function formatMoney(num) {
@@ -2340,14 +2413,7 @@
         `;
       });
       checkWheelAvailability();
-    }
-
-    function claimDailyReward() {
-      state.icash += 5;
-      alert("🎁 Belohnung abgeholt: +💎 5 iCash!");
-      updateUI();
-      renderDailyRewards();
-      saveGameLocally();
+      checkDailyClaimAvailability();
     }
 
     function initHackMiniGame() {
@@ -2925,6 +2991,7 @@
     setInterval(() => { 
       updateSeasonCountdown(); 
       checkWheelAvailability();
+      checkDailyClaimAvailability();
     }, 1000);
 
     setInterval(() => { if (Math.random() < 0.6) spawnSpaceEventMeteor(); }, 45000);
