@@ -9,11 +9,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   
-  <!-- Firebase SDKs & Config -->
+  <!-- Firebase SDKs & Config mit Echtzeit-Listener -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDVkBQHOU3bch3D5eAhbN_lwyV7uaK4zxM",
@@ -25,12 +25,14 @@
       measurementId: "G-ER4SVEMLVE"
     };
 
+    let unsubscribeCloud = null;
+
     try {
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
       const db = getFirestore(app);
 
-      window.FB = { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, doc, setDoc, getDoc, collection, getDocs, query, orderBy, limit };
+      window.FB = { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, doc, setDoc, getDoc, onSnapshot, collection, getDocs, query, orderBy, limit };
 
       onAuthStateChanged(auth, async (user) => {
         const authOverlay = document.getElementById('auth-overlay');
@@ -45,21 +47,34 @@
           if(authFormsEl) authFormsEl.classList.add('hidden');
           if(logoutBtnEl) logoutBtnEl.classList.remove('hidden');
 
-          try {
-            const docSnap = await getDoc(doc(db, "saves", user.uid));
+          if (unsubscribeCloud) {
+            unsubscribeCloud();
+            unsubscribeCloud = null;
+          }
+
+          // SOFORTIGE ECHTZEIT-SYNCHRONISATION ÜBER ON-SNAPSHOT
+          unsubscribeCloud = onSnapshot(doc(db, "saves", user.uid), (docSnap) => {
             if (docSnap.exists() && window.mergeCloudAndLocalState) {
-              window.mergeCloudAndLocalState(docSnap.data());
+              const cloudData = docSnap.data();
+              if (cloudData.lastSaveTimestamp > (window.state.lastSaveTimestamp || 0)) {
+                window.mergeCloudAndLocalState(cloudData);
+              }
             } else {
               window.state.companyName = displayName;
-              saveGameLocally();
+              if (window.saveGameToCloudManual) window.saveGameToCloudManual();
             }
-          } catch(err) {
+          }, (err) => {
             console.error("Cloud-Ladefehler:", err);
-          }
+          });
+
         } else {
+          if (unsubscribeCloud) {
+            unsubscribeCloud();
+            unsubscribeCloud = null;
+          }
           if(authOverlay) authOverlay.classList.remove('hidden');
           if(userStatusEl) userStatusEl.innerText = 'OFFLINE - SYSTEM GESPERRT';
-          if(authFormsEl) authFormsEl.classList.remove('hidden');
+          if(authFormsEl) authFormsEl.classList.add('hidden');
           if(logoutBtnEl) logoutBtnEl.classList.add('hidden');
         }
       });
@@ -862,7 +877,7 @@
     </button>
   </nav>
 
-  <!-- GESAMTE SPIEL-LOGIK (VOLLSTÄNDIG) -->
+  <!-- GESAMTE SPIEL-LOGIK (VOLLSTÄNDIG & UNGEKÜRZT) -->
   <script>
     let audioCtx = null;
     function initAudioContext() {
@@ -1198,7 +1213,7 @@
       fixMissingNames();
       checkDailyQuestsRefresh();
       checkOfflineEarnings(oldTime);
-      saveGameLocally();
+      saveGameLocally(false);
       updateDynamicTexts();
       applyHQTheme();
       updateUI();
@@ -2780,11 +2795,14 @@
       }
     }
 
-    function saveGameLocally() {
+    function saveGameLocally(syncCloud = true) {
       state.lastSaveTimestamp = Date.now();
       localStorage.setItem('empire_tycoon_save', JSON.stringify(state));
       localStorage.setItem('empire_last_save_time', Date.now().toString());
       showSaveIndicator();
+      if (syncCloud && window.FB && window.FB.auth && window.FB.auth.currentUser) {
+        saveGameToCloudManual();
+      }
     }
 
     function loadGameLocally() {
@@ -2822,6 +2840,7 @@
     setInterval(() => { updateServerWeather(); }, 120000);
     setInterval(() => { if (Math.random() < 0.3) triggerRandomMarketNews(); }, 60000);
 
+    // Automatisches Cloud-Speichern & Ticken alle 15 Sekunden
     setInterval(() => {
       state.incomeTimerSeconds--;
       if (state.incomeTimerSeconds <= 0) {
@@ -2842,6 +2861,11 @@
       }
       updateUI();
     }, 1000);
+
+    // Auto-Save alle 20 Sekunden in die Cloud
+    setInterval(() => {
+      saveGameLocally(true);
+    }, 20000);
 
     lucide.createIcons();
   </script>
