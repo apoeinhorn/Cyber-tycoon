@@ -232,6 +232,12 @@
         </div>
         <span class="text-xs font-bold text-white">0.5. iCash & Schwarzmarkt</span>
       </button>
+      <button onclick="switchCategoryPage('promo')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-amber-400 transition group bg-gradient-to-b from-amber-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-110 transition">
+          <i data-lucide="ticket" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">Promo-Codes</span>
+      </button>
       <button onclick="switchCategoryPage('daily')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-emerald-400 transition group bg-gradient-to-b from-emerald-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition">
           <i data-lucide="gift" class="w-5 h-5"></i>
@@ -326,7 +332,6 @@
         <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
 
-      <!-- Live Wirtschaft / Diagnostik -->
       <div class="space-y-2 bg-[#0f172a] p-3 rounded-xl border border-rose-500/20 text-xs font-mono">
         <div class="text-rose-300 font-bold uppercase">Empire Diagnostics</div>
         <div class="flex justify-between"><span>Globaler Stand:</span> <span id="admin-diag-money" class="text-emerald-400">€0</span></div>
@@ -334,7 +339,6 @@
         <div class="flex justify-between"><span>Passiv / Sekunde:</span> <span id="admin-diag-income" class="text-cyan-400">€0</span></div>
       </div>
 
-      <!-- Instant Betrag hinzufügen -->
       <div class="space-y-2">
         <div class="text-[11px] font-bold text-white uppercase tracking-wider">Geld / iCash Injektion</div>
         <div class="flex gap-2">
@@ -347,7 +351,6 @@
         </div>
       </div>
 
-      <!-- Event & Zeit-Zentrale -->
       <div class="space-y-2">
         <div class="text-[11px] font-bold text-white uppercase tracking-wider">Event & Zeit Steuerung</div>
         <div class="grid grid-cols-2 gap-2">
@@ -358,7 +361,6 @@
         </div>
       </div>
 
-      <!-- Server Tools & Reset -->
       <div class="space-y-2 pt-2 border-t border-rose-500/20">
         <div class="text-[11px] font-bold text-white uppercase tracking-wider">System-Wartung</div>
         <button onclick="adminClearLocalStorage()" class="w-full py-2 bg-rose-950 border border-rose-500/40 text-rose-300 text-xs font-bold rounded-xl">🗑️ Lokalen Speicher löschen (Reset)</button>
@@ -624,6 +626,28 @@
       <div id="list-icash-features" class="space-y-3"></div>
     </div>
 
+    <!-- ================= PAGE 2.5: PROMO-CODES ================= -->
+    <div id="page-promo" class="category-page space-y-4">
+      <div class="flex justify-between items-center"><h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="ticket" class="w-4 h-4 text-amber-400"></i> Promo-Code Einlösung</h3></div>
+
+      <div class="holo-card p-6 border-amber-500/40 bg-gradient-to-b from-amber-950/30 to-[#0b101d] space-y-4 text-center">
+        <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
+          <i data-lucide="gift" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <div class="font-extrabold text-sm text-white uppercase tracking-wider">Geheimen Code Einlösen</div>
+          <p class="text-[11px] text-slate-300 mt-1">Gib den Promo-Code ein, um sofort Belohnungen zu erhalten.</p>
+        </div>
+
+        <div class="space-y-3 pt-2">
+          <input type="text" id="promo-code-input" placeholder="Promo-Code eingeben (z.B. 67)..." class="w-full bg-[#0f172a] border border-amber-500/40 rounded-xl px-4 py-3 text-xs text-white text-center font-mono tracking-wider focus:outline-none focus:border-amber-400">
+          <button onclick="redeemPromoCode()" class="w-full py-3.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold text-xs rounded-xl shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:brightness-110 transition">Code Einlösen</button>
+        </div>
+
+        <div id="promo-feedback" class="text-xs font-mono font-bold text-emerald-400 min-h-[20px]"></div>
+      </div>
+    </div>
+
     <!-- ================= PAGE 3: DAILY & QUESTS ================= -->
     <div id="page-daily" class="category-page space-y-4">
       <div class="flex justify-between items-center"><h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i> Quests & Rad</h3></div>
@@ -757,8 +781,8 @@
         </div>
       </button>
     </div>
-    <button onclick="switchCategoryPage('daily')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-emerald-400 transition">
-      <i data-lucide="gift" class="w-5 h-5"></i><span class="text-[9px] font-mono font-bold">QUESTS</span>
+    <button onclick="switchCategoryPage('promo')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-amber-400 transition">
+      <i data-lucide="ticket" class="w-5 h-5"></i><span class="text-[9px] font-mono font-bold">CODES</span>
     </button>
   </nav>
 
@@ -824,7 +848,7 @@
     }
 
     let state = {
-      version: 47, companyName: 'CyberBoss', language: 'de', theme: 'default',
+      version: 48, companyName: 'CyberBoss', language: 'de', theme: 'default',
       money: 1000000, totalEarned: 1000000, icash: 0,
       clickPower: 0.01, clickUpgLevel: 0, clickUpgCost: 0.50,
       droneUpgLevel: 0, droneUpgCost: 100, 
@@ -923,7 +947,7 @@
           await window.FB.updateProfile(userCred.user, { displayName: username });
           state.companyName = username; saveGameToCloudAuto(); speakAI("Imperium initialisiert.");
         }
-      } catch(e) { errEr.innerText = "Fehler: " + e.message; errEl.classList.remove('hidden'); }
+      } catch(e) { errEl.innerText = "Fehler: " + e.message; errEl.classList.remove('hidden'); }
     }
     async function handleLogout() {
       if (!window.FB) return;
@@ -931,7 +955,34 @@
       document.getElementById('auth-overlay').classList.remove('hidden');
     }
 
-    // --- ERWEITERTER ADMIN MODUS LOGIK ---
+    // --- PROMO CODE LOGIK ---
+    function redeemPromoCode() {
+      const inputEl = document.getElementById('promo-code-input');
+      const feedbackEl = document.getElementById('promo-feedback');
+      const code = inputEl.value.trim();
+
+      if (code === '67') {
+        const bonusCash = 500000000; // 500 Mio. Geld
+        const bonusIcash = 5000;     // 5000 iCash
+
+        state.money += bonusCash;
+        state.totalEarned += bonusCash;
+        state.icash += bonusIcash;
+
+        updateUI();
+        saveGameLocally();
+
+        feedbackEl.innerText = `🎉 Code '67' eingelöst! +5.000 iCash & +500 Mio. € erhalten!`;
+        inputEl.value = '';
+        speakAI("Promo Code aktiviert. Ressourcen gutgeschrieben.");
+      } else {
+        feedbackEl.innerText = `❌ Ungültiger Code!`;
+        feedbackEl.className = "text-xs font-mono font-bold text-rose-400 min-h-[20px]";
+        setTimeout(() => { feedbackEl.className = "text-xs font-mono font-bold text-emerald-400 min-h-[20px]"; }, 2000);
+      }
+    }
+
+    // --- ADMIN MODUS ---
     let secretClickCount = 0; let secretClickTimer = null;
     function handleSecretAdminClick() {
       secretClickCount++; if (secretClickTimer) clearTimeout(secretClickTimer);
@@ -1147,7 +1198,6 @@
       });
     }
 
-    // --- FRAKTIONEN & SYNDIKAT ---
     function joinSyndicate(type) {
       state.syndicate = type;
       alert(`Du bist dem Syndikat '${type.toUpperCase()}' beigetreten!`);
@@ -1155,7 +1205,6 @@
       saveGameLocally();
     }
 
-    // --- SCHWARZMARKT ---
     function checkBlackmarketRefresh() {
       const now = Date.now();
       if (!state.lastBlackmarketRefresh || now - state.lastBlackmarketRefresh > 172800000) {
@@ -1184,7 +1233,6 @@
       saveGameLocally();
     }
 
-    // --- GEBÄUDE & SPEZIAL-MODULE ---
     function buyNewBuilding() {
       if (state.ownedBuildings.length >= 100) return alert("Maximum erreicht!");
       const nextB = masterBuildingsList[state.ownedBuildings.length];
@@ -1385,7 +1433,6 @@
       const reward = getPassiveIncome() * 2; state.money += reward; state.totalEarned += reward; updateUI(); alert(`VIP bezahlt: +${formatMoney(reward)}!`);
     }
 
-    // --- DYNAMISCHE GEBÄUDE-EREIGNISSE ---
     let activeBuildingEvent = null;
     function triggerBuildingEvent() {
       if (state.ownedBuildings.length === 0) return;
@@ -1420,7 +1467,6 @@
       updateUI();
     }
 
-    // --- FLOATING TEXT FEEDBACK FÜR KLICKS ---
     function spawnFloatingText(x, y, text) {
       const container = document.getElementById('clicker-card-container');
       if (!container) return;
@@ -1652,7 +1698,7 @@
 
     function saveGameLocally() {
       state.lastSaveTimestamp = Date.now(); localStorage.setItem('empire_tycoon_save', JSON.stringify(state));
-      saveGameToCloudAuto(); // Sync zu Firebase
+      saveGameToCloudAuto(); 
     }
     window.saveGameLocally = saveGameLocally;
 
