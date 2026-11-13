@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Cyber Tycoon // APP-EDITION 2026</title>
+  <title>Cyber Tycoon // CLOUD-EDITION 2026</title>
   <link rel="manifest" href="./manifest.json">
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -12,7 +12,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDVkBQHOU3bch3D5eAhbN_lwyV7uaK4zxM",
@@ -29,7 +29,7 @@
       const auth = getAuth(app);
       const db = getFirestore(app);
 
-      window.FB = { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, doc, setDoc, getDoc, collection, getDocs, query, orderBy, limit };
+      window.FB = { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, doc, setDoc, getDoc, collection, getDocs, deleteDoc, query, orderBy, limit };
 
       onAuthStateChanged(auth, async (user) => {
         const authOverlay = document.getElementById('auth-overlay');
@@ -39,7 +39,7 @@
         if (user) {
           const displayName = user.displayName || user.email.split('@')[0];
           if(authOverlay) authOverlay.classList.add('hidden');
-          if(userStatusEl) userStatusEl.innerText = `CYBER SECURE: ${displayName} (${user.email})`;
+          if(userStatusEl) userStatusEl.innerText = `CLOUD SECURE: ${displayName} (${user.email})`;
           if(logoutBtnEl) logoutBtnEl.classList.remove('hidden');
 
           try {
@@ -48,14 +48,14 @@
               window.mergeCloudAndLocalState(docSnap.data());
             } else {
               window.state.companyName = displayName;
-              if (window.saveGameLocally) window.saveGameLocally();
+              if (window.saveGameToCloud) window.saveGameToCloud();
             }
           } catch(err) {
             console.error("Cloud-Ladefehler:", err);
           }
         } else {
           if(authOverlay) authOverlay.classList.remove('hidden');
-          if(userStatusEl) userStatusEl.innerText = 'OFFLINE - SYSTEM GESPERRT';
+          if(userStatusEl) userStatusEl.innerText = 'OFFLINE - BITTE ANMELDEN';
           if(logoutBtnEl) logoutBtnEl.classList.add('hidden');
         }
       });
@@ -164,7 +164,6 @@
     .category-page { display: none; }
     .category-page.active { display: block; }
 
-    /* FLOATING CLICK TEXT ANIMATION */
     @keyframes floatUp {
       0% { opacity: 1; transform: translateY(0) scale(1); }
       100% { opacity: 0; transform: translateY(-50px) scale(1.2); }
@@ -272,8 +271,8 @@
         <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mx-auto text-blue-400">
           <i data-lucide="shield-lock" class="w-6 h-6"></i>
         </div>
-        <h2 class="font-extrabold text-base text-white tracking-widest uppercase">CYBER TYCOON // ACCESS CORE</h2>
-        <p class="text-xs text-slate-400">Erstelle einen Account oder melde dich an, um das Imperium zu starten.</p>
+        <h2 class="font-extrabold text-base text-white tracking-widest uppercase">CYBER TYCOON // CLOUD CORE</h2>
+        <p class="text-xs text-slate-400">Melde dich an, um dein Cloud-Imperium zu laden.</p>
       </div>
 
       <div class="flex border-b border-blue-500/20 text-xs font-semibold">
@@ -291,7 +290,7 @@
           <input type="password" id="overlay-login-pass" required placeholder="••••••••" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 mt-1">
         </div>
         <button type="submit" class="w-full py-3 holo-btn text-xs font-bold rounded-xl shadow-lg mt-2">
-          Anmelden & Terminal Freischalten
+          Anmelden & Cloud Laden
         </button>
       </form>
 
@@ -309,19 +308,15 @@
           <input type="password" id="overlay-reg-pass" required minlength="6" placeholder="••••••••" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 mt-1">
         </div>
         <button type="submit" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg hover:brightness-110 mt-2">
-          Account Erstellen & Starten
+          Cloud-Account Erstellen
         </button>
       </form>
 
       <div id="overlay-auth-error" class="text-xs font-mono text-rose-400 text-center hidden"></div>
-      
-      <button onclick="skipLoginOffline()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold rounded-xl border border-slate-700 transition">
-        ⚡ Offline / Ohne Account spielen
-      </button>
     </div>
   </div>
 
-  <!-- ERWEITERTER ADMIN MODAL -->
+  <!-- ERWEITERTER ADMIN MODAL MIT GLOBALEM LÖSCHEN -->
   <div id="admin-modal" class="fixed inset-0 bg-black/90 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
     <div class="holo-card p-6 max-w-md w-full border-rose-500/50 bg-[#070b14] space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-rose-500/20 pb-3">
@@ -333,10 +328,9 @@
       </div>
 
       <div class="space-y-2 bg-[#0f172a] p-3 rounded-xl border border-rose-500/20 text-xs font-mono">
-        <div class="text-rose-300 font-bold uppercase">Empire Diagnostics</div>
+        <div class="text-rose-300 font-bold uppercase">Empire Diagnostics (Cloud)</div>
         <div class="flex justify-between"><span>Globaler Stand:</span> <span id="admin-diag-money" class="text-emerald-400">€0</span></div>
         <div class="flex justify-between"><span>Aktive Gebäude:</span> <span id="admin-diag-buildings" class="text-pink-400">0</span></div>
-        <div class="flex justify-between"><span>Passiv / Sekunde:</span> <span id="admin-diag-income" class="text-cyan-400">€0</span></div>
       </div>
 
       <div class="space-y-2">
@@ -351,19 +345,10 @@
         </div>
       </div>
 
-      <div class="space-y-2">
-        <div class="text-[11px] font-bold text-white uppercase tracking-wider">Event & Zeit Steuerung</div>
-        <div class="grid grid-cols-2 gap-2">
-          <button onclick="adminTimeJump()" class="py-2 px-3 bg-blue-600/25 border border-blue-500/40 text-blue-300 text-xs font-bold rounded-xl">⚡ +24h Einkommen</button>
-          <button onclick="adminForceEvent()" class="py-2 px-3 bg-amber-600/25 border border-amber-500/40 text-amber-300 text-xs font-bold rounded-xl">📈 Event Erzwingen</button>
-          <button onclick="adminTriggerMonthlyReset()" class="py-2 px-3 bg-purple-600/25 border border-purple-500/40 text-purple-300 text-xs font-bold rounded-xl">📅 Monats-Reset Test</button>
-          <button onclick="adminForceHack()" class="py-2 px-3 bg-red-600/25 border border-red-500/40 text-red-300 text-xs font-bold rounded-xl">⚠️ Hack Auslösen</button>
-        </div>
-      </div>
-
-      <div class="space-y-2 pt-2 border-t border-rose-500/20">
-        <div class="text-[11px] font-bold text-white uppercase tracking-wider">System-Wartung</div>
-        <button onclick="adminClearLocalStorage()" class="w-full py-2 bg-rose-950 border border-rose-500/40 text-rose-300 text-xs font-bold rounded-xl">🗑️ Lokalen Speicher löschen (Reset)</button>
+      <!-- GLOBALES LÖSCHEN FÜR ADMINS -->
+      <div class="space-y-2 pt-3 border-t border-rose-500/30">
+        <div class="text-[11px] font-bold text-rose-400 uppercase tracking-wider">⚠️ Globale Admin-Säuberung</div>
+        <button onclick="adminDeleteAllPlayersCloudData()" class="w-full py-2.5 bg-rose-700 hover:bg-rose-600 text-white text-xs font-bold rounded-xl shadow-[0_0_15px_rgba(225,29,72,0.5)] transition">💥 ALLE Spielstände & Ranglisten löschen!</button>
       </div>
 
       <button onclick="closeAdminModal()" class="w-full py-2.5 bg-[#0f172a] hover:bg-[#1e293b] text-slate-300 border border-slate-700 text-xs font-bold rounded-xl mt-2">Admin-Modus schließen</button>
@@ -380,7 +365,7 @@
     </div>
     <div class="text-center cursor-pointer select-none" onclick="handleSecretAdminClick()">
       <h1 class="font-extrabold text-xs tracking-widest uppercase text-white">CYBER TYCOON</h1>
-      <span class="text-[9px] text-blue-400 font-mono tracking-wider">SYSTEM ONLINE</span>
+      <span class="text-[9px] text-blue-400 font-mono tracking-wider">CLOUD LIVE</span>
     </div>
     <div class="flex items-center space-x-2 text-xs font-semibold">
       <div class="px-2 py-1 rounded-lg bg-[#0f172a] border border-blue-500/20 text-slate-300 font-mono text-[11px]">
@@ -538,7 +523,6 @@
           <div class="text-sm font-mono text-emerald-400 font-bold" id="detail-building-income">0.00 /STD.</div>
         </div>
 
-        <!-- GEBÄUDE-MEILENSTEIN FORTSCHRITT -->
         <div class="mt-4 p-3 bg-purple-950/30 border border-purple-500/30 rounded-2xl">
           <div class="flex justify-between items-center text-[11px] font-mono mb-1">
             <span class="text-slate-300">Meilenstein-Fortschritt</span>
@@ -555,7 +539,6 @@
           <button onclick="upgradeBuildingDetail(500)" class="holo-card p-3 flex flex-col items-center justify-center"><div class="font-mono text-xs text-amber-300" id="cost-detail-500">0</div><div class="text-[9px] mt-0.5">500 LVL</div></button>
         </div>
 
-        <!-- SPEZIAL-MODULE -->
         <div class="mt-5 space-y-2">
           <div class="text-xs font-bold text-white uppercase">Spezial-Module (Tuning)</div>
           <div class="grid grid-cols-1 gap-2" id="building-modules-container"></div>
@@ -594,7 +577,6 @@
     <div id="page-icash" class="category-page space-y-4">
       <div class="flex justify-between items-center"><h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="gem" class="w-4 h-4 text-purple-400"></i> iCash & Schwarzmarkt</h3></div>
 
-      <!-- SCHWARZMARKT -->
       <div class="holo-card p-4 border-amber-500/40 bg-amber-950/10 space-y-3">
         <div class="flex justify-between items-center">
           <div class="font-bold text-xs text-amber-300 uppercase flex items-center gap-1.5"><i data-lucide="shopping-cart" class="w-4 h-4"></i> Geheim-Schwarzmarkt</div>
@@ -714,7 +696,6 @@
         <button onclick="loadLeaderboard()" class="px-2.5 py-1 bg-cyan-600/30 border border-cyan-500/40 text-cyan-300 rounded text-[10px] font-bold hover:bg-cyan-600/50 transition">Aktualisieren</button>
       </div>
 
-      <!-- NAMENSÄNDERUNG FÜR 100 ICASH -->
       <div class="holo-card p-4 space-y-3 border-cyan-500/30 bg-cyan-950/10">
         <div class="font-bold text-xs text-white uppercase">Unternehmensname ändern</div>
         <p class="text-[10px] text-slate-400">Ändere deinen Imperium-Namen für <span class="text-purple-400 font-bold">💎 100 iCash</span> (aktualisiert sofort die Rangliste).</p>
@@ -736,9 +717,9 @@
       </div>
 
       <div class="holo-card p-4 space-y-3">
-        <div id="firebase-user-status" class="text-xs text-blue-400 font-mono font-medium">Verbinde mit Empire Core...</div>
+        <div id="firebase-user-status" class="text-xs text-blue-400 font-mono font-medium">Verbinde mit Cloud Core...</div>
         <button id="firebase-logout-btn" onclick="handleLogout()" class="w-full py-2 bg-rose-950/80 hover:bg-rose-900 text-rose-200 text-xs rounded-xl font-semibold hidden">Abmelden</button>
-        <button onclick="saveGameToCloudManual()" class="w-full py-2 holo-btn text-xs rounded-xl font-semibold">Cloud-Sync erzwingen</button>
+        <button onclick="saveGameToCloud()" class="w-full py-2 holo-btn text-xs rounded-xl font-semibold">Cloud-Sync erzwingen</button>
       </div>
 
       <div id="leaderboard-list" class="space-y-2"><div class="text-xs text-slate-500 italic">Lade Rangliste...</div></div>
@@ -830,7 +811,7 @@
         music.play().then(() => {
           isMusicPlaying = true;
           icon.setAttribute('data-lucide', 'volume-2');
-          speakAI("Live Stream verbunden. Neuralnetz aktiv.");
+          speakAI("Live Stream verbunden. Cloud aktiv.");
         }).catch(err => { alert("Browser blockiert Autoplay. Bitte erneut klicken."); });
       }
       lucide.createIcons();
@@ -848,7 +829,7 @@
     }
 
     let state = {
-      version: 48, companyName: 'CyberBoss', language: 'de', theme: 'default',
+      version: 49, companyName: 'CyberBoss', language: 'de', theme: 'default',
       money: 1000000, totalEarned: 1000000, icash: 0,
       clickPower: 0.01, clickUpgLevel: 0, clickUpgCost: 0.50,
       droneUpgLevel: 0, droneUpgCost: 100, 
@@ -915,26 +896,19 @@
         btnReg.className = "flex-1 py-2 text-center text-slate-400 hover:text-white";
       }
     }
-    function skipLoginOffline() {
-      document.getElementById('auth-overlay').classList.add('hidden');
-      const userStatusEl = document.getElementById('firebase-user-status');
-      if(userStatusEl) userStatusEl.innerText = 'OFFLINE-MODUS (Lokal aktiv)';
-      speakAI("Offline Modus gestartet.");
-      loadLeaderboard();
-    }
     async function handleLoginOverlay() {
-      if (!window.FB) return skipLoginOffline();
+      if (!window.FB) return alert("Firebase nicht verfügbar.");
       const email = document.getElementById('overlay-login-email').value.trim();
       const pass = document.getElementById('overlay-login-pass').value;
       const errEl = document.getElementById('overlay-auth-error');
       try {
         errEl.classList.add('hidden');
         await window.FB.signInWithEmailAndPassword(window.FB.auth, email, pass);
-        speakAI("Willkommen zurück, Boss.");
+        speakAI("Cloud-Verbindung hergestellt.");
       } catch(e) { errEl.innerText = "Fehler: " + e.message; errEl.classList.remove('hidden'); }
     }
     async function handleRegisterOverlay() {
-      if (!window.FB) return skipLoginOffline();
+      if (!window.FB) return alert("Firebase nicht verfügbar.");
       const username = document.getElementById('overlay-reg-username').value.trim();
       const email = document.getElementById('overlay-reg-email').value.trim();
       const pass = document.getElementById('overlay-reg-pass').value;
@@ -945,7 +919,7 @@
         const userCred = await window.FB.createUserWithEmailAndPassword(window.FB.auth, email, pass);
         if(userCred && userCred.user) {
           await window.FB.updateProfile(userCred.user, { displayName: username });
-          state.companyName = username; saveGameToCloudAuto(); speakAI("Imperium initialisiert.");
+          state.companyName = username; saveGameToCloud(); speakAI("Cloud-Imperium initialisiert.");
         }
       } catch(e) { errEl.innerText = "Fehler: " + e.message; errEl.classList.remove('hidden'); }
     }
@@ -962,19 +936,19 @@
       const code = inputEl.value.trim();
 
       if (code === '67') {
-        const bonusCash = 500000000; // 500 Mio. Geld
-        const bonusIcash = 5000;     // 5000 iCash
+        const bonusCash = 500000000;
+        const bonusIcash = 5000;
 
         state.money += bonusCash;
         state.totalEarned += bonusCash;
         state.icash += bonusIcash;
 
         updateUI();
-        saveGameLocally();
+        saveGameToCloud();
 
         feedbackEl.innerText = `🎉 Code '67' eingelöst! +5.000 iCash & +500 Mio. € erhalten!`;
         inputEl.value = '';
-        speakAI("Promo Code aktiviert. Ressourcen gutgeschrieben.");
+        speakAI("Promo Code aktiviert. In Cloud gespeichert.");
       } else {
         feedbackEl.innerText = `❌ Ungültiger Code!`;
         feedbackEl.className = "text-xs font-mono font-bold text-rose-400 min-h-[20px]";
@@ -982,7 +956,7 @@
       }
     }
 
-    // --- ADMIN MODUS ---
+    // --- ADMIN MODUS MIT GLOBALEM LÖSCHEN ---
     let secretClickCount = 0; let secretClickTimer = null;
     function handleSecretAdminClick() {
       secretClickCount++; if (secretClickTimer) clearTimeout(secretClickTimer);
@@ -996,7 +970,6 @@
     function openAdminModal() {
       document.getElementById('admin-diag-money').innerText = formatMoney(state.money);
       document.getElementById('admin-diag-buildings').innerText = state.ownedBuildings.length;
-      document.getElementById('admin-diag-income').innerText = formatMoney(getPassiveIncome() / 3600) + '/s';
       document.getElementById('admin-modal').classList.remove('hidden');
     }
     function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
@@ -1004,38 +977,34 @@
     function adminAddCustomMoney() {
       const val = parseFloat(document.getElementById('admin-custom-money').value);
       if(isNaN(val)) return alert("Bitte gültigen Betrag eingeben!");
-      state.money += val; state.totalEarned += val; updateUI(); saveGameLocally(); alert(`💰 +${formatMoney(val)} injiziert!`);
+      state.money += val; state.totalEarned += val; updateUI(); saveGameToCloud(); alert(`💰 +${formatMoney(val)} injiziert!`);
       openAdminModal();
     }
     function adminAddCustomIcash() {
       const val = parseInt(document.getElementById('admin-custom-icash').value);
       if(isNaN(val)) return alert("Bitte gültigen iCash-Wert eingeben!");
-      state.icash += val; updateUI(); saveGameLocally(); alert(`💎 +${val} iCash injiziert!`);
+      state.icash += val; updateUI(); saveGameToCloud(); alert(`💎 +${val} iCash injiziert!`);
       openAdminModal();
     }
-    function adminTimeJump() { 
-      const e = getPassiveIncome() * 24; state.money += e; state.totalEarned += e; updateUI(); saveGameLocally(); alert(`⚡ +24h Einkommen (${formatMoney(e)}) hinzugefügt!`); 
-      openAdminModal();
-    }
-    function adminForceEvent() {
-      closeAdminModal();
-      triggerBuildingEvent();
-    }
-    function adminTriggerMonthlyReset() {
-      state.lastMonthlyResetKey = "";
-      checkMonthlyReset();
-      closeAdminModal();
-    }
-    function adminForceHack() {
-      closeAdminModal();
-      hackActive = true; 
-      document.getElementById('hacking-alert').classList.remove('hidden'); 
-      document.getElementById('click-btn').classList.add('hack-active');
-    }
-    function adminClearLocalStorage() {
-      if(confirm("ACHTUNG: Lokalen Speicher wirklich komplett löschen? Alle Fortschritte gehen verloren!")) {
-        localStorage.removeItem('empire_tycoon_save');
-        location.reload();
+    
+    // 🔥 GLOBALE LÖSCH-FUNKTION (Löscht ALLES von ALLEN Spielern in Firestore)
+    async function adminDeleteAllPlayersCloudData() {
+      if (!window.FB || !window.FB.db) return alert("Keine Cloud-Verbindung!");
+      if (confirm("💥 ACHTUNG ADMIN: Möchtest du wirklich ALLE Spielstände und die gesamte Weltrangliste in der Cloud unwiderruflich löschen?")) {
+        try {
+          const savesSnapshot = await window.FB.getDocs(window.FB.collection(window.FB.db, "saves"));
+          for (const d of savesSnapshot.docs) {
+            await window.FB.deleteDoc(d.ref);
+          }
+          const lbSnapshot = await window.FB.getDocs(window.FB.collection(window.FB.db, "leaderboard"));
+          for (const d of lbSnapshot.docs) {
+            await window.FB.deleteDoc(d.ref);
+          }
+          alert("💥 Alle Cloud-Daten und Ranglisten wurden erfolgreich gelöscht!");
+          location.reload();
+        } catch (e) {
+          alert("Fehler beim Löschen: " + e.message);
+        }
       }
     }
 
@@ -1050,8 +1019,7 @@
       inputEl.value = '';
 
       updateUI();
-      saveGameLocally();
-      await saveGameToCloudAuto();
+      await saveGameToCloud();
       loadLeaderboard();
 
       alert(`✅ Unternehmensname erfolgreich zu "${newName}" geändert!`);
@@ -1069,9 +1037,9 @@
     function setTheme(themeName) {
       state.theme = themeName;
       document.getElementById('app-body').className = `text-slate-300 min-h-screen flex flex-col relative overflow-x-hidden ${themeName === 'default' ? '' : themeName}`;
-      saveGameLocally();
+      saveGameToCloud();
     }
-    function setLanguage(lang) { state.language = lang; saveGameLocally(); renderLanguageTab(); }
+    function setLanguage(lang) { state.language = lang; saveGameToCloud(); renderLanguageTab(); }
     
     function renderLanguageTab() {
       const c = document.getElementById('settings-content-box'); if (!c) return;
@@ -1108,7 +1076,7 @@
         state.ownedBuildings = []; 
         state.passPoints = 0;
         alert("📅 Monats-Reset ausgeführt! Willkommen im neuen Monat mit €1.000.000 Startkapital.");
-        saveGameLocally(); 
+        saveGameToCloud(); 
         updateUI();
       } else if (!state.lastMonthlyResetKey) { 
         state.lastMonthlyResetKey = currentMonth; 
@@ -1119,15 +1087,20 @@
       if (!cloudData) return;
       state = { ...state, ...cloudData }; window.state = state;
       if(!state.staffStorage) state.staffStorage = [];
-      setTheme(state.theme || 'default'); checkDailyMidnightReset(); checkMonthlyReset(); saveGameLocally(); updateUI();
+      setTheme(state.theme || 'default'); checkDailyMidnightReset(); checkMonthlyReset(); updateUI();
     };
 
-    async function saveGameToCloudAuto() {
+    // --- VOLLSTÄNDIGER CLOUD SAVE & SYNC ---
+    async function saveGameToCloud() {
       if (!window.FB || !window.FB.auth.currentUser) return;
       try {
         const u = window.FB.auth.currentUser; 
         state.companyName = state.companyName || u.displayName || "CyberBoss";
+        
+        // Speichert den vollständigen Spielstand in der Cloud
         await window.FB.setDoc(window.FB.doc(window.FB.db, "saves", u.uid), state);
+        
+        // Synchronisiert direkt mit der Weltrangliste
         await window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", u.uid), { 
           companyName: state.companyName, 
           totalValue: state.totalEarned || state.money, 
@@ -1135,19 +1108,10 @@
           updatedAt: Date.now() 
         });
       } catch (e) { 
-        console.error("Cloud-Sync Auto Fehler:", e);
+        console.error("Cloud-Sync Fehler:", e);
       }
     }
-
-    async function saveGameToCloudManual() { 
-      if (!window.FB || !window.FB.auth.currentUser) {
-        alert('Kein Cloud-Account aktiv! Bitte zuerst anmelden.');
-        return;
-      }
-      await saveGameToCloudAuto(); 
-      alert('Cloud-Sync erfolgreich!'); 
-      loadLeaderboard();
-    }
+    window.saveGameToCloud = saveGameToCloud;
 
     async function loadLeaderboard() {
       const listEl = document.getElementById('leaderboard-list');
@@ -1157,8 +1121,8 @@
       let entries = [];
       try {
         if (window.FB && window.FB.db) {
-          const qRef = query(collection(window.FB.db, "leaderboard"), orderBy("totalValue", "desc"), limit(10));
-          const querySnapshot = await getDocs(qRef);
+          const qRef = window.FB.query(window.FB.collection(window.FB.db, "leaderboard"), window.FB.orderBy("totalValue", "desc"), window.FB.limit(10));
+          const querySnapshot = await window.FB.getDocs(qRef);
           querySnapshot.forEach((docSnap) => {
             entries.push(docSnap.data());
           });
@@ -1169,7 +1133,7 @@
 
       if (entries.length === 0) {
         entries.push({
-          companyName: state.companyName || "Du (Offline/Lokal)",
+          companyName: state.companyName || "Du (Cloud)",
           totalValue: state.totalEarned || state.money,
           avatar: state.selectedAvatar || '🤖'
         });
@@ -1202,7 +1166,7 @@
       state.syndicate = type;
       alert(`Du bist dem Syndikat '${type.toUpperCase()}' beigetreten!`);
       renderTabContent('syndicate');
-      saveGameLocally();
+      saveGameToCloud();
     }
 
     function checkBlackmarketRefresh() {
@@ -1230,7 +1194,7 @@
       alert(`Erfolgreich erworben: ${item.name}!`);
       renderTabContent('icash');
       updateUI();
-      saveGameLocally();
+      saveGameToCloud();
     }
 
     function buyNewBuilding() {
@@ -1239,7 +1203,7 @@
       if (state.money >= nextB.cost) {
         state.money -= nextB.cost; 
         state.ownedBuildings.push({ ...nextB, workers: [null, null, null, null, null, null], modules: { aiCore: 0, firewall: false, holoAd: 0 } });
-        updateUI(); renderBuildingsTab(); saveGameLocally();
+        updateUI(); renderBuildingsTab(); saveGameToCloud();
       } else alert("Nicht genügend Kapital!");
     }
 
@@ -1333,13 +1297,13 @@
       openBuildingDetailModal(b.id);
       renderBuildingsTab();
       updateUI();
-      saveGameLocally();
+      saveGameToCloud();
     }
 
     function upgradeBuildingDetail(lvl) {
       const b = state.ownedBuildings.find(item => item.id === activeDetailBuildingId); if(!b) return;
       const cost = ((b.cost * 0.1) * b.level) * lvl;
-      if(state.money >= cost) { state.money -= cost; b.level += lvl; openBuildingDetailModal(b.id); renderBuildingsTab(); updateUI(); saveGameLocally(); }
+      if(state.money >= cost) { state.money -= cost; b.level += lvl; openBuildingDetailModal(b.id); renderBuildingsTab(); updateUI(); saveGameToCloud(); }
     }
     function openWorkerShopModal() { document.getElementById('worker-shop-modal').classList.remove('hidden'); }
     function closeWorkerShopModal() { document.getElementById('worker-shop-modal').classList.add('hidden'); }
@@ -1356,7 +1320,7 @@
       state.staffStorage.push(w);
       closeWorkerShopModal();
       if(activeDetailBuildingId !== null) openBuildingDetailModal(activeDetailBuildingId);
-      updateUI(); saveGameLocally();
+      updateUI(); saveGameToCloud();
       alert("Mitarbeiter erfolgreich angeheuert und ins Personal-Lager gelegt!");
     }
 
@@ -1367,7 +1331,7 @@
         if(!state.staffStorage) state.staffStorage = [];
         state.staffStorage.push(w);
         b.workers[slotIndex] = null;
-        openBuildingDetailModal(b.id); renderBuildingsTab(); updateUI(); saveGameLocally();
+        openBuildingDetailModal(b.id); renderBuildingsTab(); updateUI(); saveGameToCloud();
       }
     }
 
@@ -1380,7 +1344,7 @@
       const w = state.staffStorage.splice(storageIndex, 1)[0];
       if(w) {
         b.workers[slot] = w;
-        openBuildingDetailModal(b.id); renderBuildingsTab(); updateUI(); saveGameLocally();
+        openBuildingDetailModal(b.id); renderBuildingsTab(); updateUI(); saveGameToCloud();
       }
     }
 
@@ -1417,8 +1381,8 @@
       });
     }
 
-    function buyClickUpgrade() { if(state.money >= state.clickUpgCost) { state.money -= state.clickUpgCost; state.clickUpgLevel++; state.clickUpgCost *= 1.35; updateUI(); saveGameLocally(); } }
-    function buyDroneUpgrade() { if(state.money >= state.droneUpgCost) { state.money -= state.droneUpgCost; state.droneUpgLevel++; state.droneUpgCost *= 1.8; updateUI(); saveGameLocally(); } }
+    function buyClickUpgrade() { if(state.money >= state.clickUpgCost) { state.money -= state.clickUpgCost; state.clickUpgLevel++; state.clickUpgCost *= 1.35; updateUI(); saveGameToCloud(); } }
+    function buyDroneUpgrade() { if(state.money >= state.droneUpgCost) { state.money -= state.droneUpgCost; state.droneUpgLevel++; state.droneUpgCost *= 1.8; updateUI(); saveGameToCloud(); } }
     
     let hackActive = false; let hackBoostActive = false;
     function resolveHack() {
@@ -1519,7 +1483,7 @@
       if(r < 0.05) { state.icash += 50; document.getElementById('lootbox-result').innerText = `💎 EPISCHER JACKPOT: +50 iCash!`; }
       else if(r < 0.3) { state.icash += 15; document.getElementById('lootbox-result').innerText = `💎 Guter Fund: +15 iCash!`; }
       else { const cash = getPassiveIncome() * 5; state.money += cash; document.getElementById('lootbox-result').innerText = `💶 Niete: +${formatMoney(cash)}`; }
-      updateUI(); saveGameLocally();
+      updateUI(); saveGameToCloud();
     }
     function toggleStaking() {
       const now = Date.now();
@@ -1530,17 +1494,17 @@
         if(state.icash < 50) return alert("50 iCash benötigt!");
         state.icash -= 50; state.stakingActive = true; state.stakingEndTime = now + (7 * 86400000);
       }
-      renderTabContent('icash'); updateUI(); saveGameLocally();
+      renderTabContent('icash'); updateUI(); saveGameToCloud();
     }
     function spinLuckyWheel() {
       const t = getGermanDateString(); if (state.lastWheelSpinDate === t) return alert("Bereits gedreht!");
       state.lastWheelSpinDate = t; if(Math.random() < 0.01) { state.icash += 500; alert("🎰 JACKPOT!!! +💎 500 iCash!"); } else { state.icash += 5; alert("🎰 +💎 5 iCash!"); }
-      renderTabContent('daily'); updateTimersDisplay(); updateUI(); saveGameLocally();
+      renderTabContent('daily'); updateTimersDisplay(); updateUI(); saveGameToCloud();
     }
     function claimDailyReward() {
       const t = getGermanDateString(); if (state.lastDailyClaimDate === t) return alert("Bereits abgeholt!");
       state.lastDailyClaimDate = t; state.icash += 5; alert("🎁 +💎 5 iCash!");
-      renderTabContent('daily'); updateTimersDisplay(); updateUI(); saveGameLocally();
+      renderTabContent('daily'); updateTimersDisplay(); updateUI(); saveGameToCloud();
     }
     function updateQuestProgress(qId, val) {
       checkDailyMidnightReset(); const q = state.dailyQuests.find(item => item.id === qId);
@@ -1552,14 +1516,14 @@
         q.claimed = true; state.icash += q.reward; state.passPoints += 10;
         alert(`🏆 Quest erfüllt! +💎 ${q.reward} iCash & +10 Pass Punkte.`);
         if(state.passPoints >= 100 && !state.unlockedTitles.includes("Cyber-Lord")) { state.unlockedTitles.push("Cyber-Lord"); alert("Titel 'Cyber-Lord' freigeschaltet!"); }
-        checkDailyMidnightReset(); updateUI(); renderTabContent('daily'); saveGameLocally();
+        checkDailyMidnightReset(); updateUI(); renderTabContent('daily'); saveGameToCloud();
       }
     }
     function buyPermaUpgrade(idx) {
       const pu = state.permaUpgrades[idx];
-      if (state.icash >= pu.cost && pu.level < pu.maxLevel) { state.icash -= pu.cost; pu.level++; updateUI(); renderTabContent('icash'); saveGameLocally(); }
+      if (state.icash >= pu.cost && pu.level < pu.maxLevel) { state.icash -= pu.cost; pu.level++; updateUI(); renderTabContent('icash'); saveGameToCloud(); }
     }
-    function changeTitle(newTitle) { state.selectedTitle = newTitle; saveGameLocally(); }
+    function changeTitle(newTitle) { state.selectedTitle = newTitle; saveGameToCloud(); }
 
     function updateTimersDisplay() {
       const todayStr = getGermanDateString();
@@ -1634,7 +1598,7 @@
         const avs = [{ name: '🤖 Standard Klon', type: 'free' }, { name: '💻 Cyber Hacker', type: 'free' }, { name: '👑 Cyber Emperor', type: 'pass' }];
         avs.forEach(av => {
           const isSelected = state.selectedAvatar === av.name; const isUnlocked = av.type === 'free' || state.unlockedAvatars.includes(av.name);
-          let actionBtn = isSelected ? `<span class="text-[10px] text-emerald-400 font-bold">Aktiv</span>` : (isUnlocked ? `<button onclick="state.selectedAvatar='${av.name}';updateUI();renderTabContent('fame');saveGameLocally();" class="px-2 py-1 bg-blue-600/20 text-blue-300 border border-blue-500/30 rounded text-[10px] font-bold">Nutzen</button>` : `<span class="text-[10px] text-slate-500">Gesperrt</span>`);
+          let actionBtn = isSelected ? `<span class="text-[10px] text-emerald-400 font-bold">Aktiv</span>` : (isUnlocked ? `<button onclick="state.selectedAvatar='${av.name}';updateUI();renderTabContent('fame');saveGameToCloud();" class="px-2 py-1 bg-blue-600/20 text-blue-300 border border-blue-500/30 rounded text-[10px] font-bold">Nutzen</button>` : `<span class="text-[10px] text-slate-500">Gesperrt</span>`);
           grid.innerHTML += `<div class="p-2.5 bg-[#0f172a] border ${isSelected ? 'border-purple-500' : 'border-blue-500/20'} rounded-xl flex items-center justify-between text-xs"><span class="text-white">${av.name}</span>${actionBtn}</div>`;
         });
         loadLeaderboard();
@@ -1696,19 +1660,6 @@
       if(btnUpg) btnUpg.className = state.money >= state.clickUpgCost ? "px-3.5 py-2 holo-btn text-xs rounded-lg font-semibold" : "px-3.5 py-2 bg-[#0f172a] text-slate-600 border border-blue-500/10 text-xs rounded-lg font-semibold cursor-not-allowed";
     }
 
-    function saveGameLocally() {
-      state.lastSaveTimestamp = Date.now(); localStorage.setItem('empire_tycoon_save', JSON.stringify(state));
-      saveGameToCloudAuto(); 
-    }
-    window.saveGameLocally = saveGameLocally;
-
-    function loadGameLocally() {
-      const saved = localStorage.getItem('empire_tycoon_save');
-      if (saved) { try { const parsed = JSON.parse(saved); if(parsed.version >= 32) { state = { ...state, ...parsed }; window.state = state; } } catch (e) {} }
-      if(!state.staffStorage) state.staffStorage = [];
-      setTheme(state.theme || 'default'); checkDailyMidnightReset(); checkMonthlyReset();
-    }
-
     setInterval(() => {
       const now = Date.now();
       const comboRing = document.getElementById('combo-timer-ring');
@@ -1746,6 +1697,11 @@
       checkMonthlyReset(); 
     }, 1000);
 
+    // Automatischer Cloud-Sync alle 15 Sekunden
+    setInterval(() => {
+      saveGameToCloud();
+    }, 15000);
+
     setInterval(() => {
       if(!hackActive && !hackBoostActive && Math.random() < 0.02) {
         hackActive = true; document.getElementById('hacking-alert').classList.remove('hidden'); document.getElementById('click-btn').classList.add('hack-active');
@@ -1766,8 +1722,8 @@
       }
     }, 25000);
 
-    loadGameLocally(); updateUI(); updateTimersDisplay(); lucide.createIcons();
-    setTimeout(loadLeaderboard, 1000);
+    updateUI(); updateTimersDisplay(); lucide.createIcons();
+    setTimeout(loadLeaderboard, 1500);
   </script>
 </body>
 </html>
