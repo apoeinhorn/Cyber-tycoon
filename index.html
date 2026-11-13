@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Cyber Tycoon // CLOUD-EDITION 2026</title>
+  <title>Cyber Tycoon // PURE CLOUD EDITION 2026</title>
   <link rel="manifest" href="./manifest.json">
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -316,7 +316,7 @@
     </div>
   </div>
 
-  <!-- ERWEITERTER ADMIN MODAL MIT GLOBALEM LÖSCHEN -->
+  <!-- ADMIN MODAL -->
   <div id="admin-modal" class="fixed inset-0 bg-black/90 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
     <div class="holo-card p-6 max-w-md w-full border-rose-500/50 bg-[#070b14] space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-rose-500/20 pb-3">
@@ -365,7 +365,7 @@
     </div>
     <div class="text-center cursor-pointer select-none" onclick="handleSecretAdminClick()">
       <h1 class="font-extrabold text-xs tracking-widest uppercase text-white">CYBER TYCOON</h1>
-      <span class="text-[9px] text-blue-400 font-mono tracking-wider">CLOUD LIVE</span>
+      <span class="text-[9px] text-blue-400 font-mono tracking-wider">100% CLOUD CORE</span>
     </div>
     <div class="flex items-center space-x-2 text-xs font-semibold">
       <div class="px-2 py-1 rounded-lg bg-[#0f172a] border border-blue-500/20 text-slate-300 font-mono text-[11px]">
@@ -811,7 +811,7 @@
         music.play().then(() => {
           isMusicPlaying = true;
           icon.setAttribute('data-lucide', 'volume-2');
-          speakAI("Live Stream verbunden. Cloud aktiv.");
+          speakAI("Live Stream verbunden. 100% Cloud aktiv.");
         }).catch(err => { alert("Browser blockiert Autoplay. Bitte erneut klicken."); });
       }
       lucide.createIcons();
@@ -829,7 +829,7 @@
     }
 
     let state = {
-      version: 49, companyName: 'CyberBoss', language: 'de', theme: 'default',
+      version: 50, companyName: 'CyberBoss', language: 'de', theme: 'default',
       money: 1000000, totalEarned: 1000000, icash: 0,
       clickPower: 0.01, clickUpgLevel: 0, clickUpgCost: 0.50,
       droneUpgLevel: 0, droneUpgCost: 100, 
@@ -987,10 +987,10 @@
       openAdminModal();
     }
     
-    // 🔥 GLOBALE LÖSCH-FUNKTION (Löscht ALLES von ALLEN Spielern in Firestore)
+    // 🔥 PURE CLOUD LÖSCH-FUNKTION (Löscht ALLES von ALLEN Spielern in Firestore)
     async function adminDeleteAllPlayersCloudData() {
       if (!window.FB || !window.FB.db) return alert("Keine Cloud-Verbindung!");
-      if (confirm("💥 ACHTUNG ADMIN: Möchtest du wirklich ALLE Spielstände und die gesamte Weltrangliste in der Cloud unwiderruflich löschen?")) {
+      if (confirm("💥 ACHTUNG ADMIN: Möchtest du wirklich ALLE Spielstände und die gesamte Weltrangliste in der Cloud unwiderruflich löschen? Jeder Spieler verliert seinen Fortschritt und startet neu!")) {
         try {
           const savesSnapshot = await window.FB.getDocs(window.FB.collection(window.FB.db, "saves"));
           for (const d of savesSnapshot.docs) {
@@ -1000,7 +1000,7 @@
           for (const d of lbSnapshot.docs) {
             await window.FB.deleteDoc(d.ref);
           }
-          alert("💥 Alle Cloud-Daten und Ranglisten wurden erfolgreich gelöscht!");
+          alert("💥 Alle Cloud-Daten und Ranglisten wurden erfolgreich gelöscht! Das System wird neu geladen.");
           location.reload();
         } catch (e) {
           alert("Fehler beim Löschen: " + e.message);
@@ -1097,10 +1097,8 @@
         const u = window.FB.auth.currentUser; 
         state.companyName = state.companyName || u.displayName || "CyberBoss";
         
-        // Speichert den vollständigen Spielstand in der Cloud
         await window.FB.setDoc(window.FB.doc(window.FB.db, "saves", u.uid), state);
         
-        // Synchronisiert direkt mit der Weltrangliste
         await window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", u.uid), { 
           companyName: state.companyName, 
           totalValue: state.totalEarned || state.money, 
@@ -1697,7 +1695,6 @@
       checkMonthlyReset(); 
     }, 1000);
 
-    // Automatischer Cloud-Sync alle 15 Sekunden
     setInterval(() => {
       saveGameToCloud();
     }, 15000);
