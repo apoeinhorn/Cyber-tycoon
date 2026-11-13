@@ -315,25 +315,53 @@
     </div>
   </div>
 
-  <!-- ADMIN MODAL -->
+  <!-- ERWEITERTER ADMIN MODAL -->
   <div id="admin-modal" class="fixed inset-0 bg-black/90 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
     <div class="holo-card p-6 max-w-md w-full border-rose-500/50 bg-[#070b14] space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-rose-500/20 pb-3">
         <div class="flex items-center space-x-2 text-rose-400 font-extrabold text-xs uppercase tracking-wider">
           <i data-lucide="shield-alert" class="w-5 h-5 animate-pulse"></i>
-          <span>CYBER ADMIN OVERRIDE</span>
+          <span>CYBER ADMIN OVERRIDE CONSOLE</span>
         </div>
         <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
 
-      <div class="space-y-3">
-        <div class="text-[11px] font-bold text-white uppercase tracking-wider">Eigene Admin-Power</div>
-        <div class="grid grid-cols-2 gap-2">
-          <button onclick="adminAddMoney()" class="py-2 px-3 bg-emerald-600/25 border border-emerald-500/40 text-emerald-300 text-xs font-bold rounded-xl">+€1.000.000</button>
-          <button onclick="adminAddIcash()" class="py-2 px-3 bg-purple-600/25 border border-purple-500/40 text-purple-300 text-xs font-bold rounded-xl">+💎 50 iCash</button>
-          <button onclick="adminTimeJump()" class="py-2 px-3 bg-blue-600/25 border border-blue-500/40 text-blue-300 text-xs font-bold rounded-xl">⚡ +24h Einkommen</button>
-          <button onclick="adminTriggerMonthlyReset()" class="py-2 px-3 bg-amber-600/25 border border-amber-500/40 text-amber-300 text-xs font-bold rounded-xl">📅 Monats-Reset Test</button>
+      <!-- Live Wirtschaft / Diagnostik -->
+      <div class="space-y-2 bg-[#0f172a] p-3 rounded-xl border border-rose-500/20 text-xs font-mono">
+        <div class="text-rose-300 font-bold uppercase">Empire Diagnostics</div>
+        <div class="flex justify-between"><span>Globaler Stand:</span> <span id="admin-diag-money" class="text-emerald-400">€0</span></div>
+        <div class="flex justify-between"><span>Aktive Gebäude:</span> <span id="admin-diag-buildings" class="text-pink-400">0</span></div>
+        <div class="flex justify-between"><span>Passiv / Sekunde:</span> <span id="admin-diag-income" class="text-cyan-400">€0</span></div>
+      </div>
+
+      <!-- Instant Betrag hinzufügen -->
+      <div class="space-y-2">
+        <div class="text-[11px] font-bold text-white uppercase tracking-wider">Geld / iCash Injektion</div>
+        <div class="flex gap-2">
+          <input type="number" id="admin-custom-money" placeholder="Betrag..." class="flex-1 bg-[#0f172a] border border-rose-500/30 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+          <button onclick="adminAddCustomMoney()" class="px-4 py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl">Geld +</button>
         </div>
+        <div class="flex gap-2">
+          <input type="number" id="admin-custom-icash" placeholder="iCash Menge..." class="flex-1 bg-[#0f172a] border border-rose-500/30 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+          <button onclick="adminAddCustomIcash()" class="px-4 py-2 bg-purple-600 text-white font-bold text-xs rounded-xl">iCash 💎</button>
+        </div>
+      </div>
+
+      <!-- Event & Zeit-Zentrale -->
+      <div class="space-y-2">
+        <div class="text-[11px] font-bold text-white uppercase tracking-wider">Event & Zeit Steuerung</div>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="adminTimeJump()" class="py-2 px-3 bg-blue-600/25 border border-blue-500/40 text-blue-300 text-xs font-bold rounded-xl">⚡ +24h Einkommen</button>
+          <button onclick="adminForceEvent()" class="py-2 px-3 bg-amber-600/25 border border-amber-500/40 text-amber-300 text-xs font-bold rounded-xl">📈 Event Erzwingen</button>
+          <button onclick="adminTriggerMonthlyReset()" class="py-2 px-3 bg-purple-600/25 border border-purple-500/40 text-purple-300 text-xs font-bold rounded-xl">📅 Monats-Reset Test</button>
+          <button onclick="adminForceHack()" class="py-2 px-3 bg-red-600/25 border border-red-500/40 text-red-300 text-xs font-bold rounded-xl">⚠️ Hack Auslösen</button>
+        </div>
+      </div>
+
+      <!-- Server Tools & Reset -->
+      <div class="space-y-2 pt-2 border-t border-rose-500/20">
+        <div class="text-[11px] font-bold text-white uppercase tracking-wider">System-Wartung</div>
+        <button onclick="adminClearLocalStorage()" class="w-full py-2 bg-rose-950 border border-rose-500/40 text-rose-300 text-xs font-bold rounded-xl">🗑️ Lokalen Speicher löschen (Reset)</button>
       </div>
 
       <button onclick="closeAdminModal()" class="w-full py-2.5 bg-[#0f172a] hover:bg-[#1e293b] text-slate-300 border border-slate-700 text-xs font-bold rounded-xl mt-2">Admin-Modus schließen</button>
@@ -738,24 +766,18 @@
     let audioCtx = null;
     function initAudioContext() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
     
-    // VERBESSERTES AUDIO: Dynamische Tonhöhe basierend auf Combo-Multiplikator
     function playClickBeep(comboMult = 1.0) { 
       try { 
         initAudioContext(); if(!audioCtx) return; 
         const osc = audioCtx.createOscillator(); 
         const gain = audioCtx.createGain(); 
         osc.type = 'sine'; 
-        
-        // Tonhöhe steigt mit der Combo an (max. ca. 1200 Hz)
         const baseFreq = 580;
         const targetFreq = Math.min(1200, baseFreq * (1 + (comboMult - 1) * 0.25));
-        
         osc.frequency.setValueAtTime(targetFreq, audioCtx.currentTime); 
         osc.frequency.exponentialRampToValueAtTime(targetFreq * 0.4, audioCtx.currentTime + 0.08); 
-        
         gain.gain.setValueAtTime(0.08, audioCtx.currentTime); 
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08); 
-        
         osc.connect(gain); gain.connect(audioCtx.destination); 
         osc.start(); osc.stop(audioCtx.currentTime + 0.08); 
       } catch(e) {} 
@@ -802,7 +824,7 @@
     }
 
     let state = {
-      version: 46, companyName: 'CyberBoss', language: 'de', theme: 'default',
+      version: 47, companyName: 'CyberBoss', language: 'de', theme: 'default',
       money: 1000000, totalEarned: 1000000, icash: 0,
       clickPower: 0.01, clickUpgLevel: 0, clickUpgCost: 0.50,
       droneUpgLevel: 0, droneUpgCost: 100, 
@@ -901,7 +923,7 @@
           await window.FB.updateProfile(userCred.user, { displayName: username });
           state.companyName = username; saveGameToCloudAuto(); speakAI("Imperium initialisiert.");
         }
-      } catch(e) { errEl.innerText = "Fehler: " + e.message; errEl.classList.remove('hidden'); }
+      } catch(e) { errEr.innerText = "Fehler: " + e.message; errEl.classList.remove('hidden'); }
     }
     async function handleLogout() {
       if (!window.FB) return;
@@ -909,22 +931,61 @@
       document.getElementById('auth-overlay').classList.remove('hidden');
     }
 
+    // --- ERWEITERTER ADMIN MODUS LOGIK ---
     let secretClickCount = 0; let secretClickTimer = null;
     function handleSecretAdminClick() {
       secretClickCount++; if (secretClickTimer) clearTimeout(secretClickTimer);
       if (secretClickCount >= 3) {
         secretClickCount = 0;
-        if (prompt("🔐 ADMIN PASSWORT EINGEBEN:") === "cyberboss2026") document.getElementById('admin-modal').classList.remove('hidden');
+        if (prompt("🔐 ADMIN PASSWORT EINGEBEN:") === "cyberboss2026") {
+          openAdminModal();
+        }
       } else secretClickTimer = setTimeout(() => { secretClickCount = 0; }, 1000);
     }
+    function openAdminModal() {
+      document.getElementById('admin-diag-money').innerText = formatMoney(state.money);
+      document.getElementById('admin-diag-buildings').innerText = state.ownedBuildings.length;
+      document.getElementById('admin-diag-income').innerText = formatMoney(getPassiveIncome() / 3600) + '/s';
+      document.getElementById('admin-modal').classList.remove('hidden');
+    }
     function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
-    function adminAddMoney() { state.money += 1000000; state.totalEarned += 1000000; updateUI(); saveGameLocally(); alert("💰 +€1M"); }
-    function adminAddIcash() { state.icash += 50; updateUI(); saveGameLocally(); alert("💎 +50 iCash"); }
-    function adminTimeJump() { const e = getPassiveIncome() * 24; state.money += e; state.totalEarned += e; updateUI(); saveGameLocally(); alert(`⚡ +${formatMoney(e)}`); }
+    
+    function adminAddCustomMoney() {
+      const val = parseFloat(document.getElementById('admin-custom-money').value);
+      if(isNaN(val)) return alert("Bitte gültigen Betrag eingeben!");
+      state.money += val; state.totalEarned += val; updateUI(); saveGameLocally(); alert(`💰 +${formatMoney(val)} injiziert!`);
+      openAdminModal();
+    }
+    function adminAddCustomIcash() {
+      const val = parseInt(document.getElementById('admin-custom-icash').value);
+      if(isNaN(val)) return alert("Bitte gültigen iCash-Wert eingeben!");
+      state.icash += val; updateUI(); saveGameLocally(); alert(`💎 +${val} iCash injiziert!`);
+      openAdminModal();
+    }
+    function adminTimeJump() { 
+      const e = getPassiveIncome() * 24; state.money += e; state.totalEarned += e; updateUI(); saveGameLocally(); alert(`⚡ +24h Einkommen (${formatMoney(e)}) hinzugefügt!`); 
+      openAdminModal();
+    }
+    function adminForceEvent() {
+      closeAdminModal();
+      triggerBuildingEvent();
+    }
     function adminTriggerMonthlyReset() {
       state.lastMonthlyResetKey = "";
       checkMonthlyReset();
       closeAdminModal();
+    }
+    function adminForceHack() {
+      closeAdminModal();
+      hackActive = true; 
+      document.getElementById('hacking-alert').classList.remove('hidden'); 
+      document.getElementById('click-btn').classList.add('hack-active');
+    }
+    function adminClearLocalStorage() {
+      if(confirm("ACHTUNG: Lokalen Speicher wirklich komplett löschen? Alle Fortschritte gehen verloren!")) {
+        localStorage.removeItem('empire_tycoon_save');
+        location.reload();
+      }
     }
 
     async function changeCompanyNameWithIcash() {
@@ -1157,17 +1218,13 @@
       document.getElementById('buildings-total-income').innerText = `+${formatMoney(totalInc)}/Stunde`;
       listEl.innerHTML = '';
       [...state.ownedBuildings].reverse().forEach((b) => {
-        // Meilenstein Berechnung für Vorschau
-        const milestoneTarget = Math.ceil(b.level / 10) * 10;
         const milestoneProg = Math.min(100, (b.level % 10 === 0 ? 10 : (b.level % 10)) * 10);
-        
         listEl.innerHTML += `
           <div onclick="openBuildingDetailModal(${b.id})" class="holo-card p-4 border-pink-500/30 bg-gradient-to-r from-slate-900/80 to-[#0b101d] cursor-pointer space-y-2">
             <div class="flex items-center justify-between">
               <div><div class="font-bold text-xs text-white">🎭 ${b.name}</div><div class="text-[10px] text-pink-400">${b.category}</div><div class="text-[11px] text-emerald-400 font-mono font-bold">+${formatMoney(getBuildingIncome(b))}/h</div></div>
               <div class="text-right"><div class="text-xs font-mono font-bold text-purple-300">LVL ${b.level}</div></div>
             </div>
-            <!-- KLEINER MEILENSTEIN-BALKEN -->
             <div class="w-full h-1.5 bg-[#0f172a] rounded-full overflow-hidden border border-purple-500/20">
               <div class="h-full bg-purple-500 rounded-full" style="width: ${milestoneProg}%"></div>
             </div>
@@ -1181,7 +1238,6 @@
       document.getElementById('detail-building-name').innerText = b.name;
       document.getElementById('detail-building-income').innerText = formatMoney(getBuildingIncome(b)) + '/STD.';
       
-      // Meilenstein Update im Modal
       const currentLevelMod = b.level % 10 === 0 ? 10 : b.level % 10;
       document.getElementById('building-milestone-text').innerText = `Level ${b.level} (Fortschritt zum 10er Meilenstein: ${currentLevelMod}/10)`;
       document.getElementById('building-milestone-bar').style.width = (currentLevelMod * 10) + '%';
@@ -1397,7 +1453,6 @@
         state.totalEarned += pwr;
         state.exp += 1;
 
-        // Floating Text erzeugen
         spawnFloatingText(e.clientX, e.clientY, `+${formatMoney(pwr)}`);
 
         if (state.exp >= state.expNeeded) { state.level++; state.exp = 0; state.expNeeded = Math.floor(state.expNeeded * 1.3); state.icash += 2; }
@@ -1597,6 +1652,7 @@
 
     function saveGameLocally() {
       state.lastSaveTimestamp = Date.now(); localStorage.setItem('empire_tycoon_save', JSON.stringify(state));
+      saveGameToCloudAuto(); // Sync zu Firebase
     }
     window.saveGameLocally = saveGameLocally;
 
@@ -1607,19 +1663,17 @@
       setTheme(state.theme || 'default'); checkDailyMidnightReset(); checkMonthlyReset();
     }
 
-    // COMBO TIMEOUT LOOP (Ring aktualisieren & Combo bei Inaktivität abbauen)
     setInterval(() => {
       const now = Date.now();
       const comboRing = document.getElementById('combo-timer-ring');
       if (state.lastClickTime && comboRing) {
         const elapsed = now - state.lastClickTime;
-        const maxTime = 1500; // 1.5 Sekunden Timeout
+        const maxTime = 1500;
         if (elapsed < maxTime) {
           const progress = 1 - (elapsed / maxTime);
           const dashoffset = 289 * (1 - progress);
           comboRing.style.strokeDashoffset = dashoffset;
         } else {
-          // Combo abgelaufen
           state.comboMult = 1.0;
           state.comboHits = 0;
           comboRing.style.strokeDashoffset = 289;
