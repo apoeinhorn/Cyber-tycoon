@@ -12,7 +12,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, deleteDoc, query, orderBy, limit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDVkBQHOU3bch3D5eAhbN_lwyV7uaK4zxM",
@@ -24,12 +24,17 @@
       measurementId: "G-ER4SVEMLVE"
     };
 
+    const ADMIN_EMAILS = ["t.blau97@gmail.com"];
+
     try {
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
       const db = getFirestore(app);
 
-      window.FB = { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, doc, setDoc, getDoc, collection, getDocs, deleteDoc, query, orderBy, limit };
+      window.FB = { 
+        auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, 
+        doc, setDoc, getDoc, collection, addDoc, getDocs, deleteDoc, query, orderBy, limit, onSnapshot, serverTimestamp 
+      };
 
       onAuthStateChanged(auth, async (user) => {
         const authOverlay = document.getElementById('auth-overlay');
@@ -42,10 +47,19 @@
           if(userStatusEl) userStatusEl.innerText = `CLOUD SECURE: ${displayName} (${user.email})`;
           if(logoutBtnEl) logoutBtnEl.classList.remove('hidden');
 
+          if (ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+            window.state.role = 'admin';
+          } else {
+            if (!window.state.role) window.state.role = 'spieler';
+          }
+
           try {
             const docSnap = await getDoc(doc(db, "saves", user.uid));
             if (docSnap.exists() && window.mergeCloudAndLocalState) {
               window.mergeCloudAndLocalState(docSnap.data());
+              if (ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+                window.state.role = 'admin';
+              }
             } else {
               window.state.companyName = displayName;
               if (window.saveGameToCloud) window.saveGameToCloud();
@@ -53,15 +67,33 @@
           } catch(err) {
             console.error("Cloud-Ladefehler:", err);
           }
+
+          if (window.initGlobalChatListener) {
+            window.initGlobalChatListener();
+          }
         } else {
           if(authOverlay) authOverlay.classList.remove('hidden');
           if(userStatusEl) userStatusEl.innerText = 'OFFLINE - BITTE ANMELDEN';
           if(logoutBtnEl) logoutBtnEl.classList.add('hidden');
         }
+
+        // Ladebildschirm nach erfolgreichem Init ausblenden
+        setTimeout(() => {
+          const loader = document.getElementById('splash-screen');
+          if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => loader.remove(), 500);
+          }
+        }, 1200);
       });
     } catch (e) {
       console.warn("Firebase Init Fehler:", e);
       window.FB = null;
+      // Auch bei Fehler Ladebildschirm entfernen
+      setTimeout(() => {
+        const loader = document.getElementById('splash-screen');
+        if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 500); }
+      }, 1000);
     }
   </script>
   
@@ -180,6 +212,46 @@
       text-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
     }
 
+    #cyber-toast-container {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+      width: 90%;
+      max-width: 380px;
+    }
+    .cyber-toast {
+      background: rgba(11, 16, 29, 0.95);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(6, 182, 212, 0.4);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 15px rgba(6, 182, 212, 0.2);
+      border-radius: 14px;
+      padding: 12px 16px;
+      color: #fff;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      pointer-events: auto;
+    }
+    @keyframes toastIn {
+      0% { opacity: 0; transform: translateY(-20px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .cyber-toast.fadeOut {
+      animation: toastOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes toastOut {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-20px) scale(0.95); }
+    }
+
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 2px; }
@@ -200,7 +272,31 @@
 </head>
 <body id="app-body" class="text-slate-300 min-h-screen flex flex-col relative overflow-x-hidden">
 
-  <!-- TOP DROPDOWN MENU (DIRECTORY) -->
+  <!-- ================= NEUER LADEBILDSCHIRM (SPLASH SCREEN) ================= -->
+  <div id="splash-screen" class="fixed inset-0 bg-[#020408] z-[300] flex flex-col items-center justify-center p-6 transition-opacity duration-500">
+    <div class="relative flex flex-col items-center space-y-6 text-center max-w-xs w-full">
+      
+      <!-- GT Bild mit Neon Glow -->
+      <div class="relative w-36 h-36 rounded-3xl p-1 bg-gradient-to-tr from-cyan-500 via-purple-600 to-pink-500 shadow-[0_0_35px_rgba(6,182,212,0.5)] gt-logo-anim">
+        <img src="gt-logo.jpg" alt="Cyber Tycoon Logo" class="w-full h-full object-cover rounded-[22px] border-2 border-[#020408]">
+      </div>
+
+      <div class="space-y-1">
+        <h2 class="text-white font-extrabold text-base tracking-[0.2em] uppercase">CYBER TYCOON</h2>
+        <p class="text-[11px] text-cyan-400 font-mono tracking-widest uppercase">Initialisiere Neural-Netz...</p>
+      </div>
+
+      <!-- Ladebalken -->
+      <div class="w-full h-2 bg-[#0f172a] rounded-full overflow-hidden border border-cyan-500/30 p-0.5">
+        <div id="splash-bar" class="h-full bg-gradient-to-r from-cyan-500 to-pink-500 rounded-full animate-pulse" style="width: 85%;"></div>
+      </div>
+      
+      <div class="text-[9px] text-slate-500 font-mono">P.U.R.E. CLOUD EDITION 2026</div>
+    </div>
+  </div>
+
+  <div id="cyber-toast-container"></div>
+
   <div id="top-dropdown-menu" class="fixed inset-0 bg-[#050810]/98 backdrop-blur-3xl z-[100] flex flex-col p-4 sm:p-6 overflow-y-auto">
     <div class="flex justify-between items-center pb-4 border-b border-cyan-500/20 mb-4 sticky top-0 bg-[#050810] z-10 pt-2">
       <div class="flex items-center space-x-2 text-white font-extrabold text-sm tracking-widest uppercase">
@@ -230,6 +326,18 @@
           <i data-lucide="gem" class="w-5 h-5"></i>
         </div>
         <span class="text-xs font-bold text-white">0.5. iCash & Schwarzmarkt</span>
+      </button>
+      <button onclick="switchCategoryPage('tictactoe')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-emerald-400 transition group bg-gradient-to-b from-emerald-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition">
+          <i data-lucide="grid" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">Cyber Tic-Tac-Toe</span>
+      </button>
+      <button onclick="switchCategoryPage('chat')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-cyan-400 transition group bg-gradient-to-b from-cyan-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition">
+          <i data-lucide="message-square" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">Globaler Live-Chat</span>
       </button>
       <button onclick="switchCategoryPage('promo')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-amber-400 transition group bg-gradient-to-b from-amber-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-110 transition">
@@ -264,7 +372,6 @@
     </div>
   </div>
 
-  <!-- AUTH OVERLAY -->
   <div id="auth-overlay" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] flex items-center justify-center p-4">
     <div class="holo-card p-6 max-w-md w-full border-blue-500/50 bg-[#070b14] space-y-5 shadow-2xl relative">
       <div class="text-center space-y-1.5">
@@ -283,7 +390,7 @@
       <form id="form-overlay-login" onsubmit="event.preventDefault(); handleLoginOverlay();" class="space-y-3">
         <div>
           <label class="text-[10px] text-slate-400 font-mono uppercase">E-Mail</label>
-          <input type="email" id="overlay-login-email" required placeholder="boss@cyber.de" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 mt-1">
+          <input type="email" id="overlay-login-email" required placeholder="t.blau97@gmail.com" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 mt-1">
         </div>
         <div>
           <label class="text-[10px] text-slate-400 font-mono uppercase">Passwort</label>
@@ -301,7 +408,7 @@
         </div>
         <div>
           <label class="text-[10px] text-slate-400 font-mono uppercase">E-Mail</label>
-          <input type="email" id="overlay-reg-email" required placeholder="boss@cyber.de" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 mt-1">
+          <input type="email" id="overlay-reg-email" required placeholder="t.blau97@gmail.com" class="w-full bg-[#0f172a] border border-blue-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 mt-1">
         </div>
         <div>
           <label class="text-[10px] text-slate-400 font-mono uppercase">Passwort</label>
@@ -316,7 +423,6 @@
     </div>
   </div>
 
-  <!-- ADMIN MODAL -->
   <div id="admin-modal" class="fixed inset-0 bg-black/90 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
     <div class="holo-card p-6 max-w-md w-full border-rose-500/50 bg-[#070b14] space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-rose-500/20 pb-3">
@@ -327,8 +433,19 @@
         <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
 
+      <div class="space-y-2">
+        <div class="text-[11px] font-bold text-white uppercase tracking-wider">Ziel-Spieler auswählen</div>
+        <div class="flex gap-2">
+          <select id="admin-target-player-select" class="flex-1 bg-[#0f172a] border border-rose-500/30 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+            <option value="">Lade Spieler...</option>
+          </select>
+          <button onclick="loadAdminSelectedPlayerData()" class="px-3 py-2 bg-blue-600 text-white font-bold text-xs rounded-xl">Laden</button>
+        </div>
+      </div>
+
       <div class="space-y-2 bg-[#0f172a] p-3 rounded-xl border border-rose-500/20 text-xs font-mono">
         <div class="text-rose-300 font-bold uppercase">Empire Diagnostics (Cloud)</div>
+        <div class="flex justify-between"><span>Ausgewählter Spieler:</span> <span id="admin-diag-name" class="text-cyan-400">Dein Account</span></div>
         <div class="flex justify-between"><span>Globaler Stand:</span> <span id="admin-diag-money" class="text-emerald-400">€0</span></div>
         <div class="flex justify-between"><span>Aktive Gebäude:</span> <span id="admin-diag-buildings" class="text-pink-400">0</span></div>
       </div>
@@ -345,7 +462,6 @@
         </div>
       </div>
 
-      <!-- GLOBALES LÖSCHEN FÜR ADMINS -->
       <div class="space-y-2 pt-3 border-t border-rose-500/30">
         <div class="text-[11px] font-bold text-rose-400 uppercase tracking-wider">⚠️ Globale Admin-Säuberung</div>
         <button onclick="adminDeleteAllPlayersCloudData()" class="w-full py-2.5 bg-rose-700 hover:bg-rose-600 text-white text-xs font-bold rounded-xl shadow-[0_0_15px_rgba(225,29,72,0.5)] transition">💥 ALLE Spielstände & Ranglisten löschen!</button>
@@ -355,7 +471,6 @@
     </div>
   </div>
 
-  <!-- HEADER -->
   <header class="bg-[#070b14]/95 backdrop-blur-2xl border-b border-blue-500/10 px-4 py-3 sticky top-0 z-30 flex items-center justify-between">
     <div class="flex items-center space-x-2">
       <audio id="bg-music" loop><source src="https://n11a-eu.rcs.revma.com/1z19ak79n98uv" type="audio/mpeg"></audio>
@@ -365,11 +480,13 @@
     </div>
     <div class="text-center cursor-pointer select-none" onclick="handleSecretAdminClick()">
       <h1 class="font-extrabold text-xs tracking-widest uppercase text-white">CYBER TYCOON</h1>
-      <span class="text-[9px] text-blue-400 font-mono tracking-wider">100% CLOUD CORE</span>
     </div>
     <div class="flex items-center space-x-2 text-xs font-semibold">
       <div class="px-2 py-1 rounded-lg bg-[#0f172a] border border-blue-500/20 text-slate-300 font-mono text-[11px]">
         LVL <span id="stat-level" class="text-white font-bold">1</span>
+      </div>
+      <div id="stat-icash" class="px-2 py-1 rounded-lg bg-[#0f172a] border border-purple-500/20 text-purple-400 text-[11px] font-mono shadow-lg">
+        💎 0
       </div>
       <div class="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[#0f172a] border border-emerald-500/20 text-emerald-400 text-[11px] font-mono shadow-lg">
         <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
@@ -378,18 +495,16 @@
     </div>
   </header>
 
-  <!-- MAIN CONTENT -->
   <main class="flex-1 max-w-2xl w-full mx-auto p-4 flex flex-col pb-28">
     
-    <!-- TOP STATS BAR -->
     <div class="grid grid-cols-3 gap-2 mb-4">
       <div class="holo-card p-3 relative overflow-hidden">
         <div class="text-[9px] text-slate-400 font-mono uppercase tracking-wider">PASSIV / STUNDE</div>
         <div id="stat-income" class="font-mono font-bold text-xs text-emerald-400 mt-1">+€0.00 /h</div>
       </div>
       <div class="holo-card p-3 relative overflow-hidden">
-        <div class="text-[9px] text-slate-400 font-mono uppercase tracking-wider">ICASH GUTHABEN</div>
-        <div id="stat-icash" class="font-mono font-bold text-xs text-purple-400 mt-1">💎 0 iCash</div>
+        <div class="text-[9px] text-slate-400 font-mono uppercase tracking-wider">GESAMT-STERNE ⭐</div>
+        <div id="stat-stars" class="font-mono font-bold text-xs text-amber-400 mt-1">⭐ 0</div>
       </div>
       <div class="holo-card p-3 relative overflow-hidden">
         <div class="text-[9px] text-slate-400 font-mono uppercase tracking-wider">GESAMT-ASSETS</div>
@@ -397,7 +512,6 @@
       </div>
     </div>
 
-    <!-- MONTHLY RESET BANNER -->
     <div class="holo-card p-3 mb-4 bg-gradient-to-r from-blue-950/40 via-purple-950/40 to-[#0b101d] border-blue-500/30 flex items-center justify-between text-xs">
       <div class="flex items-center gap-2">
         <span class="text-base">📅</span>
@@ -409,13 +523,11 @@
       <div id="monthly-reset-countdown" class="font-mono font-extrabold text-cyan-400 text-xs">--:--:--:--</div>
     </div>
 
-    <!-- HACKING ALERT BANNER -->
     <div id="hacking-alert" class="hidden absolute top-10 left-1/2 -translate-x-1/2 w-64 bg-red-900/90 border-2 border-red-500 rounded-xl p-3 text-center z-[80] shadow-[0_0_20px_red]">
       <div class="text-xs font-bold text-white uppercase mb-1">⚠️ Firewall Breach!</div>
       <button onclick="resolveHack()" class="w-full py-2 bg-red-600 text-white font-bold text-xs rounded shadow">Hack Stoppen! (10x Boost)</button>
     </div>
 
-    <!-- DYNAMIC BUILDING EVENT BANNER -->
     <div id="building-event-banner" class="hidden holo-card p-3 mb-4 border-amber-500/60 bg-amber-950/40 flex items-center justify-between text-xs animate-pulse">
       <div id="building-event-text" class="font-bold text-amber-300">⚡ Krypto-Boom aktiv!</div>
       <button onclick="resolveBuildingEvent()" class="px-3 py-1.5 bg-amber-500 text-white font-bold rounded-lg">Kassieren!</button>
@@ -438,7 +550,6 @@
         <h3 class="font-bold text-base text-white tracking-wide relative z-10">0. Core Terminal Overdrive</h3>
         <p class="text-xs text-slate-400 mt-0.5 mb-4 relative z-10">Generiere Datenimpulse, um das Imperium zu skalieren.</p>
 
-        <!-- CLICK BUTTON MIT SVG COMBO-TIMER-RING -->
         <div class="relative my-2 z-10">
           <svg class="absolute -inset-3 w-[calc(100%+24px)] h-[calc(100%+24px)] pointer-events-none" viewBox="0 0 100 100">
             <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(59, 130, 246, 0.15)" stroke-width="3" />
@@ -490,7 +601,7 @@
     <!-- ================= PAGE 1: BUILDINGS & MODULES ================= -->
     <div id="page-buildings" class="category-page space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="building-2" class="w-4 h-4 text-pink-400"></i> Meine Gebäude & Module</h3>
+        <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="building-2" class="w-4 h-4 text-pink-400"></i> Meine Gebäude</h3>
       </div>
 
       <div class="holo-card p-6 text-center space-y-4 bg-gradient-to-b from-purple-950/40 via-[#0b101d] to-[#0b101d] border-pink-500/40">
@@ -514,7 +625,7 @@
       <div id="owned-buildings-list" class="space-y-3"></div>
     </div>
 
-    <!-- BUILDING DETAIL & MODULES MODAL -->
+    <!-- BUILDING DETAIL MODAL -->
     <div id="building-detail-modal" class="fixed inset-0 bg-[#050614]/95 backdrop-blur-2xl z-[90] flex items-center justify-center p-4 hidden">
       <div class="w-full max-w-md bg-gradient-to-b from-[#110d2c] via-[#090b21] to-[#040510] border border-purple-500/30 rounded-3xl p-5 shadow-2xl relative text-slate-200 max-h-[92vh] overflow-y-auto">
         <button onclick="closeBuildingDetailModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-blue-600/40 text-white flex items-center justify-center hover:scale-105"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -525,7 +636,7 @@
 
         <div class="mt-4 p-3 bg-purple-950/30 border border-purple-500/30 rounded-2xl">
           <div class="flex justify-between items-center text-[11px] font-mono mb-1">
-            <span class="text-slate-300">Meilenstein-Fortschritt</span>
+            <span class="text-slate-300">Gebäude-Level & Meilenstein</span>
             <span id="building-milestone-text" class="text-purple-400 font-bold">Level 1 / 10</span>
           </div>
           <div class="w-full h-2 bg-[#0f172a] rounded-full overflow-hidden border border-purple-500/20">
@@ -537,6 +648,13 @@
           <button onclick="upgradeBuildingDetail(1)" class="holo-card p-3 flex flex-col items-center justify-center"><div class="font-mono text-xs text-amber-300" id="cost-detail-1">0</div><div class="text-[9px] mt-0.5">1 LVL</div></button>
           <button onclick="upgradeBuildingDetail(10)" class="holo-card p-3 flex flex-col items-center justify-center"><div class="font-mono text-xs text-amber-300" id="cost-detail-10">0</div><div class="text-[9px] mt-0.5">10 LVL</div></button>
           <button onclick="upgradeBuildingDetail(500)" class="holo-card p-3 flex flex-col items-center justify-center"><div class="font-mono text-xs text-amber-300" id="cost-detail-500">0</div><div class="text-[9px] mt-0.5">500 LVL</div></button>
+        </div>
+
+        <div class="mt-5">
+          <button onclick="openAdBonusModal()" class="w-full py-3.5 bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-500 text-black font-extrabold text-xs rounded-2xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:brightness-110 transition">
+            <i data-lucide="megaphone" class="w-4 h-4"></i>
+            <span>📢 Werbeboni-Zentrale öffnen (Stufe <span id="detail-ad-level-badge">0</span>/10)</span>
+          </button>
         </div>
 
         <div class="mt-5 space-y-2">
@@ -559,8 +677,33 @@
       </div>
     </div>
 
+    <!-- AD BONUS MODAL -->
+    <div id="ad-bonus-modal" class="fixed inset-0 bg-[#02040c]/98 backdrop-blur-3xl z-[95] flex items-center justify-center p-4 hidden">
+      <div class="w-full max-w-md bg-gradient-to-b from-[#161033] via-[#090b21] to-[#040510] border-2 border-amber-500/50 rounded-3xl p-5 shadow-2xl relative text-slate-200 max-h-[92vh] overflow-y-auto">
+        <button onclick="closeAdBonusModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-rose-600/40 text-white flex items-center justify-center hover:scale-105"><i data-lucide="x" class="w-5 h-5"></i></button>
+        
+        <div class="text-center space-y-1.5 pt-1">
+          <div class="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
+            <i data-lucide="megaphone" class="w-6 h-6"></i>
+          </div>
+          <div class="text-white text-base font-extrabold tracking-wide uppercase">WERBEBONI-ZENTRALE</div>
+          <div class="text-xs text-amber-300 font-mono" id="ad-modal-building-name">Gebäude Name</div>
+          <p class="text-[10px] text-slate-300 px-2 pt-1">Kaufe teure Werbemaßnahmen für dieses Gebäude. **Jedes Gebäude kann täglich genau 1 Stufe** erwerben!</p>
+        </div>
+
+        <div class="mt-4 p-3 bg-amber-950/20 border border-amber-500/30 rounded-2xl flex justify-between items-center text-xs font-mono">
+          <span class="text-slate-300">Tägliches Limit:</span>
+          <span id="ad-daily-limit-status" class="text-emerald-400 font-bold">Verfügbar (1 Stufe heute möglich)</span>
+        </div>
+
+        <div id="ad-boni-container" class="mt-4 space-y-2"></div>
+
+        <button onclick="closeAdBonusModal()" class="w-full py-3 bg-[#0f172a] hover:bg-[#1e293b] text-slate-300 border border-slate-700 text-xs font-bold rounded-xl mt-5 transition">Schließen</button>
+      </div>
+    </div>
+
     <!-- WORKER SHOP MODAL -->
-    <div id="worker-shop-modal" class="fixed inset-0 bg-[#050614]/95 z-[95] flex items-center justify-center p-4 hidden">
+    <div id="worker-shop-modal" class="fixed inset-0 bg-[#050614]/95 z-[98] flex items-center justify-center p-4 hidden">
       <div class="w-full max-w-md bg-gradient-to-b from-[#110d2c] via-[#090b21] to-[#040510] border border-pink-500/40 rounded-3xl p-5 shadow-2xl relative text-slate-200">
         <button onclick="closeWorkerShopModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-rose-600/40 text-white flex items-center justify-center"><i data-lucide="x" class="w-5 h-5"></i></button>
         <div class="text-center mb-4"><h3 class="font-extrabold uppercase">Mitarbeiter Anstellen</h3></div>
@@ -608,6 +751,67 @@
       <div id="list-icash-features" class="space-y-3"></div>
     </div>
 
+    <!-- ================= PAGE 2.2: CYBER TIC-TAC-TOE ================= -->
+    <div id="page-tictactoe" class="category-page space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="grid" class="w-4 h-4 text-emerald-400"></i> Cyber Tic-Tac-Toe Arena</h3>
+      </div>
+
+      <div class="holo-card p-6 text-center space-y-4 bg-gradient-to-b from-emerald-950/30 to-[#0b101d] border-emerald-500/30">
+        <div class="flex justify-center items-center gap-2">
+          <button onclick="setTictactoeMode('ai')" id="ttt-mode-ai" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow">Gegen KI</button>
+          <button onclick="setTictactoeMode('pvp')" id="ttt-mode-pvp" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0f172a] text-slate-400 border border-emerald-500/20">2 Spieler (Hot-Seat)</button>
+        </div>
+
+        <div id="ttt-status" class="text-xs font-mono font-bold text-cyan-400">Du (X) bist am Zug!</div>
+
+        <div class="grid grid-cols-3 gap-3 max-w-[280px] mx-auto my-4">
+          <button onclick="makeTictactoeMove(0)" id="ttt-cell-0" class="w-20 h-20 bg-[#0f172a] border border-emerald-500/30 rounded-2xl text-2xl font-mono font-extrabold text-white flex items-center justify-center hover:border-emerald-400 transition active:scale-95"></button>
+          <button onclick="makeTictactoeMove(1)" id="ttt-cell-1" class="w-20 h-20 bg-[#0f172a] border border-emerald-500/30 rounded-2xl text-2xl font-mono font-extrabold text-white flex items-center justify-center hover:border-emerald-400 transition active:scale-95"></button>
+          <button onclick="makeTictactoeMove(2)" id="ttt-cell-2" class="w-20 h-20 bg-[#0f172a] border border-emerald-500/30 rounded-2xl text-2xl font-mono font-extrabold text-white flex items-center justify-center hover:border-emerald-400 transition active:scale-95"></button>
+          <button onclick="makeTictactoeMove(3)" id="ttt-cell-3" class="w-20 h-20 bg-[#0f172a] border border-emerald-500/30 rounded-2xl text-2xl font-mono font-extrabold text-white flex items-center justify-center hover:border-emerald-400 transition active:scale-95"></button>
+          <button onclick="makeTictactoeMove(4)" id="ttt-cell-4" class="w-20 h-20 bg-[#0f172a] border border-emerald-500/30 rounded-2xl text-2xl font-mono font-extrabold text-white flex items-center justify-center hover:border-emerald-400 transition active:scale-95"></button>
+          <button onclick="makeTictactoeMove(5)" id="ttt-cell-5" class="w-20 h-20 bg-[#0f172a] border border-emerald-500/30 rounded-2xl text-2xl font-mono font-extrabold text-white flex items-center justify-center hover:border-emerald-400 transition active:scale-95"></button>
+          <button onclick="makeTictactoeMove(6)" id="ttt-cell-6" class="w-20 h-20 bg-[#0f172a] border border-emerald-500/30 rounded-2xl text-2xl font-mono font-extrabold text-white flex items-center justify-center hover:border-emerald-400 transition active:scale-95"></button>
+          <button onclick="makeTictactoeMove(7)" id="ttt-cell-7" class="w-20 h-20 bg-[#0f172a] border border-emerald-500/30 rounded-2xl text-2xl font-mono font-extrabold text-white flex items-center justify-center hover:border-emerald-400 transition active:scale-95"></button>
+          <button onclick="makeTictactoeMove(8)" id="ttt-cell-8" class="w-20 h-20 bg-[#0f172a] border border-emerald-500/30 rounded-2xl text-2xl font-mono font-extrabold text-white flex items-center justify-center hover:border-emerald-400 transition active:scale-95"></button>
+        </div>
+
+        <div class="flex justify-between items-center px-4 text-xs font-mono text-slate-400">
+          <div>Siege (X): <span id="ttt-score-x" class="text-emerald-400 font-bold">0</span></div>
+          <div>Unentschieden: <span id="ttt-score-draw" class="text-amber-400 font-bold">0</span></div>
+          <div>Siege (O): <span id="ttt-score-o" class="text-pink-400 font-bold">0</span></div>
+        </div>
+
+        <button onclick="resetTictactoeBoard()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Neues Spiel starten</button>
+      </div>
+    </div>
+
+    <!-- ================= PAGE 2.3: GLOBALER LIVE-CHAT ================= -->
+    <div id="page-chat" class="category-page space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="message-square" class="w-4 h-4 text-cyan-400"></i> Globaler Live-Chat</h3>
+      </div>
+
+      <div class="holo-card p-4 border-cyan-500/40 bg-gradient-to-b from-cyan-950/20 to-[#0b101d] space-y-3 flex flex-col h-[480px]">
+        <div class="text-[11px] text-slate-400 border-b border-cyan-500/20 pb-2 flex justify-between items-center">
+          <span>Verbundene Spieler im Netz</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        </div>
+
+        <div id="chat-messages-box" class="flex-1 overflow-y-auto space-y-2.5 pr-1 font-mono text-xs">
+          <div class="text-slate-500 text-center italic py-4">Lade Cloud-Nachrichten...</div>
+        </div>
+
+        <form onsubmit="event.preventDefault(); sendChatMessage();" class="flex gap-2 pt-2 border-t border-cyan-500/20">
+          <input type="text" id="chat-input-msg" placeholder="Nachricht an alle Tycoons..." autocomplete="off" class="flex-1 bg-[#0f172a] border border-cyan-500/30 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-mono">
+          <button type="submit" class="px-5 py-2.5 holo-btn text-xs font-bold rounded-xl shadow-lg flex items-center justify-center">
+            <i data-lucide="send" class="w-4 h-4"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+
     <!-- ================= PAGE 2.5: PROMO-CODES ================= -->
     <div id="page-promo" class="category-page space-y-4">
       <div class="flex justify-between items-center"><h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="ticket" class="w-4 h-4 text-amber-400"></i> Promo-Code Einlösung</h3></div>
@@ -618,12 +822,12 @@
         </div>
         <div>
           <div class="font-extrabold text-sm text-white uppercase tracking-wider">Geheimen Code Einlösen</div>
-          <p class="text-[11px] text-slate-300 mt-1">Gib den Promo-Code ein, um sofort Belohnungen zu erhalten.</p>
+          <p class="text-[11px] text-slate-300 mt-1">Gib einen gültigen Promo-Code ein (1x täglich benutzbar).</p>
         </div>
 
         <div class="space-y-3 pt-2">
-          <input type="text" id="promo-code-input" placeholder="Promo-Code eingeben (z.B. 67)..." class="w-full bg-[#0f172a] border border-amber-500/40 rounded-xl px-4 py-3 text-xs text-white text-center font-mono tracking-wider focus:outline-none focus:border-amber-400">
-          <button onclick="redeemPromoCode()" class="w-full py-3.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold text-xs rounded-xl shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:brightness-110 transition">Code Einlösen</button>
+          <input type="text" id="promo-code-input" placeholder="Promo-Code eingeben..." class="w-full bg-[#0f172a] border border-amber-500/40 rounded-xl px-4 py-3 text-xs text-white text-center font-mono tracking-wider focus:outline-none focus:border-amber-400">
+          <button id="btn-redeem-promo" onclick="redeemPromoCode()" class="w-full py-3.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold text-xs rounded-xl shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:brightness-110 transition">Code Einlösen (+100 iCash, +10k €)</button>
         </div>
 
         <div id="promo-feedback" class="text-xs font-mono font-bold text-emerald-400 min-h-[20px]"></div>
@@ -642,21 +846,37 @@
         <div class="w-full h-2 bg-[#0f172a] rounded-full overflow-hidden">
           <div id="pass-bar" class="h-full bg-indigo-500 transition-all" style="width: 0%"></div>
         </div>
-        <p class="text-[10px] text-slate-400">Sammle Punkte durch Quests, um Titel freizuschalten. Reset am 1. jeden Monats.</p>
+        <p class="text-[10px] text-slate-400">Sammle Punkte durch Quests & Rad, um Titel freizuschalten.</p>
       </div>
 
-      <div class="holo-card p-4 border-amber-500/30 bg-gradient-to-b from-amber-950/20 to-[#0b101d] text-center space-y-3">
-        <div class="font-bold text-xs text-amber-400 flex items-center justify-center gap-1.5"><i data-lucide="disc" class="w-4 h-4"></i> CYBER HOLO-WHEEL</div>
-        <div id="wheel-visual" class="w-24 h-24 rounded-full border-4 border-amber-500/40 border-t-amber-400 mx-auto flex items-center justify-center font-bold text-xs text-white transition-transform duration-1000 shadow-[0_0_15px_rgba(245,158,11,0.2)]">SPIN</div>
-        <button onclick="spinLuckyWheel()" id="btn-spin-wheel" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Holo-Rad Drehen!</button>
-        <div id="wheel-timer-text" class="text-[11px] font-mono text-slate-400 hidden">Reset um 00:00 Uhr in: <span class="text-amber-400 font-bold" id="wheel-countdown">00:00:00</span></div>
+      <div class="holo-card p-5 border-amber-500/40 bg-gradient-to-b from-amber-950/30 to-[#0b101d] text-center space-y-3">
+        <div class="flex justify-between items-center text-[10px] font-mono text-amber-300 px-1">
+          <span>Streak: <strong id="wheel-streak-count">0</strong> Tage</span>
+          <span id="super-spin-badge" class="hidden px-2 py-0.5 bg-amber-500 text-black font-extrabold rounded animate-bounce">SUPER-SPIN 2x!</span>
+        </div>
+        <div class="font-bold text-xs text-amber-400 flex items-center justify-center gap-1.5"><i data-lucide="disc" class="w-4 h-4"></i> CYBER HOLO-WHEEL (EXP & iCASH)</div>
+        
+        <div class="relative w-28 h-28 mx-auto my-2 flex items-center justify-center">
+          <div class="absolute inset-0 rounded-full border-4 border-dashed border-amber-500/30 animate-spin" style="animation-duration: 20s;"></div>
+          <div id="wheel-visual" class="w-24 h-24 rounded-full border-4 border-amber-500/40 bg-gradient-to-tr from-amber-950 via-amber-900 to-amber-600 flex flex-col items-center justify-center font-bold text-xs text-white shadow-[0_0_20px_rgba(245,158,11,0.4)]">
+            <span class="text-[10px] uppercase tracking-tighter text-amber-200">Gewinn</span>
+            <span class="text-xs font-mono text-white font-bold">RAD</span>
+          </div>
+        </div>
+
+        <button onclick="spinLuckyWheel()" id="btn-spin-wheel" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold text-xs rounded-xl shadow-lg transition hover:brightness-110">Holo-Rad Drehen!</button>
+        <div id="wheel-timer-text" class="text-[11px] font-mono text-slate-400 hidden">Nächster Spin in: <span class="text-amber-400 font-bold" id="wheel-countdown">00:00:00</span></div>
       </div>
 
       <div class="space-y-2">
-        <div class="text-xs font-bold text-white uppercase tracking-wider">Tägliche Cyber-Verträge</div>
-        <div id="daily-quests-container" class="space-y-2"></div>
+        <div class="flex justify-between items-center text-xs font-bold text-white uppercase tracking-wider">
+          <span>Tägliche Cyber-Verträge (Quests)</span>
+          <span class="text-[10px] text-cyan-400 font-mono">iCash + EXP + Pass</span>
+        </div>
+        <div id="daily-quests-container" class="space-y-2.5"></div>
       </div>
-      <button onclick="claimDailyReward()" id="btn-claim-daily" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg transition mt-4">Tägliche Belohnung abholen!</button>
+
+      <button onclick="claimDailyReward()" id="btn-claim-daily" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg transition mt-4 hover:brightness-110">Tägliche Belohnung abholen (+💎 10)</button>
       <div id="daily-claim-timer-text" class="text-[11px] font-mono text-slate-400 text-center hidden">Nächster Reset in: <span class="text-emerald-400 font-bold" id="daily-claim-countdown">00:00:00</span></div>
     </div>
 
@@ -729,6 +949,12 @@
     <div id="page-settings" class="category-page space-y-4">
       <div class="flex justify-between items-center"><h3 class="font-bold text-sm text-white">System & Stats</h3></div>
       
+      <div id="admin-settings-section" class="hidden holo-card p-4 space-y-2 border-rose-500/50 bg-rose-950/20">
+        <div class="font-bold text-rose-300 uppercase text-xs flex items-center gap-1.5"><i data-lucide="shield-alert" class="w-4 h-4"></i> Administrator Steuerung</div>
+        <p class="text-[10px] text-slate-300">Du bist als Administrator (t.blau97@gmail.com) erkannt. Öffne hier direkt die Admin-Konsole.</p>
+        <button onclick="openAdminModal()" class="w-full py-2.5 bg-rose-700 hover:bg-rose-600 text-white font-bold text-xs rounded-xl shadow-[0_0_15px_rgba(225,29,72,0.5)] transition">🛠️ Admin-Konsole Öffnen</button>
+      </div>
+
       <div class="holo-card p-4 space-y-2 text-xs font-mono border-cyan-500/20 bg-cyan-950/10">
         <div class="font-bold text-white uppercase mb-2">Spieler-Statistiken</div>
         <div class="flex justify-between"><span class="text-slate-400">Klicks Gesamt:</span> <span id="stat-total-clicks" class="text-cyan-400">0</span></div>
@@ -750,7 +976,6 @@
     </div>
   </main>
 
-  <!-- BOTTOM NAVIGATION -->
   <nav class="fixed bottom-0 left-0 right-0 bg-[#070b14]/95 backdrop-blur-2xl border-t border-cyan-500/20 py-2.5 px-6 flex items-center justify-between z-50">
     <button onclick="switchCategoryPage('clicker')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-cyan-400 transition">
       <i data-lucide="cpu" class="w-5 h-5"></i><span class="text-[9px] font-mono font-bold">TERMINAL</span>
@@ -762,15 +987,44 @@
         </div>
       </button>
     </div>
-    <button onclick="switchCategoryPage('promo')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-amber-400 transition">
-      <i data-lucide="ticket" class="w-5 h-5"></i><span class="text-[9px] font-mono font-bold">CODES</span>
+    <button onclick="switchCategoryPage('chat')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-cyan-400 transition">
+      <i data-lucide="message-square" class="w-5 h-5"></i><span class="text-[9px] font-mono font-bold">CHAT</span>
     </button>
   </nav>
 
   <script>
+    const ADMIN_EMAILS_GLOBAL = ["t.blau97@gmail.com"];
+
     let audioCtx = null;
     function initAudioContext() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
     
+    function showCyberToast(message, type = 'success') {
+      const container = document.getElementById('cyber-toast-container');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = 'cyber-toast';
+      
+      let iconName = 'check-circle-2';
+      let iconColor = 'text-cyan-400';
+      if (type === 'error') { iconName = 'alert-triangle'; iconColor = 'text-rose-400'; }
+      else if (type === 'reward') { iconName = 'gift'; iconColor = 'text-amber-400'; }
+      else if (type === 'level') { iconName = 'zap'; iconColor = 'text-purple-400'; }
+
+      toast.innerHTML = `
+        <i data-lucide="${iconName}" class="w-5 h-5 ${iconColor} shrink-0"></i>
+        <div class="flex-1 font-mono text-xs leading-snug">${message}</div>
+      `;
+
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      setTimeout(() => {
+        toast.classList.add('fadeOut');
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
     function playClickBeep(comboMult = 1.0) { 
       try { 
         initAudioContext(); if(!audioCtx) return; 
@@ -811,10 +1065,199 @@
         music.play().then(() => {
           isMusicPlaying = true;
           icon.setAttribute('data-lucide', 'volume-2');
-          speakAI("Live Stream verbunden. 100% Cloud aktiv.");
-        }).catch(err => { alert("Browser blockiert Autoplay. Bitte erneut klicken."); });
+          showCyberToast("Live Stream verbunden.", "success");
+        }).catch(err => { showCyberToast("Browser blockiert Autoplay. Bitte erneut klicken.", "error"); });
       }
       lucide.createIcons();
+    }
+
+    let chatUnsubscribe = null;
+    function initGlobalChatListener() {
+      if (!window.FB || !window.FB.db) return;
+      const chatBox = document.getElementById('chat-messages-box');
+      if (!chatBox) return;
+
+      if (chatUnsubscribe) chatUnsubscribe();
+
+      const q = window.FB.query(window.FB.collection(window.FB.db, "global_chat"), window.FB.orderBy("timestamp", "asc"), window.FB.limit(50));
+      chatUnsubscribe = window.FB.onSnapshot(q, (snapshot) => {
+        chatBox.innerHTML = '';
+        if (snapshot.empty) {
+          chatBox.innerHTML = `<div class="text-slate-500 text-center italic py-4">Noch keine Nachrichten im Netz. Starte das Gespräch!</div>`;
+          return;
+        }
+        snapshot.forEach((docSnap) => {
+          const msg = docSnap.data();
+          const timeStr = msg.timestamp ? new Date(msg.timestamp.toDate ? msg.timestamp.toDate() : msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+          const isMe = window.FB.auth.currentUser && msg.uid === window.FB.auth.currentUser.uid;
+          const isAdminSender = msg.role === 'admin' || (ADMIN_EMAILS_GLOBAL.includes(msg.email?.toLowerCase()));
+          
+          let senderBadge = `<span class="font-bold ${isMe ? 'text-cyan-400' : 'text-purple-400'}">${msg.sender || 'Unbekannt'}</span>`;
+          if (isAdminSender) {
+            senderBadge = `<span class="px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-500 text-amber-300 font-bold text-[9px] mr-1">👑 ADMIN</span><span class="font-bold text-amber-400">${msg.sender || 'Unbekannt'}</span>`;
+          }
+
+          chatBox.innerHTML += `
+            <div class="p-2.5 rounded-xl bg-[#0f172a]/80 border ${isMe ? 'border-cyan-500/40 bg-cyan-950/10' : 'border-blue-500/20'} space-y-1">
+              <div class="flex justify-between items-center text-[10px]">
+                <div class="flex items-center">${senderBadge}</div>
+                <span class="text-slate-500">${timeStr}</span>
+              </div>
+              <div class="text-white text-xs break-words">${escapeHtml(msg.text || '')}</div>
+            </div>
+          `;
+        });
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }, (error) => {
+        console.warn("Chat Listener Fehler:", error);
+      });
+    }
+    window.initGlobalChatListener = initGlobalChatListener;
+
+    async function sendChatMessage() {
+      if (!window.FB || !window.FB.auth.currentUser) return showCyberToast("Bitte erst in der Cloud anmelden!", "error");
+      const inputEl = document.getElementById('chat-input-msg');
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      const user = window.FB.auth.currentUser;
+      const senderName = state.companyName || user.displayName || user.email.split('@')[0];
+      const userRole = state.role || (ADMIN_EMAILS_GLOBAL.includes(user.email.toLowerCase()) ? 'admin' : 'spieler');
+
+      try {
+        await window.FB.addDoc(window.FB.collection(window.FB.db, "global_chat"), {
+          uid: user.uid,
+          email: user.email,
+          sender: senderName,
+          role: userRole,
+          text: text,
+          timestamp: window.FB.serverTimestamp()
+        });
+        inputEl.value = '';
+      } catch (e) {
+        showCyberToast("Fehler beim Senden: " + e.message, "error");
+      }
+    }
+
+    function escapeHtml(string) {
+      return String(string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    let tttBoard = ['', '', '', '', '', '', '', '', ''];
+    let tttCurrentPlayer = 'X'; 
+    let tttGameActive = true;
+    let tttMode = 'ai'; 
+    let tttScoreX = 0;
+    let tttScoreO = 0;
+    let tttScoreDraw = 0;
+
+    function setTictactoeMode(mode) {
+      tttMode = mode;
+      document.getElementById('ttt-mode-ai').className = mode === 'ai' ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow" : "px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0f172a] text-slate-400 border border-emerald-500/20";
+      document.getElementById('ttt-mode-pvp').className = mode === 'pvp' ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow" : "px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0f172a] text-slate-400 border border-emerald-500/20";
+      resetTictactoeBoard();
+    }
+
+    function makeTictactoeMove(index) {
+      if (!tttGameActive || tttBoard[index] !== '') return;
+      
+      tttBoard[index] = tttCurrentPlayer;
+      renderTictactoeBoard();
+
+      if (checkTictactoeWin(tttCurrentPlayer)) {
+        tttGameActive = false;
+        if (tttCurrentPlayer === 'X') {
+          tttScoreX++;
+          document.getElementById('ttt-score-x').innerText = tttScoreX;
+          document.getElementById('ttt-status').innerText = "🎉 Spieler X gewinnt! +💎 2 iCash!";
+          state.icash += 2;
+          showCyberToast("Tic-Tac-Toe Sieg! +💎 2 iCash", "reward");
+          updateUI(); saveGameToCloud();
+        } else {
+          tttScoreO++;
+          document.getElementById('ttt-score-o').innerText = tttScoreO;
+          document.getElementById('ttt-status').innerText = "🤖 Spieler O gewinnt!";
+        }
+        return;
+      }
+
+      if (tttBoard.every(cell => cell !== '')) {
+        tttGameActive = false;
+        tttScoreDraw++;
+        document.getElementById('ttt-score-draw').innerText = tttScoreDraw;
+        document.getElementById('ttt-status').innerText = "🤝 Unentschieden!";
+        return;
+      }
+
+      tttCurrentPlayer = tttCurrentPlayer === 'X' ? 'O' : 'X';
+      
+      if (tttMode === 'ai' && tttCurrentPlayer === 'O' && tttGameActive) {
+        document.getElementById('ttt-status').innerText = "🤖 KI rechnet Zug...";
+        setTimeout(makeTictactoeAIMove, 400);
+      } else {
+        document.getElementById('ttt-status').innerText = `Spieler (${tttCurrentPlayer}) ist am Zug`;
+      }
+    }
+
+    function makeTictactoeAIMove() {
+      if (!tttGameActive) return;
+      const emptyIndices = [];
+      tttBoard.forEach((val, idx) => { if (val === '') emptyIndices.push(idx); });
+      if (emptyIndices.length === 0) return;
+
+      let moveIdx = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+      
+      tttBoard[moveIdx] = 'O';
+      renderTictactoeBoard();
+
+      if (checkTictactoeWin('O')) {
+        tttGameActive = false;
+        tttScoreO++;
+        document.getElementById('ttt-score-o').innerText = tttScoreO;
+        document.getElementById('ttt-status').innerText = "🤖 Cyber-KI hat gewonnen!";
+        return;
+      }
+
+      if (tttBoard.every(cell => cell !== '')) {
+        tttGameActive = false;
+        tttScoreDraw++;
+        document.getElementById('ttt-score-draw').innerText = tttScoreDraw;
+        document.getElementById('ttt-status').innerText = "🤝 Unentschieden!";
+        return;
+      }
+
+      tttCurrentPlayer = 'X';
+      document.getElementById('ttt-status').innerText = "Du (X) bist am Zug!";
+    }
+
+    function checkTictactoeWin(player) {
+      const wins = [
+        [0,1,2], [3,4,5], [6,7,8], 
+        [0,3,6], [1,4,7], [2,5,8], 
+        [0,4,8], [2,4,6]           
+      ];
+      return wins.some(combination => {
+        return combination.every(index => tttBoard[index] === player);
+      });
+    }
+
+    function renderTictactoeBoard() {
+      tttBoard.forEach((val, idx) => {
+        const cell = document.getElementById(`ttt-cell-${idx}`);
+        if (!cell) return;
+        cell.innerText = val;
+        if (val === 'X') cell.className = "w-20 h-20 bg-[#0f172a] border border-emerald-500/50 rounded-2xl text-3xl font-mono font-extrabold text-emerald-400 flex items-center justify-center shadow-[0_0_10px_rgba(52,211,153,0.3)]";
+        else if (val === 'O') cell.className = "w-20 h-20 bg-[#0f172a] border border-pink-500/50 rounded-2xl text-3xl font-mono font-extrabold text-pink-400 flex items-center justify-center shadow-[0_0_10px_rgba(236,72,153,0.3)]";
+        else cell.className = "w-20 h-20 bg-[#0f172a] border border-emerald-500/30 rounded-2xl text-2xl font-mono font-extrabold text-white flex items-center justify-center hover:border-emerald-400 transition active:scale-95";
+      });
+    }
+
+    function resetTictactoeBoard() {
+      tttBoard = ['', '', '', '', '', '', '', '', ''];
+      tttCurrentPlayer = 'X';
+      tttGameActive = true;
+      document.getElementById('ttt-status').innerText = tttMode === 'ai' ? "Du (X) bist am Zug!" : "Spieler (X) ist am Zug";
+      renderTictactoeBoard();
     }
 
     const masterBuildingsList = [];
@@ -823,14 +1266,16 @@
     for (let i = 1; i <= 100; i++) {
       masterBuildingsList.push({
         id: i, name: `${buildingNames[(i - 1) % buildingNames.length]} #${i}`, category: buildingCategories[(i - 1) % buildingCategories.length],
-        cost: 50000 * Math.pow(1.55, i - 1), income: 2500 * Math.pow(1.35, i - 1), level: 1, stars: Math.floor(Math.random() * 2500) + 100,
-        distance: Math.floor(Math.random() * 900) + 50, workers: [null, null, null, null, null, null], modules: { aiCore: 0, firewall: false, holoAd: 0 }
+        cost: 50000 * Math.pow(1.55, i - 1), income: 2500 * Math.pow(1.35, i - 1), level: 1, 
+        adLevel: 0, lastAdBuyDate: '',
+        workers: [null, null, null, null, null, null], modules: { aiCore: 0, firewall: false, holoAd: 0 }
       });
     }
 
     let state = {
-      version: 50, companyName: 'CyberBoss', language: 'de', theme: 'default',
+      version: 67, companyName: 'CyberBoss', language: 'de', theme: 'default',
       money: 1000000, totalEarned: 1000000, icash: 0,
+      role: 'spieler',
       clickPower: 0.01, clickUpgLevel: 0, clickUpgCost: 0.50,
       droneUpgLevel: 0, droneUpgCost: 100, 
       level: 1, exp: 0, expNeeded: 200, comboHits: 0, comboMult: 1.0, lastClickTime: 0,
@@ -840,12 +1285,16 @@
       stakingActive: false, stakingEndTime: 0,
       syndicate: null,
       
-      lastWheelSpinDate: '', lastDailyClaimDate: '', lastQuestRefreshDate: '', lastMonthlyResetKey: '',
+      lastWheelSpinDate: '', wheelStreak: 0, lastDailyClaimDate: '', lastPromoRedeemDate: '', lastQuestRefreshDate: '', lastMonthlyResetKey: '',
       lastBlackmarketRefresh: 0, blackmarketStock: [],
       selectedAvatar: '🤖 Standard Klon', unlockedAvatars: ['🤖 Standard Klon', '💻 Cyber Hacker', '👑 Cyber Emperor'],
       ownedBuildings: [],
       staffStorage: [],
-      dailyQuests: [{ id: 'q1', text: 'Führe 25 Klick-Impulse aus', goal: 25, current: 0, reward: 3, claimed: false }],
+      dailyQuests: [
+        { id: 'q1', text: 'Führe 25 Klick-Impulse aus', goal: 25, current: 0, reward: 3, expReward: 75, passReward: 15, claimed: false, tier: 'STANDARD' },
+        { id: 'q2', text: 'Wehre 1 Firewall-Breach ab', goal: 1, current: 0, reward: 6, expReward: 150, passReward: 25, claimed: false, tier: 'MITTEL' },
+        { id: 'q3', text: 'Kaufe oder verbessere ein Gebäude', goal: 1, current: 0, reward: 15, expReward: 350, passReward: 40, claimed: false, tier: 'SCHWER' }
+      ],
       permaUpgrades: [
         { id: 'pi1', name: 'Quantum Matrix (2x Klick)', cost: 5, level: 0, maxLevel: 10, mult: 2.0 },
         { id: 'pi2', name: 'Neural Boost (+50% Einkommen)', cost: 10, level: 0, maxLevel: 10, mult: 1.5 }
@@ -897,7 +1346,7 @@
       }
     }
     async function handleLoginOverlay() {
-      if (!window.FB) return alert("Firebase nicht verfügbar.");
+      if (!window.FB) return showCyberToast("Firebase nicht verfügbar.", "error");
       const email = document.getElementById('overlay-login-email').value.trim();
       const pass = document.getElementById('overlay-login-pass').value;
       const errEl = document.getElementById('overlay-auth-error');
@@ -908,7 +1357,7 @@
       } catch(e) { errEl.innerText = "Fehler: " + e.message; errEl.classList.remove('hidden'); }
     }
     async function handleRegisterOverlay() {
-      if (!window.FB) return alert("Firebase nicht verfügbar.");
+      if (!window.FB) return showCyberToast("Firebase nicht verfügbar.", "error");
       const username = document.getElementById('overlay-reg-username').value.trim();
       const email = document.getElementById('overlay-reg-email').value.trim();
       const pass = document.getElementById('overlay-reg-pass').value;
@@ -919,7 +1368,10 @@
         const userCred = await window.FB.createUserWithEmailAndPassword(window.FB.auth, email, pass);
         if(userCred && userCred.user) {
           await window.FB.updateProfile(userCred.user, { displayName: username });
-          state.companyName = username; saveGameToCloud(); speakAI("Cloud-Imperium initialisiert.");
+          state.companyName = username; 
+          if (ADMIN_EMAILS_GLOBAL.includes(email.toLowerCase())) state.role = 'admin';
+          saveGameToCloud(); 
+          speakAI("Cloud-Imperium initialisiert.");
         }
       } catch(e) { errEl.innerText = "Fehler: " + e.message; errEl.classList.remove('hidden'); }
     }
@@ -929,90 +1381,171 @@
       document.getElementById('auth-overlay').classList.remove('hidden');
     }
 
-    // --- PROMO CODE LOGIK ---
     function redeemPromoCode() {
       const inputEl = document.getElementById('promo-code-input');
       const feedbackEl = document.getElementById('promo-feedback');
       const code = inputEl.value.trim();
 
-      if (code === '67') {
-        const bonusCash = 500000000;
-        const bonusIcash = 5000;
-
-        state.money += bonusCash;
-        state.totalEarned += bonusCash;
-        state.icash += bonusIcash;
-
-        updateUI();
-        saveGameToCloud();
-
-        feedbackEl.innerText = `🎉 Code '67' eingelöst! +5.000 iCash & +500 Mio. € erhalten!`;
-        inputEl.value = '';
-        speakAI("Promo Code aktiviert. In Cloud gespeichert.");
-      } else {
-        feedbackEl.innerText = `❌ Ungültiger Code!`;
+      if (!code) {
+        feedbackEl.innerText = `❌ Bitte gib einen Code ein!`;
         feedbackEl.className = "text-xs font-mono font-bold text-rose-400 min-h-[20px]";
-        setTimeout(() => { feedbackEl.className = "text-xs font-mono font-bold text-emerald-400 min-h-[20px]"; }, 2000);
+        return;
       }
+
+      const todayStr = getGermanDateString();
+      if (state.lastPromoRedeemDate === todayStr) {
+        feedbackEl.innerText = `⏳ Du hast heute bereits einen Promo-Code eingelöst! Versuche es morgen wieder.`;
+        feedbackEl.className = "text-xs font-mono font-bold text-amber-400 min-h-[20px]";
+        return;
+      }
+
+      state.lastPromoRedeemDate = todayStr;
+      
+      const bonusCash = 10000; 
+      const bonusIcash = 100;  
+
+      state.money += bonusCash;
+      state.totalEarned += bonusCash;
+      state.icash += bonusIcash;
+
+      updateUI();
+      saveGameToCloud();
+
+      feedbackEl.innerText = `🎉 Code erfolgreich eingelöst! +100 iCash & +10.000 € erhalten!`;
+      feedbackEl.className = "text-xs font-mono font-bold text-emerald-400 min-h-[20px]";
+      inputEl.value = '';
+      showCyberToast("Promo Code aktiviert! +100 iCash & +10k €", "reward");
+      speakAI("Promo Code aktiviert.");
     }
 
-    // --- ADMIN MODUS MIT GLOBALEM LÖSCHEN ---
     let secretClickCount = 0; let secretClickTimer = null;
     function handleSecretAdminClick() {
       secretClickCount++; if (secretClickTimer) clearTimeout(secretClickTimer);
       if (secretClickCount >= 3) {
         secretClickCount = 0;
-        if (prompt("🔐 ADMIN PASSWORT EINGEBEN:") === "cyberboss2026") {
+        if (state.role === 'admin' || prompt("🔐 ADMIN PASSWORT EINGEBEN:") === "cyberboss2026") {
           openAdminModal();
         }
       } else secretClickTimer = setTimeout(() => { secretClickCount = 0; }, 1000);
     }
-    function openAdminModal() {
-      document.getElementById('admin-diag-money').innerText = formatMoney(state.money);
-      document.getElementById('admin-diag-buildings').innerText = state.ownedBuildings.length;
+
+    let selectedAdminTargetUid = null;
+
+    async function openAdminModal() {
       document.getElementById('admin-modal').classList.remove('hidden');
+      await populateAdminPlayerSelect();
     }
     function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
     
-    function adminAddCustomMoney() {
-      const val = parseFloat(document.getElementById('admin-custom-money').value);
-      if(isNaN(val)) return alert("Bitte gültigen Betrag eingeben!");
-      state.money += val; state.totalEarned += val; updateUI(); saveGameToCloud(); alert(`💰 +${formatMoney(val)} injiziert!`);
-      openAdminModal();
+    async function populateAdminPlayerSelect() {
+      const selectEl = document.getElementById('admin-target-player-select');
+      if (!window.FB || !window.FB.db) return;
+      selectEl.innerHTML = `<option value="">(Eigenen Account bearbeiten)</option>`;
+      
+      try {
+        const querySnapshot = await window.FB.getDocs(window.FB.collection(window.FB.db, "saves"));
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const uid = docSnap.id;
+          const name = data.companyName || uid.substring(0, 6);
+          selectEl.innerHTML += `<option value="${uid}">${name} (${uid.substring(0,6)}...)</option>`;
+        });
+      } catch (e) {
+        console.warn("Fehler beim Laden der Spielerliste:", e);
+      }
+      
+      selectedAdminTargetUid = window.FB.auth.currentUser ? window.FB.auth.currentUser.uid : null;
+      updateAdminDiagnostics();
     }
-    function adminAddCustomIcash() {
+
+    async function loadAdminSelectedPlayerData() {
+      const selectEl = document.getElementById('admin-target-player-select');
+      selectedAdminTargetUid = selectEl.value || (window.FB.auth.currentUser ? window.FB.auth.currentUser.uid : null);
+      await updateAdminDiagnostics();
+      showCyberToast("Spieler-Daten für Konsole geladen.", "success");
+    }
+
+    async function updateAdminDiagnostics() {
+      if (!window.FB || !window.FB.db || !selectedAdminTargetUid) return;
+      try {
+        const docSnap = await window.FB.getDoc(window.FB.doc(window.FB.db, "saves", selectedAdminTargetUid));
+        if (docSnap.exists()) {
+          const d = docSnap.data();
+          document.getElementById('admin-diag-name').innerText = d.companyName || "Unbekannt";
+          document.getElementById('admin-diag-money').innerText = formatMoney(d.money || 0);
+          document.getElementById('admin-diag-buildings').innerText = d.ownedBuildings ? d.ownedBuildings.length : 0;
+        }
+      } catch(e) {}
+    }
+
+    async function adminAddCustomMoney() {
+      const val = parseFloat(document.getElementById('admin-custom-money').value);
+      if(isNaN(val)) return showCyberToast("Bitte gültigen Betrag eingeben!", "error");
+      if(!selectedAdminTargetUid) return showCyberToast("Kein Spieler ausgewählt!", "error");
+
+      try {
+        const docRef = window.FB.doc(window.FB.db, "saves", selectedAdminTargetUid);
+        const docSnap = await window.FB.getDoc(docRef);
+        if(docSnap.exists()) {
+          let d = docSnap.data();
+          d.money = (d.money || 0) + val;
+          d.totalEarned = (d.totalEarned || 0) + val;
+          await window.FB.setDoc(docRef, d);
+          
+          if (selectedAdminTargetUid === window.FB.auth.currentUser.uid) {
+            state.money = d.money; state.totalEarned = d.totalEarned; updateUI();
+          }
+          showCyberToast(`💰 +${formatMoney(val)} für Spieler injiziert!`, "reward");
+          updateAdminDiagnostics();
+        }
+      } catch(e) {
+        showCyberToast("Fehler: " + e.message, "error");
+      }
+    }
+
+    async function adminAddCustomIcash() {
       const val = parseInt(document.getElementById('admin-custom-icash').value);
-      if(isNaN(val)) return alert("Bitte gültigen iCash-Wert eingeben!");
-      state.icash += val; updateUI(); saveGameToCloud(); alert(`💎 +${val} iCash injiziert!`);
-      openAdminModal();
+      if(isNaN(val)) return showCyberToast("Bitte gültigen iCash-Wert eingeben!", "error");
+      if(!selectedAdminTargetUid) return showCyberToast("Kein Spieler ausgewählt!", "error");
+
+      try {
+        const docRef = window.FB.doc(window.FB.db, "saves", selectedAdminTargetUid);
+        const docSnap = await window.FB.getDoc(docRef);
+        if(docSnap.exists()) {
+          let d = docSnap.data();
+          d.icash = (d.icash || 0) + val;
+          await window.FB.setDoc(docRef, d);
+          
+          if (selectedAdminTargetUid === window.FB.auth.currentUser.uid) {
+            state.icash = d.icash; updateUI();
+          }
+          showCyberToast(`💎 +${val} iCash für Spieler injiziert!`, "reward");
+          updateAdminDiagnostics();
+        }
+      } catch(e) {
+        showCyberToast("Fehler: " + e.message, "error");
+      }
     }
     
-    // 🔥 PURE CLOUD LÖSCH-FUNKTION (Löscht ALLES von ALLEN Spielern in Firestore)
     async function adminDeleteAllPlayersCloudData() {
-      if (!window.FB || !window.FB.db) return alert("Keine Cloud-Verbindung!");
-      if (confirm("💥 ACHTUNG ADMIN: Möchtest du wirklich ALLE Spielstände und die gesamte Weltrangliste in der Cloud unwiderruflich löschen? Jeder Spieler verliert seinen Fortschritt und startet neu!")) {
+      if (!window.FB || !window.FB.db) return showCyberToast("Keine Cloud-Verbindung!", "error");
+      if (confirm("💥 ACHTUNG ADMIN: Möchtest du wirklich ALLE Spielstände und die gesamte Weltrangliste in der Cloud unwiderruflich löschen?")) {
         try {
           const savesSnapshot = await window.FB.getDocs(window.FB.collection(window.FB.db, "saves"));
-          for (const d of savesSnapshot.docs) {
-            await window.FB.deleteDoc(d.ref);
-          }
+          for (const d of savesSnapshot.docs) { await window.FB.deleteDoc(d.ref); }
           const lbSnapshot = await window.FB.getDocs(window.FB.collection(window.FB.db, "leaderboard"));
-          for (const d of lbSnapshot.docs) {
-            await window.FB.deleteDoc(d.ref);
-          }
-          alert("💥 Alle Cloud-Daten und Ranglisten wurden erfolgreich gelöscht! Das System wird neu geladen.");
+          for (const d of lbSnapshot.docs) { await window.FB.deleteDoc(d.ref); }
+          showCyberToast("💥 Alle Cloud-Daten und Ranglisten wurden gelöscht!", "error");
           location.reload();
-        } catch (e) {
-          alert("Fehler beim Löschen: " + e.message);
-        }
+        } catch (e) { showCyberToast("Fehler beim Löschen: " + e.message, "error"); }
       }
     }
 
     async function changeCompanyNameWithIcash() {
       const inputEl = document.getElementById('new-company-name-input');
       const newName = inputEl.value.trim();
-      if (!newName) return alert("Bitte gib einen gültigen Namen ein!");
-      if (state.icash < 100) return alert("💎 100 iCash benötigt, um den Firmennamen zu ändern!");
+      if (!newName) return showCyberToast("Bitte gib einen gültigen Namen ein!", "error");
+      if (state.icash < 100) return showCyberToast("💎 100 iCash benötigt, um den Firmennamen zu ändern!", "error");
 
       state.icash -= 100;
       state.companyName = newName;
@@ -1021,8 +1554,7 @@
       updateUI();
       await saveGameToCloud();
       loadLeaderboard();
-
-      alert(`✅ Unternehmensname erfolgreich zu "${newName}" geändert!`);
+      showCyberToast(`✅ Unternehmensname zu "${newName}" geändert!`, "success");
     }
 
     function toggleTopMenu() { document.getElementById('top-dropdown-menu').classList.toggle('open'); }
@@ -1054,7 +1586,9 @@
       const todayStr = getGermanDateString();
       if (state.lastQuestRefreshDate !== todayStr) {
         state.lastQuestRefreshDate = todayStr;
-        state.dailyQuests.forEach(q => { q.current = 0; q.claimed = false; });
+        if(state.dailyQuests) {
+          state.dailyQuests.forEach(q => { q.current = 0; q.claimed = false; });
+        }
       }
     }
 
@@ -1064,50 +1598,64 @@
       
       if (now.getDate() === 1 && state.lastMonthlyResetKey !== currentMonth) {
         state.lastMonthlyResetKey = currentMonth;
-        state.money = 1000000; 
-        state.totalEarned = 1000000; 
-        state.level = 1; 
-        state.exp = 0; 
-        state.expNeeded = 200;
-        state.clickUpgLevel = 0; 
-        state.clickUpgCost = 0.50; 
-        state.droneUpgLevel = 0; 
-        state.droneUpgCost = 100;
-        state.ownedBuildings = []; 
-        state.passPoints = 0;
-        alert("📅 Monats-Reset ausgeführt! Willkommen im neuen Monat mit €1.000.000 Startkapital.");
-        saveGameToCloud(); 
-        updateUI();
-      } else if (!state.lastMonthlyResetKey) { 
-        state.lastMonthlyResetKey = currentMonth; 
-      }
+        state.money = 1000000; state.totalEarned = 1000000; state.level = 1; state.exp = 0; state.expNeeded = 200;
+        state.clickUpgLevel = 0; state.clickUpgCost = 0.50; state.droneUpgLevel = 0; state.droneUpgCost = 100;
+        state.ownedBuildings = []; state.passPoints = 0;
+        showCyberToast("📅 Monats-Reset ausgeführt! Willkommen im neuen Monat mit €1M Startkapital.", "reward");
+        saveGameToCloud(); updateUI();
+      } else if (!state.lastMonthlyResetKey) { state.lastMonthlyResetKey = currentMonth; }
     }
 
     window.mergeCloudAndLocalState = function(cloudData) {
       if (!cloudData) return;
       state = { ...state, ...cloudData }; window.state = state;
       if(!state.staffStorage) state.staffStorage = [];
+      if(state.wheelStreak === undefined) state.wheelStreak = 0;
+      
+      state.dailyQuests = [
+        { id: 'q1', text: 'Führe 25 Klick-Impulse aus', goal: 25, current: state.dailyQuests?.find(q=>q.id==='q1')?.current || 0, reward: 3, expReward: 75, passReward: 15, claimed: state.dailyQuests?.find(q=>q.id==='q1')?.claimed || false, tier: 'STANDARD' },
+        { id: 'q2', text: 'Wehre 1 Firewall-Breach ab', goal: 1, current: state.dailyQuests?.find(q=>q.id==='q2')?.current || 0, reward: 6, expReward: 150, passReward: 25, claimed: state.dailyQuests?.find(q=>q.id==='q2')?.claimed || false, tier: 'MITTEL' },
+        { id: 'q3', text: 'Kaufe oder verbessere ein Gebäude', goal: 1, current: state.dailyQuests?.find(q=>q.id==='q3')?.current || 0, reward: 15, expReward: 350, passReward: 40, claimed: state.dailyQuests?.find(q=>q.id==='q3')?.claimed || false, tier: 'SCHWER' }
+      ];
+
       setTheme(state.theme || 'default'); checkDailyMidnightReset(); checkMonthlyReset(); updateUI();
     };
 
-    // --- VOLLSTÄNDIGER CLOUD SAVE & SYNC ---
+    function getTotalStars() {
+      let stars = 0;
+      if (state.ownedBuildings) {
+        state.ownedBuildings.forEach(b => {
+          let adLvl = b.adLevel || 0;
+          for (let i = 1; i <= adLvl; i++) {
+            stars += Math.floor(5 * Math.pow(2, i - 1));
+          }
+          let buildingLevel = b.level || 1;
+          let levelStars = Math.floor(buildingLevel / 100) * 10;
+          stars += levelStars;
+        });
+      }
+      return stars;
+    }
+
     async function saveGameToCloud() {
       if (!window.FB || !window.FB.auth.currentUser) return;
       try {
         const u = window.FB.auth.currentUser; 
         state.companyName = state.companyName || u.displayName || "CyberBoss";
-        
+        if (ADMIN_EMAILS_GLOBAL.includes(u.email.toLowerCase())) state.role = 'admin';
+
         await window.FB.setDoc(window.FB.doc(window.FB.db, "saves", u.uid), state);
         
         await window.FB.setDoc(window.FB.doc(window.FB.db, "leaderboard", u.uid), { 
           companyName: state.companyName, 
           totalValue: state.totalEarned || state.money, 
+          stars: getTotalStars(), 
           avatar: state.selectedAvatar || '🤖', 
+          role: state.role || 'spieler', 
+          email: u.email, 
           updatedAt: Date.now() 
         });
-      } catch (e) { 
-        console.error("Cloud-Sync Fehler:", e);
-      }
+      } catch (e) { console.warn("Cloud-Sync Fehler:", e); }
     }
     window.saveGameToCloud = saveGameToCloud;
 
@@ -1121,24 +1669,15 @@
         if (window.FB && window.FB.db) {
           const qRef = window.FB.query(window.FB.collection(window.FB.db, "leaderboard"), window.FB.orderBy("totalValue", "desc"), window.FB.limit(10));
           const querySnapshot = await window.FB.getDocs(qRef);
-          querySnapshot.forEach((docSnap) => {
-            entries.push(docSnap.data());
-          });
+          querySnapshot.forEach((docSnap) => { entries.push(docSnap.data()); });
         }
-      } catch (err) {
-        console.warn("Firestore Ranglisten-Fehler:", err);
-      }
+      } catch (err) { console.warn("Firestore Ranglisten-Fehler:", err); }
 
       if (entries.length === 0) {
-        entries.push({
-          companyName: state.companyName || "Du (Cloud)",
-          totalValue: state.totalEarned || state.money,
-          avatar: state.selectedAvatar || '🤖'
-        });
+        entries.push({ companyName: state.companyName || "Du (Cloud)", totalValue: state.totalEarned || state.money, stars: getTotalStars(), avatar: state.selectedAvatar || '🤖', role: state.role || 'spieler' });
       }
 
       entries.sort((a, b) => (b.totalValue || 0) - (a.totalValue || 0));
-
       listEl.innerHTML = '';
       entries.forEach((item, idx) => {
         let badgeColor = "text-slate-400 bg-slate-800/50 border-slate-700";
@@ -1146,25 +1685,28 @@
         else if (idx === 1) badgeColor = "text-slate-200 bg-slate-800 border-slate-500/40";
         else if (idx === 2) badgeColor = "text-amber-600 bg-amber-950/20 border-amber-700/40";
 
+        const isAdmin = item.role === 'admin' || ADMIN_EMAILS_GLOBAL.includes(item.email?.toLowerCase());
+        const roleBadge = isAdmin ? `<span class="px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-500 text-amber-300 font-bold text-[9px] mr-1.5">👑 ADMIN</span>` : '';
+        const playerStars = item.stars !== undefined ? item.stars : 0;
+
         listEl.innerHTML += `
           <div class="holo-card p-3 flex items-center justify-between text-xs font-mono">
             <div class="flex items-center space-x-3">
               <div class="w-7 h-7 rounded-lg border flex items-center justify-center font-bold text-xs ${badgeColor}">#${idx + 1}</div>
               <div>
-                <div class="font-bold text-white">${item.avatar || '🤖'} ${item.companyName || 'Unbekannt'}</div>
+                <div class="font-bold text-white flex items-center">${roleBadge}${item.avatar || '🤖'} ${item.companyName || 'Unbekannt'}</div>
+                <div class="text-[10px] text-amber-400 font-mono mt-0.5">⭐ ${playerStars} Sterne</div>
               </div>
             </div>
             <div class="text-emerald-400 font-bold">${formatMoney(item.totalValue || 0)}</div>
-          </div>
-        `;
+          </div>`;
       });
     }
 
     function joinSyndicate(type) {
       state.syndicate = type;
-      alert(`Du bist dem Syndikat '${type.toUpperCase()}' beigetreten!`);
-      renderTabContent('syndicate');
-      saveGameToCloud();
+      showCyberToast(`Syndikat '${type.toUpperCase()}' beigetreten!`, "success");
+      renderTabContent('syndicate'); saveGameToCloud();
     }
 
     function checkBlackmarketRefresh() {
@@ -1181,33 +1723,39 @@
       const item = state.blackmarketStock.find(i => i.id === id);
       if (!item || item.bought) return;
       if (item.costType === 'icash') {
-        if (state.icash < item.cost) return alert("Zu wenig iCash!");
+        if (state.icash < item.cost) return showCyberToast("Zu wenig iCash!", "error");
         state.icash -= item.cost;
       } else {
-        if (state.money < item.cost) return alert("Zu wenig Geld!");
+        if (state.money < item.cost) return showCyberToast("Zu wenig Geld!", "error");
         state.money -= item.cost;
       }
       item.bought = true;
       if (id === 'bm1') state.clickPower += 0.05;
-      alert(`Erfolgreich erworben: ${item.name}!`);
-      renderTabContent('icash');
-      updateUI();
-      saveGameToCloud();
+      showCyberToast(`Erfolgreich erworben: ${item.name}!`, "reward");
+      renderTabContent('icash'); updateUI(); saveGameToCloud();
     }
 
     function buyNewBuilding() {
-      if (state.ownedBuildings.length >= 100) return alert("Maximum erreicht!");
+      if (state.ownedBuildings.length >= 100) return showCyberToast("Maximum erreicht!", "error");
       const nextB = masterBuildingsList[state.ownedBuildings.length];
       if (state.money >= nextB.cost) {
         state.money -= nextB.cost; 
-        state.ownedBuildings.push({ ...nextB, workers: [null, null, null, null, null, null], modules: { aiCore: 0, firewall: false, holoAd: 0 } });
+        state.ownedBuildings.push({ ...nextB, adLevel: 0, lastAdBuyDate: '', workers: [null, null, null, null, null, null], modules: { aiCore: 0, firewall: false, holoAd: 0 } });
+        updateQuestProgress('q3', 1);
+        showCyberToast(`Gebäude gekauft: ${nextB.name}`, "success");
         updateUI(); renderBuildingsTab(); saveGameToCloud();
-      } else alert("Nicht genügend Kapital!");
+      } else showCyberToast("Nicht genügend Kapital!", "error");
     }
 
     function getBuildingIncome(b) {
       let baseInc = b.income * b.level; 
       let boostMult = 1.0;
+      
+      let adLvl = b.adLevel || 0;
+      if (adLvl > 0) {
+        boostMult += (adLvl * 0.1);
+      }
+
       if (b.workers) {
         b.workers.forEach(w => {
           if (w) { let wBoost = w.boost / 100; if(w.isSuper && b.category === 'INDUSTRIE') wBoost += 2.0; boostMult += wBoost; }
@@ -1229,10 +1777,11 @@
       listEl.innerHTML = '';
       [...state.ownedBuildings].reverse().forEach((b) => {
         const milestoneProg = Math.min(100, (b.level % 10 === 0 ? 10 : (b.level % 10)) * 10);
+        let buildingLevelStars = Math.floor(b.level / 100) * 10;
         listEl.innerHTML += `
           <div onclick="openBuildingDetailModal(${b.id})" class="holo-card p-4 border-pink-500/30 bg-gradient-to-r from-slate-900/80 to-[#0b101d] cursor-pointer space-y-2">
             <div class="flex items-center justify-between">
-              <div><div class="font-bold text-xs text-white">🎭 ${b.name}</div><div class="text-[10px] text-pink-400">${b.category}</div><div class="text-[11px] text-emerald-400 font-mono font-bold">+${formatMoney(getBuildingIncome(b))}/h</div></div>
+              <div><div class="font-bold text-xs text-white">🎭 ${b.name}</div><div class="text-[10px] text-pink-400">${b.category} | 📢 Werbe-Lvl ${b.adLevel || 0}/10 | ⭐ +${buildingLevelStars} Level-Sterne</div><div class="text-[11px] text-emerald-400 font-mono font-bold">+${formatMoney(getBuildingIncome(b))}/h</div></div>
               <div class="text-right"><div class="text-xs font-mono font-bold text-purple-300">LVL ${b.level}</div></div>
             </div>
             <div class="w-full h-1.5 bg-[#0f172a] rounded-full overflow-hidden border border-purple-500/20">
@@ -1254,13 +1803,107 @@
 
       const c1 = (b.cost * 0.1) * b.level;
       document.getElementById('cost-detail-1').innerText = formatMoney(c1).replace('€',''); document.getElementById('cost-detail-10').innerText = formatMoney(c1*10).replace('€',''); document.getElementById('cost-detail-500').innerText = formatMoney(c1*500).replace('€','');
-      if(!state.staffStorage) state.staffStorage = [];
-      renderBuildingModules(b);
+      
+      if(b.adLevel === undefined) b.adLevel = 0;
+      document.getElementById('detail-ad-level-badge').innerText = b.adLevel;
+
+      renderBuildingModules(b); 
       renderBuildingWorkerSlots(b); 
       renderStaffStorage();
       document.getElementById('building-detail-modal').classList.remove('hidden');
     }
     function closeBuildingDetailModal() { document.getElementById('building-detail-modal').classList.add('hidden'); }
+
+    function openAdBonusModal() {
+      const b = state.ownedBuildings.find(item => item.id === activeDetailBuildingId);
+      if(!b) return;
+      document.getElementById('ad-modal-building-name').innerText = b.name;
+      renderAdBoniList(b);
+      document.getElementById('ad-bonus-modal').classList.remove('hidden');
+    }
+    function closeAdBonusModal() { document.getElementById('ad-bonus-modal').classList.add('hidden'); }
+
+    function renderAdBoniList(b) {
+      const container = document.getElementById('ad-boni-container');
+      const limitStatus = document.getElementById('ad-daily-limit-status');
+      if (!container) return;
+      container.innerHTML = '';
+
+      let currentAdLvl = b.adLevel || 0;
+      const todayStr = getGermanDateString();
+      const alreadyBoughtToday = b.lastAdBuyDate === todayStr;
+
+      if (alreadyBoughtToday) {
+        limitStatus.innerText = "Heutige Stufe bereits gekauft! Nächste Stufe ab morgen.";
+        limitStatus.className = "text-amber-400 font-bold";
+      } else {
+        limitStatus.innerText = "Verfügbar (1 Stufe heute möglich)";
+        limitStatus.className = "text-emerald-400 font-bold";
+      }
+
+      for (let i = 1; i <= 10; i++) {
+        let isBought = i <= currentAdLvl;
+        let isNext = i === currentAdLvl + 1;
+
+        let cost = b.cost * 2.5 * Math.pow(3.0, i - 1);
+        let starGain = Math.floor(5 * Math.pow(2, i - 1));
+
+        let btnHtml = '';
+        if (isBought) {
+          btnHtml = `<span class="px-3 py-1 bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 rounded-lg text-[10px] font-bold">Aktiv ✓</span>`;
+        } else if (isNext) {
+          if (alreadyBoughtToday) {
+            btnHtml = `<span class="px-3 py-1 bg-slate-800 text-amber-400 rounded-lg text-[10px]">Tageslimit erreicht</span>`;
+          } else {
+            btnHtml = `<button onclick="buyAdBonus(${b.id})" class="px-3 py-1.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold rounded-lg text-[10px] shadow hover:brightness-110 transition">Kaufen (${formatMoney(cost)})</button>`;
+          }
+        } else {
+          btnHtml = `<span class="px-3 py-1 bg-slate-800 text-slate-500 rounded-lg text-[10px]">Gesperrt</span>`;
+        }
+
+        container.innerHTML += `
+          <div class="p-2.5 bg-[#0f172a] border ${isNext && !alreadyBoughtToday ? 'border-amber-500/60 bg-amber-950/10' : 'border-blue-500/20'} rounded-xl flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold font-mono text-[11px]">📢${i}</div>
+              <div>
+                <div class="font-bold text-white text-[11px]">Werbemaßnahme #${i}</div>
+                <div class="text-[10px] font-mono text-emerald-400">🪙 +10% Geld | ⭐ +${starGain} Sterne</div>
+              </div>
+            </div>
+            <div>${btnHtml}</div>
+          </div>
+        `;
+      }
+    }
+
+    function buyAdBonus(buildingId) {
+      const b = state.ownedBuildings.find(item => item.id === buildingId);
+      if (!b) return;
+      if (b.adLevel >= 10) return showCyberToast("Maximale Werbestufe (10) erreicht!", "error");
+
+      const todayStr = getGermanDateString();
+      if (b.lastAdBuyDate === todayStr) {
+        return showCyberToast("Du hast für dieses Gebäude heute bereits eine Werbestufe gekauft! (Tageslimit: 1 Stufe)", "error");
+      }
+
+      let nextLvl = (b.adLevel || 0) + 1;
+      let cost = b.cost * 2.5 * Math.pow(3.0, nextLvl - 1);
+
+      if (state.money >= cost) {
+        state.money -= cost;
+        b.adLevel = nextLvl;
+        b.lastAdBuyDate = todayStr;
+        showCyberToast(`📢 Werbemaßnahme #${nextLvl} für ${b.name} aktiviert! +10% Einkommen & Sterne!`, "reward");
+        
+        document.getElementById('detail-ad-level-badge').innerText = b.adLevel;
+        renderAdBoniList(b);
+        renderBuildingsTab();
+        updateUI();
+        saveGameToCloud();
+      } else {
+        showCyberToast("Zu wenig Kapital für diese teure Werbemaßnahme!", "error");
+      }
+    }
 
     function renderBuildingModules(b) {
       const container = document.getElementById('building-modules-container');
@@ -1278,30 +1921,33 @@
         <div class="p-2.5 bg-[#0f172a] rounded-xl flex justify-between items-center text-xs">
           <div><div class="font-bold text-white">Werbe-Holo (Stufe ${b.modules.holoAd})</div><div class="text-[10px] text-pink-400">+15% VIP-Chance</div></div>
           <button onclick="upgradeBuildingModule('holoAd')" class="px-3 py-1 bg-pink-600 text-white font-bold rounded-lg">Kaufen (€75k)</button>
-        </div>
-      `;
+        </div>`;
     }
 
     function upgradeBuildingModule(type) {
       const b = state.ownedBuildings.find(item => item.id === activeDetailBuildingId); if(!b) return;
       if (type === 'aiCore') {
-        if (state.money >= 50000) { state.money -= 50000; b.modules.aiCore++; } else return alert("Zu wenig Geld!");
+        if (state.money >= 50000) { state.money -= 50000; b.modules.aiCore++; } else return showCyberToast("Zu wenig Geld!", "error");
       } else if (type === 'firewall') {
-        if (b.modules.firewall) return alert("Bereits installiert!");
-        if (state.money >= 100000) { state.money -= 100000; b.modules.firewall = true; } else return alert("Zu wenig Geld!");
+        if (b.modules.firewall) return showCyberToast("Bereits installiert!", "error");
+        if (state.money >= 100000) { state.money -= 100000; b.modules.firewall = true; } else return showCyberToast("Zu wenig Geld!", "error");
       } else if (type === 'holoAd') {
-        if (state.money >= 75000) { state.money -= 75000; b.modules.holoAd++; } else return alert("Zu wenig Geld!");
+        if (state.money >= 75000) { state.money -= 75000; b.modules.holoAd++; } else return showCyberToast("Zu wenig Geld!", "error");
       }
-      openBuildingDetailModal(b.id);
-      renderBuildingsTab();
-      updateUI();
-      saveGameToCloud();
+      updateQuestProgress('q3', 1);
+      openBuildingDetailModal(b.id); renderBuildingsTab(); updateUI(); saveGameToCloud();
     }
 
     function upgradeBuildingDetail(lvl) {
       const b = state.ownedBuildings.find(item => item.id === activeDetailBuildingId); if(!b) return;
       const cost = ((b.cost * 0.1) * b.level) * lvl;
-      if(state.money >= cost) { state.money -= cost; b.level += lvl; openBuildingDetailModal(b.id); renderBuildingsTab(); updateUI(); saveGameToCloud(); }
+      if(state.money >= cost) { 
+        state.money -= cost; b.level += lvl; 
+        updateQuestProgress('q3', 1);
+        openBuildingDetailModal(b.id); renderBuildingsTab(); updateUI(); saveGameToCloud(); 
+      } else {
+        showCyberToast("Zu wenig Geld für Upgrade!", "error");
+      }
     }
     function openWorkerShopModal() { document.getElementById('worker-shop-modal').classList.remove('hidden'); }
     function closeWorkerShopModal() { document.getElementById('worker-shop-modal').classList.add('hidden'); }
@@ -1312,14 +1958,14 @@
       else if(type===2 && state.money>=50000) { state.money-=50000; w={id: 'w_'+Date.now(), name:"LVL 2", boost:100, icon:"🧍", isSuper:false}; }
       else if(type===3 && state.money>=250000) { state.money-=250000; w={id: 'w_'+Date.now(), name:"LVL 3", boost:180, icon:"🚶‍♀️", isSuper:false}; }
       else if(type===4 && state.icash>=15) { state.icash-=15; w={id: 'w_'+Date.now(), name:"Super", boost:300, icon:"🛴", isSuper:true}; }
-      else return alert("Nicht genug Ressourcen!");
+      else return showCyberToast("Nicht genug Ressourcen!", "error");
 
       if(!state.staffStorage) state.staffStorage = [];
       state.staffStorage.push(w);
       closeWorkerShopModal();
       if(activeDetailBuildingId !== null) openBuildingDetailModal(activeDetailBuildingId);
       updateUI(); saveGameToCloud();
-      alert("Mitarbeiter erfolgreich angeheuert und ins Personal-Lager gelegt!");
+      showCyberToast("Mitarbeiter angeheuert und ins Lager gelegt!", "success");
     }
 
     function removeWorkerFromSlot(slotIndex) {
@@ -1327,8 +1973,7 @@
       const w = b.workers[slotIndex];
       if (w) {
         if(!state.staffStorage) state.staffStorage = [];
-        state.staffStorage.push(w);
-        b.workers[slotIndex] = null;
+        state.staffStorage.push(w); b.workers[slotIndex] = null;
         openBuildingDetailModal(b.id); renderBuildingsTab(); updateUI(); saveGameToCloud();
       }
     }
@@ -1336,14 +1981,11 @@
     function assignWorkerFromStorage(storageIndex) {
       const b = state.ownedBuildings.find(item => item.id === activeDetailBuildingId); if (!b) return;
       const slot = b.workers.findIndex(w => w === null); 
-      if (slot === -1) return alert("Alle 6 Arbeitsplätze in diesem Gebäude sind voll!");
+      if (slot === -1) return showCyberToast("Alle 6 Arbeitsplätze voll!", "error");
 
       if(!state.staffStorage) state.staffStorage = [];
       const w = state.staffStorage.splice(storageIndex, 1)[0];
-      if(w) {
-        b.workers[slot] = w;
-        openBuildingDetailModal(b.id); renderBuildingsTab(); updateUI(); saveGameToCloud();
-      }
+      if(w) { b.workers[slot] = w; openBuildingDetailModal(b.id); renderBuildingsTab(); updateUI(); saveGameToCloud(); }
     }
 
     function renderBuildingWorkerSlots(b) {
@@ -1356,8 +1998,7 @@
     }
 
     function renderStaffStorage() {
-      const c = document.getElementById('staff-storage-container'); 
-      if(!c) return;
+      const c = document.getElementById('staff-storage-container'); if(!c) return;
       c.innerHTML = '';
       if(!state.staffStorage || state.staffStorage.length === 0) {
         c.innerHTML = `<div class="col-span-2 text-center text-[11px] text-slate-500 py-3 italic">Keine unzugewiesenen Mitarbeiter im Lager.</div>`;
@@ -1368,14 +2009,10 @@
           <div class="bg-[#0f172a] border border-blue-500/30 rounded-xl p-2.5 flex items-center justify-between text-xs">
             <div class="flex items-center space-x-2">
               <span class="text-lg">${w.icon}</span>
-              <div>
-                <div class="font-bold text-white">${w.name}</div>
-                <div class="text-[10px] text-emerald-400 font-mono">+${w.boost}%</div>
-              </div>
+              <div><div class="font-bold text-white">${w.name}</div><div class="text-[10px] text-emerald-400 font-mono">+${w.boost}%</div></div>
             </div>
             <button onclick="assignWorkerFromStorage(${idx})" class="px-2.5 py-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[10px] rounded-lg transition">Zuweisen</button>
-          </div>
-        `;
+          </div>`;
       });
     }
 
@@ -1385,14 +2022,18 @@
     let hackActive = false; let hackBoostActive = false;
     function resolveHack() {
       if(!hackActive) return; hackActive = false; state.stats.hacksDefended++;
+      updateQuestProgress('q2', 1);
       document.getElementById('hacking-alert').classList.add('hidden');
       document.getElementById('click-btn').classList.remove('hack-active');
       hackBoostActive = true; document.getElementById('combo-display').innerText = "HACK-BOOST (10x)!";
+      showCyberToast("Firewall erfolgreich verteidigt! 10x Boost aktiv.", "success");
       setTimeout(() => { hackBoostActive = false; updateUI(); }, 30000);
     }
     function claimVIP() {
       document.getElementById('vip-popup').classList.add('hidden');
-      const reward = getPassiveIncome() * 2; state.money += reward; state.totalEarned += reward; updateUI(); alert(`VIP bezahlt: +${formatMoney(reward)}!`);
+      const reward = getPassiveIncome() * 2; state.money += reward; state.totalEarned += reward; 
+      updateUI(); 
+      showCyberToast(`VIP kassiert: +${formatMoney(reward)}`, "reward");
     }
 
     let activeBuildingEvent = null;
@@ -1405,11 +2046,8 @@
       
       const banner = document.getElementById('building-event-banner');
       const text = document.getElementById('building-event-text');
-      if (chosenType === 'crypto') {
-        text.innerText = `📈 Krypto-Boom in ${randomB.name}! Jetzt kassieren!`;
-      } else {
-        text.innerText = `🔥 Überhitzung in ${randomB.name}! Klicke zum Kühlen!`;
-      }
+      if (chosenType === 'crypto') text.innerText = `📈 Krypto-Boom in ${randomB.name}! Jetzt kassieren!`;
+      else text.innerText = `🔥 Überhitzung in ${randomB.name}! Klicke zum Kühlen!`;
       banner.classList.remove('hidden');
       setTimeout(() => { banner.classList.add('hidden'); activeBuildingEvent = null; }, 15000);
     }
@@ -1419,14 +2057,13 @@
       if (activeBuildingEvent.type === 'crypto') {
         const bonus = getBuildingIncome(b) * 3;
         state.money += bonus; state.totalEarned += bonus;
-        alert(`Krypto-Boom erfolgreich genutzt! +${formatMoney(bonus)}`);
+        showCyberToast(`Krypto-Boom genutzt! +${formatMoney(bonus)}`, "reward");
       } else {
         if (b) { b.level = Math.max(1, b.level - 1); }
-        alert(`Gebäude gekühlt! Schaden verhindert.`);
+        showCyberToast(`Gebäude gekühlt! Schaden verhindert.`, "success");
       }
       document.getElementById('building-event-banner').classList.add('hidden');
-      activeBuildingEvent = null;
-      updateUI();
+      activeBuildingEvent = null; updateUI();
     }
 
     function spawnFloatingText(x, y, text) {
@@ -1435,97 +2072,188 @@
       const el = document.createElement('div');
       el.className = 'floating-number';
       el.innerText = text;
-      
       const rect = container.getBoundingClientRect();
       el.style.left = (x - rect.left - 20) + 'px';
       el.style.top = (y - rect.top - 20) + 'px';
-      
       container.appendChild(el);
       setTimeout(() => el.remove(), 800);
     }
 
-    const clickBtn = document.getElementById('click-btn');
-    if (clickBtn) {
-      clickBtn.addEventListener('click', (e) => {
-        const now = Date.now();
-        if (state.lastClickTime && (now - state.lastClickTime < 1500)) {
-          state.comboHits++; state.comboMult = Math.min(5.0, 1.0 + Math.floor(state.comboHits / 5) * 0.5);
-          if(state.comboMult > state.stats.maxCombo) state.stats.maxCombo = state.comboMult;
-        } else { state.comboHits = 1; state.comboMult = 1.0; }
-        state.lastClickTime = now; state.stats.totalClicks++;
+    document.addEventListener('DOMContentLoaded', () => {
+      const clickBtn = document.getElementById('click-btn');
+      if (clickBtn) {
+        clickBtn.addEventListener('click', (e) => {
+          const now = Date.now();
+          if (state.lastClickTime && (now - state.lastClickTime < 1500)) {
+            state.comboHits++; state.comboMult = Math.min(5.0, 1.0 + Math.floor(state.comboHits / 5) * 0.5);
+            if(state.comboMult > state.stats.maxCombo) state.stats.maxCombo = state.comboMult;
+          } else { state.comboHits = 1; state.comboMult = 1.0; }
+          state.lastClickTime = now; state.stats.totalClicks++;
 
-        playClickBeep(state.comboMult);
+          playClickBeep(state.comboMult);
 
-        const pwr = getClickPower(); 
-        state.money += pwr; 
-        state.totalEarned += pwr;
-        state.exp += 1;
+          const pwr = getClickPower(); 
+          state.money += pwr; state.totalEarned += pwr;
+          state.exp += 1;
 
-        spawnFloatingText(e.clientX, e.clientY, `+${formatMoney(pwr)}`);
+          spawnFloatingText(e.clientX, e.clientY, `+${formatMoney(pwr)}`);
 
-        if (state.exp >= state.expNeeded) { state.level++; state.exp = 0; state.expNeeded = Math.floor(state.expNeeded * 1.3); state.icash += 2; }
-        updateQuestProgress('q1', 1); updateUI();
-        
-        document.getElementById('icon-cpu').classList.add('hidden');
-        document.getElementById('icon-server').classList.add('hidden');
-        document.getElementById('icon-brain').classList.add('hidden');
-        if(state.level >= 50) document.getElementById('icon-brain').classList.remove('hidden');
-        else if(state.level >= 10) document.getElementById('icon-server').classList.remove('hidden');
-        else document.getElementById('icon-cpu').classList.remove('hidden');
-      });
-    }
+          if (state.exp >= state.expNeeded) { 
+            state.level++; state.exp = 0; state.expNeeded = Math.floor(state.expNeeded * 1.3); state.icash += 2; 
+            showCyberToast(`🚀 LEVEL UP! Empire Level ${state.level}! (+💎 2 iCash)`, "level");
+          }
+          updateQuestProgress('q1', 1); updateUI();
+          
+          document.getElementById('icon-cpu').classList.add('hidden');
+          document.getElementById('icon-server').classList.add('hidden');
+          document.getElementById('icon-brain').classList.add('hidden');
+          if(state.level >= 50) document.getElementById('icon-brain').classList.remove('hidden');
+          else if(state.level >= 10) document.getElementById('icon-server').classList.remove('hidden');
+          else document.getElementById('icon-cpu').classList.remove('hidden');
+        });
+      }
+    });
 
     function openHoloCube() {
-      if (state.icash < 10) return alert("💎 10 iCash benötigt!");
+      if (state.icash < 10) return showCyberToast("💎 10 iCash benötigt!", "error");
       state.icash -= 10; state.stats.openedCubes++; const r = Math.random();
-      if(r < 0.05) { state.icash += 50; document.getElementById('lootbox-result').innerText = `💎 EPISCHER JACKPOT: +50 iCash!`; }
-      else if(r < 0.3) { state.icash += 15; document.getElementById('lootbox-result').innerText = `💎 Guter Fund: +15 iCash!`; }
-      else { const cash = getPassiveIncome() * 5; state.money += cash; document.getElementById('lootbox-result').innerText = `💶 Niete: +${formatMoney(cash)}`; }
+      if(r < 0.05) { 
+        state.icash += 50; 
+        document.getElementById('lootbox-result').innerText = `💎 EPISCHER JACKPOT: +50 iCash!`; 
+        showCyberToast("💎 EPISCHER JACKPOT: +50 iCash!", "level");
+      } else if(r < 0.3) { 
+        state.icash += 15; 
+        document.getElementById('lootbox-result').innerText = `💎 Guter Fund: +15 iCash!`; 
+        showCyberToast("💎 Guter Fund: +15 iCash!", "reward");
+      } else { 
+        const cash = getPassiveIncome() * 5; 
+        state.money += cash; 
+        document.getElementById('lootbox-result').innerText = `💶 Niete: +${formatMoney(cash)}`; 
+        showCyberToast(`Holo-Cube geöffnet: +${formatMoney(cash)}`, "success");
+      }
       updateUI(); saveGameToCloud();
     }
     function toggleStaking() {
       const now = Date.now();
       if(state.stakingActive) {
-        if(now >= state.stakingEndTime) { state.stakingActive = false; state.icash += 65; alert("Staking beendet! +65 iCash."); } 
-        else return alert("Sperrfrist läuft!");
+        if(now >= state.stakingEndTime) { 
+          state.stakingActive = false; 
+          state.icash += 65; 
+          showCyberToast("Staking beendet! +65 iCash erhalten.", "reward"); 
+        } else return showCyberToast("Sperrfrist läuft noch!", "error");
       } else {
-        if(state.icash < 50) return alert("50 iCash benötigt!");
+        if(state.icash < 50) return showCyberToast("50 iCash benötigt!", "error");
         state.icash -= 50; state.stakingActive = true; state.stakingEndTime = now + (7 * 86400000);
+        showCyberToast("50 iCash erfolgreich für 7 Tage gestakt!", "success");
       }
       renderTabContent('icash'); updateUI(); saveGameToCloud();
     }
+    
     function spinLuckyWheel() {
-      const t = getGermanDateString(); if (state.lastWheelSpinDate === t) return alert("Bereits gedreht!");
-      state.lastWheelSpinDate = t; if(Math.random() < 0.01) { state.icash += 500; alert("🎰 JACKPOT!!! +💎 500 iCash!"); } else { state.icash += 5; alert("🎰 +💎 5 iCash!"); }
+      const t = getGermanDateString(); 
+      if (state.lastWheelSpinDate === t) return showCyberToast("Du hast das Rad heute bereits gedreht!", "error");
+      
+      state.lastWheelSpinDate = t;
+      if (state.wheelStreak === undefined) state.wheelStreak = 0;
+      state.wheelStreak++;
+
+      let multiplier = (state.wheelStreak >= 3) ? 2 : 1;
+      let rand = Math.random();
+      let prizeType = "";
+      let desc = "";
+
+      if (rand < 0.45) {
+        let cash = 10000 * multiplier;
+        let exp = 150 * multiplier;
+        state.money += cash; state.totalEarned += cash; state.exp += exp;
+        prizeType = "GEWÖHNLICH"; desc = `+${formatMoney(cash)} & +${exp} EXP`;
+      } else if (rand < 0.75) {
+        let icash = 10 * multiplier;
+        let pass = 15 * multiplier;
+        state.icash += icash; state.passPoints += pass;
+        prizeType = "SELTEN"; desc = `+💎 ${icash} iCash & +${pass} Pass-Punkte`;
+      } else if (rand < 0.93) {
+        let icash = 30 * multiplier;
+        let exp = 500 * multiplier;
+        state.icash += icash; state.exp += exp;
+        prizeType = "EPISCH ✨"; desc = `+💎 ${icash} iCash & +${exp} EXP!`;
+      } else {
+        let icash = 150 * multiplier;
+        let pass = 50 * multiplier;
+        state.icash += icash; state.passPoints += pass;
+        prizeType = "LEGENDÄR 🌟"; desc = `+💎 ${icash} iCash JACKPOT & +${pass} Pass-Punkte!`;
+      }
+
+      if (state.exp >= state.expNeeded) {
+        state.level++; state.exp = 0; state.expNeeded = Math.floor(state.expNeeded * 1.3); state.icash += 5;
+        showCyberToast(`🚀 LEVEL UP! Empire Level ${state.level}! (+💎 5 iCash)`, "level");
+      }
+
+      showCyberToast(`🎰 Holo-Rad [${prizeType}]: ${desc}!`, "reward");
       renderTabContent('daily'); updateTimersDisplay(); updateUI(); saveGameToCloud();
     }
+
     function claimDailyReward() {
-      const t = getGermanDateString(); if (state.lastDailyClaimDate === t) return alert("Bereits abgeholt!");
-      state.lastDailyClaimDate = t; state.icash += 5; alert("🎁 +💎 5 iCash!");
+      const t = getGermanDateString(); if (state.lastDailyClaimDate === t) return showCyberToast("Bereits abgeholt!", "error");
+      state.lastDailyClaimDate = t; state.icash += 10; state.exp += 200; state.passPoints += 25;
+      showCyberToast("🎁 Tägliche Belohnung: +💎 10 iCash, +200 EXP & +25 Pass!", "reward");
       renderTabContent('daily'); updateTimersDisplay(); updateUI(); saveGameToCloud();
     }
+
     function updateQuestProgress(qId, val) {
-      checkDailyMidnightReset(); const q = state.dailyQuests.find(item => item.id === qId);
+      checkDailyMidnightReset(); 
+      if(!state.dailyQuests) return;
+      const q = state.dailyQuests.find(item => item.id === qId);
       if (q && !q.claimed) { q.current += val; if (q.current > q.goal) q.current = q.goal; }
     }
+
     function claimQuestReward(qId) {
+      if(!state.dailyQuests) return;
       const q = state.dailyQuests.find(item => item.id === qId);
       if (q && q.current >= q.goal && !q.claimed) {
-        q.claimed = true; state.icash += q.reward; state.passPoints += 10;
-        alert(`🏆 Quest erfüllt! +💎 ${q.reward} iCash & +10 Pass Punkte.`);
-        if(state.passPoints >= 100 && !state.unlockedTitles.includes("Cyber-Lord")) { state.unlockedTitles.push("Cyber-Lord"); alert("Titel 'Cyber-Lord' freigeschaltet!"); }
+        q.claimed = true; 
+        state.icash += q.reward; 
+        state.exp += q.expReward;
+        state.passPoints += q.passReward;
+
+        if (state.exp >= state.expNeeded) {
+          state.level++; state.exp = 0; state.expNeeded = Math.floor(state.expNeeded * 1.3); state.icash += 5;
+          showCyberToast(`🚀 LEVEL UP! Empire Level ${state.level}!`, "level");
+        }
+
+        showCyberToast(`🏆 Quest erfüllt! +💎 ${q.reward} iCash, +${q.expReward} EXP & +${q.passReward} Pass-Punkte.`, "reward");
+        if(state.passPoints >= 100 && !state.unlockedTitles.includes("Cyber-Lord")) { 
+          state.unlockedTitles.push("Cyber-Lord"); 
+          showCyberToast("Titel 'Cyber-Lord' im Cyber Pass freigeschaltet!", "level"); 
+        }
         checkDailyMidnightReset(); updateUI(); renderTabContent('daily'); saveGameToCloud();
       }
     }
+
     function buyPermaUpgrade(idx) {
       const pu = state.permaUpgrades[idx];
-      if (state.icash >= pu.cost && pu.level < pu.maxLevel) { state.icash -= pu.cost; pu.level++; updateUI(); renderTabContent('icash'); saveGameToCloud(); }
+      if (state.icash >= pu.cost && pu.level < pu.maxLevel) { 
+        state.icash -= pu.cost; pu.level++; 
+        showCyberToast(`Upgrade gekauft: ${pu.name}`, "reward");
+        updateUI(); renderTabContent('icash'); saveGameToCloud(); 
+      } else {
+        showCyberToast("Zu wenig iCash!", "error");
+      }
     }
-    function changeTitle(newTitle) { state.selectedTitle = newTitle; saveGameToCloud(); }
+    function changeTitle(newTitle) { state.selectedTitle = newTitle; saveGameToCloud(); showCyberToast(`Titel geändert zu: ${newTitle}`, "success"); }
 
     function updateTimersDisplay() {
       const todayStr = getGermanDateString();
       const wheelBtn = document.getElementById('btn-spin-wheel');
+      const streakCountEl = document.getElementById('wheel-streak-count');
+      const superSpinBadge = document.getElementById('super-spin-badge');
+
+      if(streakCountEl) streakCountEl.innerText = state.wheelStreak || 0;
+      if(superSpinBadge) {
+        if((state.wheelStreak || 0) >= 3) superSpinBadge.classList.remove('hidden');
+        else superSpinBadge.classList.add('hidden');
+      }
+
       if (wheelBtn) {
         if (state.lastWheelSpinDate === todayStr) { wheelBtn.disabled = true; wheelBtn.className = "w-full py-2.5 bg-slate-800 text-slate-500 font-bold text-xs rounded-xl"; document.getElementById('wheel-timer-text').classList.remove('hidden'); document.getElementById('wheel-countdown').innerText = formatTimer(getMillisecondsUntilMidnightBerlin()); } 
         else { wheelBtn.disabled = false; wheelBtn.className = "w-full py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold text-xs rounded-xl shadow-lg"; document.getElementById('wheel-timer-text').classList.add('hidden'); }
@@ -1550,12 +2278,11 @@
               <div class="bg-[#0f172a] p-2.5 rounded-xl flex justify-between items-center text-xs">
                 <div><div class="font-bold text-white">${item.name}</div><div class="text-[10px] text-amber-400 font-mono">${item.cost} ${item.costType === 'icash' ? 'iCash' : '€'}</div></div>
                 <button onclick="buyBlackmarketItem('${item.id}')" ${item.bought ? 'disabled' : ''} class="px-3 py-1 bg-amber-600 text-white font-bold rounded-lg text-xs ${item.bought ? 'opacity-50 cursor-not-allowed' : ''}">${item.bought ? 'Gekauft' : 'Kaufen'}</button>
-              </div>
-            `;
+              </div>`;
           });
         }
 
-        const c = document.getElementById('daily-deals-container'); if(c) c.innerHTML = `<div class="flex justify-between items-center bg-[#0f172a] p-2 rounded"><span class="text-[10px] text-white">Super-Mitarbeiter (-33%)</span><button onclick="if(state.icash>=10){state.icash-=10; alert('Gekauft!'); updateUI();} else alert('Zu wenig iCash');" class="bg-blue-600 text-[10px] px-2 py-1 rounded text-white font-bold">💎 10</button></div>`;
+        const c = document.getElementById('daily-deals-container'); if(c) c.innerHTML = `<div class="flex justify-between items-center bg-[#0f172a] p-2 rounded"><span class="text-[10px] text-white">Super-Mitarbeiter (-33%)</span><button onclick="if(state.icash>=10){state.icash-=10; showCyberToast('Super-Mitarbeiter gekauft!', 'reward'); updateUI();} else showCyberToast('Zu wenig iCash', 'error');" class="bg-blue-600 text-[10px] px-2 py-1 rounded text-white font-bold">💎 10</button></div>`;
         const stakeBtn = document.getElementById('btn-stake'); const stakeStat = document.getElementById('staking-status');
         if(state.stakingActive) {
           const left = state.stakingEndTime - Date.now();
@@ -1568,24 +2295,43 @@
           list.innerHTML += `<div class="holo-card p-3 flex justify-between items-center mb-2"><div><div class="font-bold text-xs text-white">${pu.name} (Lvl ${pu.level}/${pu.maxLevel})</div></div><button onclick="buyPermaUpgrade(${idx})" ${pu.level>=pu.maxLevel?'disabled':''} class="px-3 py-1 text-xs rounded-xl font-bold ${canBuy?'icash-btn':'bg-slate-800 text-slate-500'}">${pu.level>=pu.maxLevel?'Max':`💎 ${pu.cost}`}</button></div>`;
         });
       }
+      if (tabId === 'tictactoe') { renderTictactoeBoard(); }
+      if (tabId === 'chat') { if (window.initGlobalChatListener) window.initGlobalChatListener(); }
       if (tabId === 'syndicate') {
         const box = document.getElementById('current-syndicate-box');
         const nameEl = document.getElementById('active-syndicate-name');
-        if (state.syndicate) {
-          box.classList.remove('hidden');
-          nameEl.innerText = state.syndicate.toUpperCase();
-        } else {
-          box.classList.add('hidden');
-        }
+        if (state.syndicate) { box.classList.remove('hidden'); nameEl.innerText = state.syndicate.toUpperCase(); }
+        else { box.classList.add('hidden'); }
       }
       if (tabId === 'daily') {
         document.getElementById('pass-points').innerText = state.passPoints; 
         const passBar = document.getElementById('pass-bar');
         if(passBar) passBar.style.width = Math.min(100, state.passPoints) + '%';
         const qC = document.getElementById('daily-quests-container'); qC.innerHTML = '';
+        
+        if(!state.dailyQuests) {
+          state.dailyQuests = [
+            { id: 'q1', text: 'Führe 25 Klick-Impulse aus', goal: 25, current: 0, reward: 3, expReward: 75, passReward: 15, claimed: false, tier: 'STANDARD' },
+            { id: 'q2', text: 'Wehre 1 Firewall-Breach ab', goal: 1, current: 0, reward: 6, expReward: 150, passReward: 25, claimed: false, tier: 'MITTEL' },
+            { id: 'q3', text: 'Kaufe oder verbessere ein Gebäude', goal: 1, current: 0, reward: 15, expReward: 350, passReward: 40, claimed: false, tier: 'SCHWER' }
+          ];
+        }
+
         state.dailyQuests.forEach(q => {
           const ready = q.current >= q.goal && !q.claimed;
-          qC.innerHTML += `<div class="holo-card p-3 flex justify-between items-center text-xs"><div><div class="font-bold text-white">${q.text}</div><div class="text-[10px] text-slate-400 mt-0.5 font-bold">Fortschritt: ${q.current}/${q.goal}</div></div><button onclick="claimQuestReward('${q.id}')" ${!ready?'disabled':''} class="px-3 py-1.5 rounded-lg font-bold ${q.claimed?'text-emerald-400 bg-slate-900 border border-emerald-500/30':(ready?'icash-btn':'bg-slate-800 text-slate-600')}">${q.claimed?'Erfüllt':'Belohnung'}</button></div>`;
+          const tierColor = q.tier === 'STANDARD' ? 'bg-emerald-950 text-emerald-300 border-emerald-500/30' : (q.tier === 'MITTEL' ? 'bg-amber-950 text-amber-300 border-amber-500/30' : 'bg-purple-950 text-purple-300 border-purple-500/30');
+          qC.innerHTML += `
+            <div class="holo-card p-3.5 flex justify-between items-center text-xs">
+              <div class="space-y-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="px-2 py-0.5 rounded text-[9px] font-mono border ${tierColor}">${q.tier || 'STANDARD'}</span>
+                  <span class="font-bold text-white">${q.text}</span>
+                </div>
+                <div class="text-[10px] text-cyan-300 font-mono">Belohnung: +💎${q.reward} | +${q.expReward} EXP | +${q.passReward} PTS</div>
+                <div class="text-[10px] text-slate-400 font-bold font-mono">Fortschritt: ${q.current}/${q.goal}</div>
+              </div>
+              <button onclick="claimQuestReward('${q.id}')" ${!ready?'disabled':''} class="px-3.5 py-2 rounded-xl font-bold ${q.claimed?'text-emerald-400 bg-slate-900 border border-emerald-500/30':'icash-btn'}">${q.claimed?'Erfüllt':(ready?'Abholen':'Offen')}</button>
+            </div>`;
         });
         updateTimersDisplay();
       }
@@ -1596,7 +2342,7 @@
         const avs = [{ name: '🤖 Standard Klon', type: 'free' }, { name: '💻 Cyber Hacker', type: 'free' }, { name: '👑 Cyber Emperor', type: 'pass' }];
         avs.forEach(av => {
           const isSelected = state.selectedAvatar === av.name; const isUnlocked = av.type === 'free' || state.unlockedAvatars.includes(av.name);
-          let actionBtn = isSelected ? `<span class="text-[10px] text-emerald-400 font-bold">Aktiv</span>` : (isUnlocked ? `<button onclick="state.selectedAvatar='${av.name}';updateUI();renderTabContent('fame');saveGameToCloud();" class="px-2 py-1 bg-blue-600/20 text-blue-300 border border-blue-500/30 rounded text-[10px] font-bold">Nutzen</button>` : `<span class="text-[10px] text-slate-500">Gesperrt</span>`);
+          let actionBtn = isSelected ? `<span class="text-[10px] text-emerald-400 font-bold">Aktiv</span>` : (isUnlocked ? `<button onclick="state.selectedAvatar='${av.name}';updateUI();renderTabContent('fame');saveGameToCloud();showCyberToast('Avatar gewechselt!', 'success');" class="px-2 py-1 bg-blue-600/20 text-blue-300 border border-blue-500/30 rounded text-[10px] font-bold">Nutzen</button>` : `<span class="text-[10px] text-slate-500">Gesperrt</span>`);
           grid.innerHTML += `<div class="p-2.5 bg-[#0f172a] border ${isSelected ? 'border-purple-500' : 'border-blue-500/20'} rounded-xl flex items-center justify-between text-xs"><span class="text-white">${av.name}</span>${actionBtn}</div>`;
         });
         loadLeaderboard();
@@ -1606,6 +2352,15 @@
         document.getElementById('stat-max-combo').innerText = state.stats.maxCombo.toFixed(1) + 'x';
         document.getElementById('stat-cubes').innerText = state.stats.openedCubes;
         document.getElementById('stat-hacks').innerText = state.stats.hacksDefended;
+        
+        const currentUser = window.FB?.auth?.currentUser;
+        const isAdminUser = state.role === 'admin' || (currentUser && ADMIN_EMAILS_GLOBAL.includes(currentUser.email.toLowerCase()));
+        const adminSection = document.getElementById('admin-settings-section');
+        if (adminSection) {
+          if (isAdminUser) adminSection.classList.remove('hidden');
+          else adminSection.classList.add('hidden');
+        }
+
         renderLanguageTab();
       }
       if (tabId === 'buildings') renderBuildingsTab();
@@ -1636,7 +2391,8 @@
 
     function updateUI() {
       document.getElementById('stat-money').innerText = formatMoney(state.money);
-      document.getElementById('stat-icash').innerText = `💎 ${state.icash} iCash`;
+      document.getElementById('stat-icash').innerText = `💎 ${state.icash}`;
+      document.getElementById('stat-stars').innerText = `⭐ ${getTotalStars()}`;
       document.getElementById('stat-income').innerText = '+' + formatMoney(getPassiveIncome()) + ' /h';
       document.getElementById('stat-level').innerText = state.level;
       document.getElementById('player-level-text').innerText = state.level;
@@ -1669,8 +2425,7 @@
           const dashoffset = 289 * (1 - progress);
           comboRing.style.strokeDashoffset = dashoffset;
         } else {
-          state.comboMult = 1.0;
-          state.comboHits = 0;
+          state.comboMult = 1.0; state.comboHits = 0;
           comboRing.style.strokeDashoffset = 289;
           updateUI();
         }
@@ -1690,14 +2445,8 @@
       }
     }, 1000);
 
-    setInterval(() => { 
-      updateTimersDisplay(); 
-      checkMonthlyReset(); 
-    }, 1000);
-
-    setInterval(() => {
-      saveGameToCloud();
-    }, 15000);
+    setInterval(() => { updateTimersDisplay(); checkMonthlyReset(); }, 1000);
+    setInterval(() => { saveGameToCloud(); }, 15000);
 
     setInterval(() => {
       if(!hackActive && !hackBoostActive && Math.random() < 0.02) {
@@ -1708,15 +2457,14 @@
 
     setInterval(() => {
       if(state.ownedBuildings.length > 0 && Math.random() < 0.05) {
-        document.getElementById('vip-popup').classList.remove('hidden');
-        setTimeout(() => { document.getElementById('vip-popup').classList.add('hidden'); }, 15000);
+        const popup = document.getElementById('vip-popup');
+        if(popup) popup.classList.remove('hidden');
+        setTimeout(() => { const p = document.getElementById('vip-popup'); if(p) p.classList.add('hidden'); }, 15000);
       }
     }, 20000);
 
     setInterval(() => {
-      if (state.ownedBuildings.length > 0 && Math.random() < 0.03) {
-        triggerBuildingEvent();
-      }
+      if (state.ownedBuildings.length > 0 && Math.random() < 0.03) { triggerBuildingEvent(); }
     }, 25000);
 
     updateUI(); updateTimersDisplay(); lucide.createIcons();
