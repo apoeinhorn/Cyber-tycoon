@@ -18,7 +18,7 @@
       apiKey: "AIzaSyDVkBQHOU3bch3D5eAhbN_lwyV7uaK4zxM",
       authDomain: "cyber-tycoon-5a1e6.firebaseapp.com",
       projectId: "cyber-tycoon-5a1e6",
-      storageBucket: "cyber-tycoon-5a1e6.firebasestorage.app",
+      storageBucket: "cyber-tycoon-5a1e6.appspot.com",
       messagingSenderId: "57493581543",
       appId: "1:57493581543:web:1b06bd315ad56ed461bc42",
       measurementId: "G-ER4SVEMLVE"
@@ -164,6 +164,23 @@
     .category-page { display: none; }
     .category-page.active { display: block; }
 
+    /* FLOATING CLICK TEXT ANIMATION */
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-50px) scale(1.2); }
+    }
+    .floating-number {
+      position: absolute;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 14px;
+      color: #34d399;
+      pointer-events: none;
+      animation: floatUp 0.8s ease-out forwards;
+      z-index: 50;
+      text-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+    }
+
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 2px; }
@@ -184,6 +201,7 @@
 </head>
 <body id="app-body" class="text-slate-300 min-h-screen flex flex-col relative overflow-x-hidden">
 
+  <!-- TOP DROPDOWN MENU (DIRECTORY) -->
   <div id="top-dropdown-menu" class="fixed inset-0 bg-[#050810]/98 backdrop-blur-3xl z-[100] flex flex-col p-4 sm:p-6 overflow-y-auto">
     <div class="flex justify-between items-center pb-4 border-b border-cyan-500/20 mb-4 sticky top-0 bg-[#050810] z-10 pt-2">
       <div class="flex items-center space-x-2 text-white font-extrabold text-sm tracking-widest uppercase">
@@ -212,13 +230,19 @@
         <div class="w-11 h-11 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:scale-110 transition">
           <i data-lucide="gem" class="w-5 h-5"></i>
         </div>
-        <span class="text-xs font-bold text-white">0.5. iCash Zentrale</span>
+        <span class="text-xs font-bold text-white">0.5. iCash & Schwarzmarkt</span>
       </button>
       <button onclick="switchCategoryPage('daily')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-emerald-400 transition group bg-gradient-to-b from-emerald-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition">
           <i data-lucide="gift" class="w-5 h-5"></i>
         </div>
         <span class="text-xs font-bold text-white">Quests & Rad</span>
+      </button>
+      <button onclick="switchCategoryPage('syndicate')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-amber-400 transition group bg-gradient-to-b from-amber-950/40 to-[#070b14]">
+        <div class="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-110 transition">
+          <i data-lucide="shield" class="w-5 h-5"></i>
+        </div>
+        <span class="text-xs font-bold text-white">Cyber-Syndikat</span>
       </button>
       <button onclick="switchCategoryPage('fame')" class="holo-card p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-blue-400 transition group bg-gradient-to-b from-blue-950/40 to-[#070b14]">
         <div class="w-11 h-11 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-300 group-hover:scale-110 transition">
@@ -235,6 +259,7 @@
     </div>
   </div>
 
+  <!-- AUTH OVERLAY -->
   <div id="auth-overlay" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] flex items-center justify-center p-4">
     <div class="holo-card p-6 max-w-md w-full border-blue-500/50 bg-[#070b14] space-y-5 shadow-2xl relative">
       <div class="text-center space-y-1.5">
@@ -290,6 +315,7 @@
     </div>
   </div>
 
+  <!-- ADMIN MODAL -->
   <div id="admin-modal" class="fixed inset-0 bg-black/90 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
     <div class="holo-card p-6 max-w-md w-full border-rose-500/50 bg-[#070b14] space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-rose-500/20 pb-3">
@@ -314,6 +340,7 @@
     </div>
   </div>
 
+  <!-- HEADER -->
   <header class="bg-[#070b14]/95 backdrop-blur-2xl border-b border-blue-500/10 px-4 py-3 sticky top-0 z-30 flex items-center justify-between">
     <div class="flex items-center space-x-2">
       <audio id="bg-music" loop><source src="https://n11a-eu.rcs.revma.com/1z19ak79n98uv" type="audio/mpeg"></audio>
@@ -336,8 +363,10 @@
     </div>
   </header>
 
+  <!-- MAIN CONTENT -->
   <main class="flex-1 max-w-2xl w-full mx-auto p-4 flex flex-col pb-28">
     
+    <!-- TOP STATS BAR -->
     <div class="grid grid-cols-3 gap-2 mb-4">
       <div class="holo-card p-3 relative overflow-hidden">
         <div class="text-[9px] text-slate-400 font-mono uppercase tracking-wider">PASSIV / STUNDE</div>
@@ -353,6 +382,7 @@
       </div>
     </div>
 
+    <!-- MONTHLY RESET BANNER -->
     <div class="holo-card p-3 mb-4 bg-gradient-to-r from-blue-950/40 via-purple-950/40 to-[#0b101d] border-blue-500/30 flex items-center justify-between text-xs">
       <div class="flex items-center gap-2">
         <span class="text-base">📅</span>
@@ -364,11 +394,19 @@
       <div id="monthly-reset-countdown" class="font-mono font-extrabold text-cyan-400 text-xs">--:--:--:--</div>
     </div>
 
+    <!-- HACKING ALERT BANNER -->
     <div id="hacking-alert" class="hidden absolute top-10 left-1/2 -translate-x-1/2 w-64 bg-red-900/90 border-2 border-red-500 rounded-xl p-3 text-center z-[80] shadow-[0_0_20px_red]">
       <div class="text-xs font-bold text-white uppercase mb-1">⚠️ Firewall Breach!</div>
       <button onclick="resolveHack()" class="w-full py-2 bg-red-600 text-white font-bold text-xs rounded shadow">Hack Stoppen! (10x Boost)</button>
     </div>
 
+    <!-- DYNAMIC BUILDING EVENT BANNER -->
+    <div id="building-event-banner" class="hidden holo-card p-3 mb-4 border-amber-500/60 bg-amber-950/40 flex items-center justify-between text-xs animate-pulse">
+      <div id="building-event-text" class="font-bold text-amber-300">⚡ Krypto-Boom aktiv!</div>
+      <button onclick="resolveBuildingEvent()" class="px-3 py-1.5 bg-amber-500 text-white font-bold rounded-lg">Kassieren!</button>
+    </div>
+
+    <!-- ================= PAGE 0: CLICKER / TERMINAL ================= -->
     <div id="page-clicker" class="category-page active space-y-4 relative">
       <div class="holo-card p-6 flex flex-col items-center justify-center relative overflow-hidden text-center" id="clicker-card-container">
         
@@ -385,18 +423,25 @@
         <h3 class="font-bold text-base text-white tracking-wide relative z-10">0. Core Terminal Overdrive</h3>
         <p class="text-xs text-slate-400 mt-0.5 mb-4 relative z-10">Generiere Datenimpulse, um das Imperium zu skalieren.</p>
 
-        <button id="click-btn" class="w-36 h-36 rounded-2xl bg-[#0f172a]/90 border-2 border-cyan-500/40 hover:border-cyan-400 flex flex-col items-center justify-center shadow-2xl active:scale-95 transition-all group my-2 cursor-pointer relative z-10 backdrop-blur-md">
-          <div class="absolute inset-0 bg-cyan-500/5 rounded-2xl group-hover:bg-cyan-500/15 transition"></div>
-          
-          <div class="mb-2 group-hover:scale-110 transition-transform">
-            <i id="icon-cpu" data-lucide="cpu" class="w-8 h-8 text-cyan-400"></i>
-            <i id="icon-server" data-lucide="server" class="w-8 h-8 text-pink-400 hidden"></i>
-            <i id="icon-brain" data-lucide="brain-circuit" class="w-8 h-8 text-purple-500 hidden"></i>
-          </div>
+        <!-- CLICK BUTTON MIT SVG COMBO-TIMER-RING -->
+        <div class="relative my-2 z-10">
+          <svg class="absolute -inset-3 w-[calc(100%+24px)] h-[calc(100%+24px)] pointer-events-none" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(59, 130, 246, 0.15)" stroke-width="3" />
+            <circle id="combo-timer-ring" cx="50" cy="50" r="46" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="289" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 50 50)" style="transition: stroke-dashoffset 0.1s linear;" />
+          </svg>
+          <button id="click-btn" class="w-36 h-36 rounded-2xl bg-[#0f172a]/90 border-2 border-cyan-500/40 hover:border-cyan-400 flex flex-col items-center justify-center shadow-2xl active:scale-95 transition-all group cursor-pointer backdrop-blur-md relative overflow-hidden">
+            <div class="absolute inset-0 bg-cyan-500/5 rounded-2xl group-hover:bg-cyan-500/15 transition"></div>
+            
+            <div class="mb-2 group-hover:scale-110 transition-transform">
+              <i id="icon-cpu" data-lucide="cpu" class="w-8 h-8 text-cyan-400"></i>
+              <i id="icon-server" data-lucide="server" class="w-8 h-8 text-pink-400 hidden"></i>
+              <i id="icon-brain" data-lucide="brain-circuit" class="w-8 h-8 text-purple-500 hidden"></i>
+            </div>
 
-          <span class="font-bold text-[11px] text-white tracking-wider">IMPULS SENDEN</span>
-          <span id="click-power-text" class="text-[10px] font-mono text-emerald-400 mt-1">+€0.01 / Klick</span>
-        </button>
+            <span class="font-bold text-[11px] text-white tracking-wider">IMPULS SENDEN</span>
+            <span id="click-power-text" class="text-[10px] font-mono text-emerald-400 mt-1">+€0.01 / Klick</span>
+          </button>
+        </div>
 
         <div class="w-full space-y-2 relative z-10 mt-4">
           <div class="w-full bg-[#0f172a]/80 border border-blue-500/20 rounded-xl p-3 flex justify-between items-center text-left backdrop-blur-md">
@@ -427,9 +472,10 @@
       </div>
     </div>
 
+    <!-- ================= PAGE 1: BUILDINGS & MODULES ================= -->
     <div id="page-buildings" class="category-page space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="building-2" class="w-4 h-4 text-pink-400"></i> Meine Gebäude</h3>
+        <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="building-2" class="w-4 h-4 text-pink-400"></i> Meine Gebäude & Module</h3>
       </div>
 
       <div class="holo-card p-6 text-center space-y-4 bg-gradient-to-b from-purple-950/40 via-[#0b101d] to-[#0b101d] border-pink-500/40">
@@ -453,6 +499,7 @@
       <div id="owned-buildings-list" class="space-y-3"></div>
     </div>
 
+    <!-- BUILDING DETAIL & MODULES MODAL -->
     <div id="building-detail-modal" class="fixed inset-0 bg-[#050614]/95 backdrop-blur-2xl z-[90] flex items-center justify-center p-4 hidden">
       <div class="w-full max-w-md bg-gradient-to-b from-[#110d2c] via-[#090b21] to-[#040510] border border-purple-500/30 rounded-3xl p-5 shadow-2xl relative text-slate-200 max-h-[92vh] overflow-y-auto">
         <button onclick="closeBuildingDetailModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-blue-600/40 text-white flex items-center justify-center hover:scale-105"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -460,10 +507,28 @@
           <div class="text-white text-lg font-extrabold tracking-wide uppercase" id="detail-building-name">NAME</div>
           <div class="text-sm font-mono text-emerald-400 font-bold" id="detail-building-income">0.00 /STD.</div>
         </div>
-        <div class="grid grid-cols-3 gap-3 mt-6">
+
+        <!-- GEBÄUDE-MEILENSTEIN FORTSCHRITT -->
+        <div class="mt-4 p-3 bg-purple-950/30 border border-purple-500/30 rounded-2xl">
+          <div class="flex justify-between items-center text-[11px] font-mono mb-1">
+            <span class="text-slate-300">Meilenstein-Fortschritt</span>
+            <span id="building-milestone-text" class="text-purple-400 font-bold">Level 1 / 10</span>
+          </div>
+          <div class="w-full h-2 bg-[#0f172a] rounded-full overflow-hidden border border-purple-500/20">
+            <div id="building-milestone-bar" class="h-full bg-purple-500 rounded-full transition-all duration-300" style="width: 10%"></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 mt-4">
           <button onclick="upgradeBuildingDetail(1)" class="holo-card p-3 flex flex-col items-center justify-center"><div class="font-mono text-xs text-amber-300" id="cost-detail-1">0</div><div class="text-[9px] mt-0.5">1 LVL</div></button>
           <button onclick="upgradeBuildingDetail(10)" class="holo-card p-3 flex flex-col items-center justify-center"><div class="font-mono text-xs text-amber-300" id="cost-detail-10">0</div><div class="text-[9px] mt-0.5">10 LVL</div></button>
           <button onclick="upgradeBuildingDetail(500)" class="holo-card p-3 flex flex-col items-center justify-center"><div class="font-mono text-xs text-amber-300" id="cost-detail-500">0</div><div class="text-[9px] mt-0.5">500 LVL</div></button>
+        </div>
+
+        <!-- SPEZIAL-MODULE -->
+        <div class="mt-5 space-y-2">
+          <div class="text-xs font-bold text-white uppercase">Spezial-Module (Tuning)</div>
+          <div class="grid grid-cols-1 gap-2" id="building-modules-container"></div>
         </div>
         
         <div class="mt-5 space-y-2">
@@ -481,6 +546,7 @@
       </div>
     </div>
 
+    <!-- WORKER SHOP MODAL -->
     <div id="worker-shop-modal" class="fixed inset-0 bg-[#050614]/95 z-[95] flex items-center justify-center p-4 hidden">
       <div class="w-full max-w-md bg-gradient-to-b from-[#110d2c] via-[#090b21] to-[#040510] border border-pink-500/40 rounded-3xl p-5 shadow-2xl relative text-slate-200">
         <button onclick="closeWorkerShopModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-rose-600/40 text-white flex items-center justify-center"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -494,8 +560,19 @@
       </div>
     </div>
 
+    <!-- ================= PAGE 2: ICASH & SCHWARZMARKT ================= -->
     <div id="page-icash" class="category-page space-y-4">
-      <div class="flex justify-between items-center"><h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="gem" class="w-4 h-4 text-purple-400"></i> iCash Zentrale</h3></div>
+      <div class="flex justify-between items-center"><h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="gem" class="w-4 h-4 text-purple-400"></i> iCash & Schwarzmarkt</h3></div>
+
+      <!-- SCHWARZMARKT -->
+      <div class="holo-card p-4 border-amber-500/40 bg-amber-950/10 space-y-3">
+        <div class="flex justify-between items-center">
+          <div class="font-bold text-xs text-amber-300 uppercase flex items-center gap-1.5"><i data-lucide="shopping-cart" class="w-4 h-4"></i> Geheim-Schwarzmarkt</div>
+          <div class="text-[10px] font-mono text-slate-400">Aktualisierung in: <span id="blackmarket-timer" class="text-amber-400 font-bold">48:00:00</span></div>
+        </div>
+        <p class="text-[10px] text-slate-300">Exklusive Items direkt vom Untergrund-Händler gegen iCash oder Geld.</p>
+        <div class="grid grid-cols-1 gap-2" id="blackmarket-container"></div>
+      </div>
 
       <div class="holo-card p-4 border-blue-500/30 bg-blue-950/20 space-y-3">
         <div class="font-bold text-xs text-white uppercase">Daily Deals (Angebote)</div>
@@ -519,6 +596,7 @@
       <div id="list-icash-features" class="space-y-3"></div>
     </div>
 
+    <!-- ================= PAGE 3: DAILY & QUESTS ================= -->
     <div id="page-daily" class="category-page space-y-4">
       <div class="flex justify-between items-center"><h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i> Quests & Rad</h3></div>
 
@@ -548,12 +626,43 @@
       <div id="daily-claim-timer-text" class="text-[11px] font-mono text-slate-400 text-center hidden">Nächster Reset in: <span class="text-emerald-400 font-bold" id="daily-claim-countdown">00:00:00</span></div>
     </div>
 
+    <!-- ================= PAGE 4: CYBER-SYNDIKAT ================= -->
+    <div id="page-syndicate" class="category-page space-y-4">
+      <div class="flex justify-between items-center"><h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="shield" class="w-4 h-4 text-amber-400"></i> Cyber-Syndikat & Fraktionskrieg</h3></div>
+
+      <div class="holo-card p-4 border-amber-500/40 bg-gradient-to-b from-amber-950/30 to-[#0b101d] space-y-3 text-center">
+        <div class="text-amber-400 font-extrabold text-sm uppercase">Wähle dein Syndikat</div>
+        <p class="text-[11px] text-slate-300">Schließe dich einer Fraktion an und gewinne jede Woche den globalen Fraktionskrieg für massive iCash-Boni!</p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+          <div onclick="joinSyndicate('neon')" class="p-3 bg-[#0f172a] border border-cyan-500/30 rounded-2xl cursor-pointer hover:border-cyan-400 transition text-left">
+            <div class="font-bold text-cyan-400 text-xs">⚡ Neon Syndicate</div>
+            <div class="text-[10px] text-slate-400 mt-1">Fokus auf High-Speed Klicks & Drohnen.</div>
+          </div>
+          <div onclick="joinSyndicate('quantum')" class="p-3 bg-[#0f172a] border border-purple-500/30 rounded-2xl cursor-pointer hover:border-purple-400 transition text-left">
+            <div class="font-bold text-purple-400 text-xs">🔮 Quantum Hackers</div>
+            <div class="text-[10px] text-slate-400 mt-1">Fokus auf iCash & Holo-Cubes.</div>
+          </div>
+          <div onclick="joinSyndicate('iron')" class="p-3 bg-[#0f172a] border border-pink-500/30 rounded-2xl cursor-pointer hover:border-pink-400 transition text-left">
+            <div class="font-bold text-pink-400 text-xs">🛡️ Iron Corp</div>
+            <div class="text-[10px] text-slate-400 mt-1">Fokus auf Immobilien & Passiv-Einkommen.</div>
+          </div>
+        </div>
+
+        <div id="current-syndicate-box" class="p-3 bg-blue-950/40 border border-blue-500/30 rounded-xl text-xs font-mono text-white hidden mt-2">
+          Aktives Syndikat: <span id="active-syndicate-name" class="text-cyan-400 font-bold">Keines</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PAGE 5: WELTRANGLISTE & IDENTITÄT ================= -->
     <div id="page-fame" class="category-page space-y-4">
       <div class="flex justify-between items-center">
         <h3 class="font-bold text-sm text-white">Weltrangliste & Identität</h3>
         <button onclick="loadLeaderboard()" class="px-2.5 py-1 bg-cyan-600/30 border border-cyan-500/40 text-cyan-300 rounded text-[10px] font-bold hover:bg-cyan-600/50 transition">Aktualisieren</button>
       </div>
 
+      <!-- NAMENSÄNDERUNG FÜR 100 ICASH -->
       <div class="holo-card p-4 space-y-3 border-cyan-500/30 bg-cyan-950/10">
         <div class="font-bold text-xs text-white uppercase">Unternehmensname ändern</div>
         <p class="text-[10px] text-slate-400">Ändere deinen Imperium-Namen für <span class="text-purple-400 font-bold">💎 100 iCash</span> (aktualisiert sofort die Rangliste).</p>
@@ -583,6 +692,7 @@
       <div id="leaderboard-list" class="space-y-2"><div class="text-xs text-slate-500 italic">Lade Rangliste...</div></div>
     </div>
 
+    <!-- ================= PAGE 6: SYSTEM & SETTINGS ================= -->
     <div id="page-settings" class="category-page space-y-4">
       <div class="flex justify-between items-center"><h3 class="font-bold text-sm text-white">System & Stats</h3></div>
       
@@ -607,6 +717,7 @@
     </div>
   </main>
 
+  <!-- BOTTOM NAVIGATION -->
   <nav class="fixed bottom-0 left-0 right-0 bg-[#070b14]/95 backdrop-blur-2xl border-t border-cyan-500/20 py-2.5 px-6 flex items-center justify-between z-50">
     <button onclick="switchCategoryPage('clicker')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-cyan-400 transition">
       <i data-lucide="cpu" class="w-5 h-5"></i><span class="text-[9px] font-mono font-bold">TERMINAL</span>
@@ -626,16 +737,25 @@
   <script>
     let audioCtx = null;
     function initAudioContext() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-    function playClickBeep() { 
+    
+    // VERBESSERTES AUDIO: Dynamische Tonhöhe basierend auf Combo-Multiplikator
+    function playClickBeep(comboMult = 1.0) { 
       try { 
         initAudioContext(); if(!audioCtx) return; 
         const osc = audioCtx.createOscillator(); 
         const gain = audioCtx.createGain(); 
         osc.type = 'sine'; 
-        osc.frequency.setValueAtTime(580, audioCtx.currentTime); 
-        osc.frequency.exponentialRampToValueAtTime(220, audioCtx.currentTime + 0.08); 
+        
+        // Tonhöhe steigt mit der Combo an (max. ca. 1200 Hz)
+        const baseFreq = 580;
+        const targetFreq = Math.min(1200, baseFreq * (1 + (comboMult - 1) * 0.25));
+        
+        osc.frequency.setValueAtTime(targetFreq, audioCtx.currentTime); 
+        osc.frequency.exponentialRampToValueAtTime(targetFreq * 0.4, audioCtx.currentTime + 0.08); 
+        
         gain.gain.setValueAtTime(0.08, audioCtx.currentTime); 
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08); 
+        
         osc.connect(gain); gain.connect(audioCtx.destination); 
         osc.start(); osc.stop(audioCtx.currentTime + 0.08); 
       } catch(e) {} 
@@ -677,12 +797,12 @@
       masterBuildingsList.push({
         id: i, name: `${buildingNames[(i - 1) % buildingNames.length]} #${i}`, category: buildingCategories[(i - 1) % buildingCategories.length],
         cost: 50000 * Math.pow(1.55, i - 1), income: 2500 * Math.pow(1.35, i - 1), level: 1, stars: Math.floor(Math.random() * 2500) + 100,
-        distance: Math.floor(Math.random() * 900) + 50, workers: [null, null, null, null, null, null]
+        distance: Math.floor(Math.random() * 900) + 50, workers: [null, null, null, null, null, null], modules: { aiCore: 0, firewall: false, holoAd: 0 }
       });
     }
 
     let state = {
-      version: 40, companyName: 'CyberBoss', language: 'de', theme: 'default',
+      version: 46, companyName: 'CyberBoss', language: 'de', theme: 'default',
       money: 1000000, totalEarned: 1000000, icash: 0,
       clickPower: 0.01, clickUpgLevel: 0, clickUpgCost: 0.50,
       droneUpgLevel: 0, droneUpgCost: 100, 
@@ -691,8 +811,10 @@
       stats: { totalClicks: 0, maxCombo: 1.0, openedCubes: 0, hacksDefended: 0 },
       passPoints: 0, unlockedTitles: ['Anfänger', 'Netz-Runner'], selectedTitle: 'Anfänger',
       stakingActive: false, stakingEndTime: 0,
+      syndicate: null,
       
       lastWheelSpinDate: '', lastDailyClaimDate: '', lastQuestRefreshDate: '', lastMonthlyResetKey: '',
+      lastBlackmarketRefresh: 0, blackmarketStock: [],
       selectedAvatar: '🤖 Standard Klon', unlockedAvatars: ['🤖 Standard Klon', '💻 Cyber Hacker', '👑 Cyber Emperor'],
       ownedBuildings: [],
       staffStorage: [],
@@ -964,23 +1086,69 @@
       });
     }
 
+    // --- FRAKTIONEN & SYNDIKAT ---
+    function joinSyndicate(type) {
+      state.syndicate = type;
+      alert(`Du bist dem Syndikat '${type.toUpperCase()}' beigetreten!`);
+      renderTabContent('syndicate');
+      saveGameLocally();
+    }
+
+    // --- SCHWARZMARKT ---
+    function checkBlackmarketRefresh() {
+      const now = Date.now();
+      if (!state.lastBlackmarketRefresh || now - state.lastBlackmarketRefresh > 172800000) {
+        state.lastBlackmarketRefresh = now;
+        state.blackmarketStock = [
+          { id: 'bm1', name: 'Neural-Chip (+10% Klick)', costType: 'icash', cost: 15, bought: false },
+          { id: 'bm2', name: 'Sicherheits-Patch (Anti-Hack)', costType: 'money', cost: 500000, bought: false }
+        ];
+      }
+    }
+    function buyBlackmarketItem(id) {
+      const item = state.blackmarketStock.find(i => i.id === id);
+      if (!item || item.bought) return;
+      if (item.costType === 'icash') {
+        if (state.icash < item.cost) return alert("Zu wenig iCash!");
+        state.icash -= item.cost;
+      } else {
+        if (state.money < item.cost) return alert("Zu wenig Geld!");
+        state.money -= item.cost;
+      }
+      item.bought = true;
+      if (id === 'bm1') state.clickPower += 0.05;
+      alert(`Erfolgreich erworben: ${item.name}!`);
+      renderTabContent('icash');
+      updateUI();
+      saveGameLocally();
+    }
+
+    // --- GEBÄUDE & SPEZIAL-MODULE ---
     function buyNewBuilding() {
       if (state.ownedBuildings.length >= 100) return alert("Maximum erreicht!");
       const nextB = masterBuildingsList[state.ownedBuildings.length];
       if (state.money >= nextB.cost) {
-        state.money -= nextB.cost; state.ownedBuildings.push({ ...nextB, workers: [null, null, null, null, null, null] });
+        state.money -= nextB.cost; 
+        state.ownedBuildings.push({ ...nextB, workers: [null, null, null, null, null, null], modules: { aiCore: 0, firewall: false, holoAd: 0 } });
         updateUI(); renderBuildingsTab(); saveGameLocally();
       } else alert("Nicht genügend Kapital!");
     }
+
     function getBuildingIncome(b) {
-      let baseInc = b.income * b.level; let boostMult = 1.0;
+      let baseInc = b.income * b.level; 
+      let boostMult = 1.0;
       if (b.workers) {
         b.workers.forEach(w => {
           if (w) { let wBoost = w.boost / 100; if(w.isSuper && b.category === 'INDUSTRIE') wBoost += 2.0; boostMult += wBoost; }
         });
       }
+      if (b.modules) {
+        if (b.modules.aiCore) boostMult += (b.modules.aiCore * 0.2);
+        if (b.modules.holoAd) boostMult += (b.modules.holoAd * 0.15);
+      }
       return baseInc * boostMult;
     }
+
     function renderBuildingsTab() {
       const countEl = document.getElementById('buildings-counter'); const listEl = document.getElementById('owned-buildings-list');
       if (!countEl) return; countEl.innerText = `${state.ownedBuildings.length}/100`;
@@ -989,26 +1157,81 @@
       document.getElementById('buildings-total-income').innerText = `+${formatMoney(totalInc)}/Stunde`;
       listEl.innerHTML = '';
       [...state.ownedBuildings].reverse().forEach((b) => {
+        // Meilenstein Berechnung für Vorschau
+        const milestoneTarget = Math.ceil(b.level / 10) * 10;
+        const milestoneProg = Math.min(100, (b.level % 10 === 0 ? 10 : (b.level % 10)) * 10);
+        
         listEl.innerHTML += `
-          <div onclick="openBuildingDetailModal(${b.id})" class="holo-card p-4 flex items-center justify-between border-pink-500/30 bg-gradient-to-r from-slate-900/80 to-[#0b101d] cursor-pointer">
-            <div><div class="font-bold text-xs text-white">🎭 ${b.name}</div><div class="text-[10px] text-pink-400">${b.category}</div><div class="text-[11px] text-emerald-400 font-mono font-bold">+${formatMoney(getBuildingIncome(b))}/h</div></div>
-            <div class="text-right"><div class="text-xs font-mono font-bold text-purple-300">LVL ${b.level}</div></div>
+          <div onclick="openBuildingDetailModal(${b.id})" class="holo-card p-4 border-pink-500/30 bg-gradient-to-r from-slate-900/80 to-[#0b101d] cursor-pointer space-y-2">
+            <div class="flex items-center justify-between">
+              <div><div class="font-bold text-xs text-white">🎭 ${b.name}</div><div class="text-[10px] text-pink-400">${b.category}</div><div class="text-[11px] text-emerald-400 font-mono font-bold">+${formatMoney(getBuildingIncome(b))}/h</div></div>
+              <div class="text-right"><div class="text-xs font-mono font-bold text-purple-300">LVL ${b.level}</div></div>
+            </div>
+            <!-- KLEINER MEILENSTEIN-BALKEN -->
+            <div class="w-full h-1.5 bg-[#0f172a] rounded-full overflow-hidden border border-purple-500/20">
+              <div class="h-full bg-purple-500 rounded-full" style="width: ${milestoneProg}%"></div>
+            </div>
           </div>`;
       });
     }
+
     let activeDetailBuildingId = null;
     function openBuildingDetailModal(id) {
       activeDetailBuildingId = id; const b = state.ownedBuildings.find(item => item.id === id); if(!b) return;
       document.getElementById('detail-building-name').innerText = b.name;
       document.getElementById('detail-building-income').innerText = formatMoney(getBuildingIncome(b)) + '/STD.';
+      
+      // Meilenstein Update im Modal
+      const currentLevelMod = b.level % 10 === 0 ? 10 : b.level % 10;
+      document.getElementById('building-milestone-text').innerText = `Level ${b.level} (Fortschritt zum 10er Meilenstein: ${currentLevelMod}/10)`;
+      document.getElementById('building-milestone-bar').style.width = (currentLevelMod * 10) + '%';
+
       const c1 = (b.cost * 0.1) * b.level;
       document.getElementById('cost-detail-1').innerText = formatMoney(c1).replace('€',''); document.getElementById('cost-detail-10').innerText = formatMoney(c1*10).replace('€',''); document.getElementById('cost-detail-500').innerText = formatMoney(c1*500).replace('€','');
       if(!state.staffStorage) state.staffStorage = [];
+      renderBuildingModules(b);
       renderBuildingWorkerSlots(b); 
       renderStaffStorage();
       document.getElementById('building-detail-modal').classList.remove('hidden');
     }
     function closeBuildingDetailModal() { document.getElementById('building-detail-modal').classList.add('hidden'); }
+
+    function renderBuildingModules(b) {
+      const container = document.getElementById('building-modules-container');
+      if (!container) return;
+      if (!b.modules) b.modules = { aiCore: 0, firewall: false, holoAd: 0 };
+      container.innerHTML = `
+        <div class="p-2.5 bg-[#0f172a] rounded-xl flex justify-between items-center text-xs">
+          <div><div class="font-bold text-white">KI-Kern (Stufe ${b.modules.aiCore})</div><div class="text-[10px] text-emerald-400">+20% Einkommen</div></div>
+          <button onclick="upgradeBuildingModule('aiCore')" class="px-3 py-1 bg-purple-600 text-white font-bold rounded-lg">Kaufen (€50k)</button>
+        </div>
+        <div class="p-2.5 bg-[#0f172a] rounded-xl flex justify-between items-center text-xs">
+          <div><div class="font-bold text-white">Sicherheits-Firewall</div><div class="text-[10px] text-cyan-400">${b.modules.firewall ? 'Aktiv' : 'Inaktiv'}</div></div>
+          <button onclick="upgradeBuildingModule('firewall')" class="px-3 py-1 bg-cyan-600 text-white font-bold rounded-lg">${b.modules.firewall ? 'Max' : '€100k'}</button>
+        </div>
+        <div class="p-2.5 bg-[#0f172a] rounded-xl flex justify-between items-center text-xs">
+          <div><div class="font-bold text-white">Werbe-Holo (Stufe ${b.modules.holoAd})</div><div class="text-[10px] text-pink-400">+15% VIP-Chance</div></div>
+          <button onclick="upgradeBuildingModule('holoAd')" class="px-3 py-1 bg-pink-600 text-white font-bold rounded-lg">Kaufen (€75k)</button>
+        </div>
+      `;
+    }
+
+    function upgradeBuildingModule(type) {
+      const b = state.ownedBuildings.find(item => item.id === activeDetailBuildingId); if(!b) return;
+      if (type === 'aiCore') {
+        if (state.money >= 50000) { state.money -= 50000; b.modules.aiCore++; } else return alert("Zu wenig Geld!");
+      } else if (type === 'firewall') {
+        if (b.modules.firewall) return alert("Bereits installiert!");
+        if (state.money >= 100000) { state.money -= 100000; b.modules.firewall = true; } else return alert("Zu wenig Geld!");
+      } else if (type === 'holoAd') {
+        if (state.money >= 75000) { state.money -= 75000; b.modules.holoAd++; } else return alert("Zu wenig Geld!");
+      }
+      openBuildingDetailModal(b.id);
+      renderBuildingsTab();
+      updateUI();
+      saveGameLocally();
+    }
+
     function upgradeBuildingDetail(lvl) {
       const b = state.ownedBuildings.find(item => item.id === activeDetailBuildingId); if(!b) return;
       const cost = ((b.cost * 0.1) * b.level) * lvl;
@@ -1106,18 +1329,77 @@
       const reward = getPassiveIncome() * 2; state.money += reward; state.totalEarned += reward; updateUI(); alert(`VIP bezahlt: +${formatMoney(reward)}!`);
     }
 
+    // --- DYNAMISCHE GEBÄUDE-EREIGNISSE ---
+    let activeBuildingEvent = null;
+    function triggerBuildingEvent() {
+      if (state.ownedBuildings.length === 0) return;
+      const types = ['crypto', 'overheat'];
+      const chosenType = types[Math.floor(Math.random() * types.length)];
+      const randomB = state.ownedBuildings[Math.floor(Math.random() * state.ownedBuildings.length)];
+      activeBuildingEvent = { type: chosenType, buildingId: randomB.id, buildingName: randomB.name };
+      
+      const banner = document.getElementById('building-event-banner');
+      const text = document.getElementById('building-event-text');
+      if (chosenType === 'crypto') {
+        text.innerText = `📈 Krypto-Boom in ${randomB.name}! Jetzt kassieren!`;
+      } else {
+        text.innerText = `🔥 Überhitzung in ${randomB.name}! Klicke zum Kühlen!`;
+      }
+      banner.classList.remove('hidden');
+      setTimeout(() => { banner.classList.add('hidden'); activeBuildingEvent = null; }, 15000);
+    }
+    function resolveBuildingEvent() {
+      if (!activeBuildingEvent) return;
+      const b = state.ownedBuildings.find(item => item.id === activeBuildingEvent.buildingId);
+      if (activeBuildingEvent.type === 'crypto') {
+        const bonus = getBuildingIncome(b) * 3;
+        state.money += bonus; state.totalEarned += bonus;
+        alert(`Krypto-Boom erfolgreich genutzt! +${formatMoney(bonus)}`);
+      } else {
+        if (b) { b.level = Math.max(1, b.level - 1); }
+        alert(`Gebäude gekühlt! Schaden verhindert.`);
+      }
+      document.getElementById('building-event-banner').classList.add('hidden');
+      activeBuildingEvent = null;
+      updateUI();
+    }
+
+    // --- FLOATING TEXT FEEDBACK FÜR KLICKS ---
+    function spawnFloatingText(x, y, text) {
+      const container = document.getElementById('clicker-card-container');
+      if (!container) return;
+      const el = document.createElement('div');
+      el.className = 'floating-number';
+      el.innerText = text;
+      
+      const rect = container.getBoundingClientRect();
+      el.style.left = (x - rect.left - 20) + 'px';
+      el.style.top = (y - rect.top - 20) + 'px';
+      
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 800);
+    }
+
     const clickBtn = document.getElementById('click-btn');
     if (clickBtn) {
-      clickBtn.addEventListener('click', () => {
-        playClickBeep(); const now = Date.now();
+      clickBtn.addEventListener('click', (e) => {
+        const now = Date.now();
         if (state.lastClickTime && (now - state.lastClickTime < 1500)) {
           state.comboHits++; state.comboMult = Math.min(5.0, 1.0 + Math.floor(state.comboHits / 5) * 0.5);
           if(state.comboMult > state.stats.maxCombo) state.stats.maxCombo = state.comboMult;
         } else { state.comboHits = 1; state.comboMult = 1.0; }
         state.lastClickTime = now; state.stats.totalClicks++;
 
-        const pwr = getClickPower(); state.money += pwr; state.totalEarned += pwr;
+        playClickBeep(state.comboMult);
+
+        const pwr = getClickPower(); 
+        state.money += pwr; 
+        state.totalEarned += pwr;
         state.exp += 1;
+
+        // Floating Text erzeugen
+        spawnFloatingText(e.clientX, e.clientY, `+${formatMoney(pwr)}`);
+
         if (state.exp >= state.expNeeded) { state.level++; state.exp = 0; state.expNeeded = Math.floor(state.expNeeded * 1.3); state.icash += 2; }
         updateQuestProgress('q1', 1); updateUI();
         
@@ -1196,6 +1478,20 @@
 
     function renderTabContent(tabId) {
       if (tabId === 'icash') {
+        checkBlackmarketRefresh();
+        const bmContainer = document.getElementById('blackmarket-container');
+        if (bmContainer) {
+          bmContainer.innerHTML = '';
+          state.blackmarketStock.forEach(item => {
+            bmContainer.innerHTML += `
+              <div class="bg-[#0f172a] p-2.5 rounded-xl flex justify-between items-center text-xs">
+                <div><div class="font-bold text-white">${item.name}</div><div class="text-[10px] text-amber-400 font-mono">${item.cost} ${item.costType === 'icash' ? 'iCash' : '€'}</div></div>
+                <button onclick="buyBlackmarketItem('${item.id}')" ${item.bought ? 'disabled' : ''} class="px-3 py-1 bg-amber-600 text-white font-bold rounded-lg text-xs ${item.bought ? 'opacity-50 cursor-not-allowed' : ''}">${item.bought ? 'Gekauft' : 'Kaufen'}</button>
+              </div>
+            `;
+          });
+        }
+
         const c = document.getElementById('daily-deals-container'); if(c) c.innerHTML = `<div class="flex justify-between items-center bg-[#0f172a] p-2 rounded"><span class="text-[10px] text-white">Super-Mitarbeiter (-33%)</span><button onclick="if(state.icash>=10){state.icash-=10; alert('Gekauft!'); updateUI();} else alert('Zu wenig iCash');" class="bg-blue-600 text-[10px] px-2 py-1 rounded text-white font-bold">💎 10</button></div>`;
         const stakeBtn = document.getElementById('btn-stake'); const stakeStat = document.getElementById('staking-status');
         if(state.stakingActive) {
@@ -1208,6 +1504,16 @@
           const canBuy = state.icash >= pu.cost && pu.level < pu.maxLevel;
           list.innerHTML += `<div class="holo-card p-3 flex justify-between items-center mb-2"><div><div class="font-bold text-xs text-white">${pu.name} (Lvl ${pu.level}/${pu.maxLevel})</div></div><button onclick="buyPermaUpgrade(${idx})" ${pu.level>=pu.maxLevel?'disabled':''} class="px-3 py-1 text-xs rounded-xl font-bold ${canBuy?'icash-btn':'bg-slate-800 text-slate-500'}">${pu.level>=pu.maxLevel?'Max':`💎 ${pu.cost}`}</button></div>`;
         });
+      }
+      if (tabId === 'syndicate') {
+        const box = document.getElementById('current-syndicate-box');
+        const nameEl = document.getElementById('active-syndicate-name');
+        if (state.syndicate) {
+          box.classList.remove('hidden');
+          nameEl.innerText = state.syndicate.toUpperCase();
+        } else {
+          box.classList.add('hidden');
+        }
       }
       if (tabId === 'daily') {
         document.getElementById('pass-points').innerText = state.passPoints; 
@@ -1253,6 +1559,7 @@
       let total = 10.00;
       if (state.ownedBuildings) state.ownedBuildings.forEach(b => { total += getBuildingIncome(b); });
       const pi2 = state.permaUpgrades.find(u => u.id === 'pi2'); if (pi2 && pi2.level > 0) total *= Math.pow(1.5, pi2.level);
+      if (state.syndicate === 'iron') total *= 1.2;
       return total;
     }
     function getClickPower() {
@@ -1260,6 +1567,7 @@
       const pi1 = state.permaUpgrades.find(u => u.id === 'pi1'); if (pi1 && pi1.level > 0) base *= Math.pow(2.0, pi1.level);
       if (state.comboMult && state.comboMult > 1.0) base *= state.comboMult;
       if (hackBoostActive) base *= 10.0;
+      if (state.syndicate === 'neon') base *= 1.25;
       return base;
     }
 
@@ -1299,6 +1607,27 @@
       setTheme(state.theme || 'default'); checkDailyMidnightReset(); checkMonthlyReset();
     }
 
+    // COMBO TIMEOUT LOOP (Ring aktualisieren & Combo bei Inaktivität abbauen)
+    setInterval(() => {
+      const now = Date.now();
+      const comboRing = document.getElementById('combo-timer-ring');
+      if (state.lastClickTime && comboRing) {
+        const elapsed = now - state.lastClickTime;
+        const maxTime = 1500; // 1.5 Sekunden Timeout
+        if (elapsed < maxTime) {
+          const progress = 1 - (elapsed / maxTime);
+          const dashoffset = 289 * (1 - progress);
+          comboRing.style.strokeDashoffset = dashoffset;
+        } else {
+          // Combo abgelaufen
+          state.comboMult = 1.0;
+          state.comboHits = 0;
+          comboRing.style.strokeDashoffset = 289;
+          updateUI();
+        }
+      }
+    }, 50);
+
     setInterval(() => {
       const incPerSec = getPassiveIncome() / 3600;
       if (incPerSec > 0) { state.money += incPerSec; state.totalEarned += incPerSec; }
@@ -1330,6 +1659,12 @@
         setTimeout(() => { document.getElementById('vip-popup').classList.add('hidden'); }, 15000);
       }
     }, 20000);
+
+    setInterval(() => {
+      if (state.ownedBuildings.length > 0 && Math.random() < 0.03) {
+        triggerBuildingEvent();
+      }
+    }, 25000);
 
     loadGameLocally(); updateUI(); updateTimersDisplay(); lucide.createIcons();
     setTimeout(loadLeaderboard, 1000);
