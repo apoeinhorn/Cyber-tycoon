@@ -1271,7 +1271,7 @@
     }
 
     let state = {
-      version: 67, companyName: 'CyberBoss', language: 'de', theme: 'default',
+      version: 68, companyName: 'CyberBoss', language: 'de', theme: 'default',
       money: 1000000, totalEarned: 1000000, icash: 0,
       role: 'spieler',
       clickPower: 0.01, clickUpgLevel: 0, clickUpgCost: 0.50,
@@ -1464,7 +1464,15 @@
     }
 
     async function updateAdminDiagnostics() {
-      if (!window.FB || !window.FB.db || !selectedAdminTargetUid) return;
+      if (!window.FB || !window.FB.db) return;
+      const selectEl = document.getElementById('admin-target-player-select');
+      if (selectEl && selectEl.value) {
+        selectedAdminTargetUid = selectEl.value;
+      }
+      if (!selectedAdminTargetUid && window.FB.auth.currentUser) {
+        selectedAdminTargetUid = window.FB.auth.currentUser.uid;
+      }
+
       try {
         const docSnap = await window.FB.getDoc(window.FB.doc(window.FB.db, "saves", selectedAdminTargetUid));
         if (docSnap.exists()) {
@@ -1479,6 +1487,14 @@
     async function adminAddCustomMoney() {
       const val = parseFloat(document.getElementById('admin-custom-money').value);
       if(isNaN(val)) return showCyberToast("Bitte gültigen Betrag eingeben!", "error");
+      
+      const selectEl = document.getElementById('admin-target-player-select');
+      if (selectEl && selectEl.value) {
+        selectedAdminTargetUid = selectEl.value;
+      }
+      if(!selectedAdminTargetUid && window.FB && window.FB.auth.currentUser) {
+        selectedAdminTargetUid = window.FB.auth.currentUser.uid;
+      }
       if(!selectedAdminTargetUid) return showCyberToast("Kein Spieler ausgewählt!", "error");
 
       try {
@@ -1490,11 +1506,13 @@
           d.totalEarned = (d.totalEarned || 0) + val;
           await window.FB.setDoc(docRef, d);
           
-          if (selectedAdminTargetUid === window.FB.auth.currentUser.uid) {
+          if (window.FB.auth.currentUser && selectedAdminTargetUid === window.FB.auth.currentUser.uid) {
             state.money = d.money; state.totalEarned = d.totalEarned; updateUI();
           }
           showCyberToast(`💰 +${formatMoney(val)} für Spieler injiziert!`, "reward");
           updateAdminDiagnostics();
+        } else {
+          showCyberToast("Fehler: Spieler-Save nicht in Cloud gefunden!", "error");
         }
       } catch(e) {
         showCyberToast("Fehler: " + e.message, "error");
@@ -1504,6 +1522,14 @@
     async function adminAddCustomIcash() {
       const val = parseInt(document.getElementById('admin-custom-icash').value);
       if(isNaN(val)) return showCyberToast("Bitte gültigen iCash-Wert eingeben!", "error");
+      
+      const selectEl = document.getElementById('admin-target-player-select');
+      if (selectEl && selectEl.value) {
+        selectedAdminTargetUid = selectEl.value;
+      }
+      if(!selectedAdminTargetUid && window.FB && window.FB.auth.currentUser) {
+        selectedAdminTargetUid = window.FB.auth.currentUser.uid;
+      }
       if(!selectedAdminTargetUid) return showCyberToast("Kein Spieler ausgewählt!", "error");
 
       try {
@@ -1514,11 +1540,13 @@
           d.icash = (d.icash || 0) + val;
           await window.FB.setDoc(docRef, d);
           
-          if (selectedAdminTargetUid === window.FB.auth.currentUser.uid) {
+          if (window.FB.auth.currentUser && selectedAdminTargetUid === window.FB.auth.currentUser.uid) {
             state.icash = d.icash; updateUI();
           }
           showCyberToast(`💎 +${val} iCash für Spieler injiziert!`, "reward");
           updateAdminDiagnostics();
+        } else {
+          showCyberToast("Fehler: Spieler-Save nicht in Cloud gefunden!", "error");
         }
       } catch(e) {
         showCyberToast("Fehler: " + e.message, "error");
